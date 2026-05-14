@@ -239,6 +239,28 @@
 987654321"></textarea>
               <p class="muted small">Admin konten hanya bisa kirim media/text ke bot untuk generate link. Mereka tidak bisa mengubah setting website. Owner ID tidak perlu dimasukkan lagi.</p>
 
+              <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+              <h3 style="margin:0 0 8px">Custom Text Bot</h3>
+              <p class="muted small">Kosongkan field untuk memakai teks bawaan. Placeholder yang bisa dipakai: {bot_name}, {bot_username}, {required_count}, {join_note}, {link}, {note}</p>
+
+              <label for="startMessage">Pesan /start</label>
+              <textarea id="startMessage" rows="6" placeholder="Pesan saat user mengetik /start tanpa kode"></textarea>
+
+              <label for="helpMessage">Pesan Bantuan</label>
+              <textarea id="helpMessage" rows="5" placeholder="Pesan saat user klik tombol Bantuan"></textarea>
+
+              <label for="joinRequiredMessage">Pesan Belum Join</label>
+              <textarea id="joinRequiredMessage" rows="3" placeholder="Kamu harus join channel wajib dulu..."></textarea>
+
+              <label for="notAllowedMessage">Pesan Akses Ditolak</label>
+              <textarea id="notAllowedMessage" rows="3" placeholder="Pesan untuk user biasa yang mencoba generate"></textarea>
+
+              <label for="invalidCodeMessage">Pesan Kode Tidak Valid</label>
+              <textarea id="invalidCodeMessage" rows="2" placeholder="Kode tidak ditemukan atau sudah tidak valid."></textarea>
+
+              <label for="linkCreatedMessage">Pesan Link Berhasil Dibuat</label>
+              <textarea id="linkCreatedMessage" rows="4" placeholder="{note}&#10;&#10;✅ Link FSub berhasil dibuat:&#10;&lt;code&gt;{link}&lt;/code&gt;"></textarea>
+
               <div class="btns"><button id="saveSettingsBtn" type="button">Simpan Pengaturan</button></div>
               <div id="settingsMsg" class="notice hidden"></div>
             </section>
@@ -377,6 +399,13 @@
       $("protectContent").checked = Boolean(bot.protect_content);
       $("antiExternalLinks").checked = Boolean(bot.anti_external_telegram_links);
       $("contentAdmins").value = (bot.content_admin_ids || []).join("\n");
+      const customTexts = bot.custom_texts || {};
+      $("startMessage").value = customTexts.start_message || "";
+      $("helpMessage").value = customTexts.help_message || "";
+      $("joinRequiredMessage").value = customTexts.join_required_message || "";
+      $("notAllowedMessage").value = customTexts.not_allowed_message || "";
+      $("invalidCodeMessage").value = customTexts.invalid_code_message || "";
+      $("linkCreatedMessage").value = customTexts.link_created_message || "";
       renderChecklist(bot);
       renderRequiredChannels(bot);
     }
@@ -494,10 +523,19 @@
           .filter(Boolean)
           .map(Number)
           .filter(v => Number.isInteger(v) && v > 0);
+        const customTexts = {
+          start_message:$("startMessage").value.trim(),
+          help_message:$("helpMessage").value.trim(),
+          join_required_message:$("joinRequiredMessage").value.trim(),
+          not_allowed_message:$("notAllowedMessage").value.trim(),
+          invalid_code_message:$("invalidCodeMessage").value.trim(),
+          link_created_message:$("linkCreatedMessage").value.trim()
+        };
         const data = await api(`/api/bots/${bot.id}/settings`, {method:"POST", body:JSON.stringify({
           protect_content:$("protectContent").checked,
           anti_external_telegram_links:$("antiExternalLinks").checked,
-          content_admin_ids:contentAdminIds
+          content_admin_ids:contentAdminIds,
+          custom_texts:customTexts
         })});
         showMsg("settingsMsg", data.message || "Pengaturan disimpan.", "ok");
         await loadDashboard();
