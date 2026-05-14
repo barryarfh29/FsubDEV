@@ -1,321 +1,875 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FSubDEV Panel</title>
   <style>
-    :root{--bg:#070b17;--card:#111832;--card2:#151f3f;--line:#263258;--text:#e9eefc;--muted:#94a3c7;--brand:#7c5cff;--brand2:#19c7a8;--danger:#ff5b7f;--warn:#ffcc66;--ok:#2ee59d}
-    *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(circle at top left,#182653 0,#0b1020 40%,#070b17 100%);color:var(--text)}
-    .wrap{max-width:1180px;margin:auto;padding:28px}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}.brand{display:flex;gap:12px;align-items:center}.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 18px 70px #7c5cff66}.brand h1{margin:0;font-size:24px}.brand p{margin:2px 0 0;color:var(--muted);font-size:13px}
-    .grid{display:grid;grid-template-columns:340px 1fr;gap:18px}.card{background:linear-gradient(180deg,var(--card),#0d1430);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 20px 70px #0005}.card h2{font-size:16px;margin:0 0 14px}.muted{color:var(--muted)}
-    label{display:block;color:var(--muted);font-size:12px;margin:12px 0 7px}input,textarea{width:100%;border:1px solid var(--line);background:#080e21;color:var(--text);border-radius:14px;padding:12px 13px;outline:none}textarea{min-height:100px;resize:vertical}
-    button{border:0;border-radius:14px;padding:11px 13px;color:#fff;background:var(--brand);font-weight:800;cursor:pointer}button:hover{filter:brightness(1.08)}button.secondary{background:#22305f}button.danger{background:var(--danger)}button.ok{background:var(--brand2)}button.ghost{background:transparent;border:1px solid var(--line);color:var(--muted)}
-    .row{display:flex;gap:10px;align-items:end}.row>*{flex:1}.actions{display:flex;gap:8px;flex-wrap:wrap}.hidden{display:none!important}.login{max-width:430px;margin:10vh auto}.pill{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:9px 12px;color:var(--muted);font-size:13px;background:#0d1430aa}
-    .bot-list{display:flex;flex-direction:column;gap:10px}.bot-item{padding:12px;border:1px solid var(--line);background:var(--card2);border-radius:16px;cursor:pointer}.bot-item.active{outline:2px solid var(--brand)}.bot-item b{display:block}.bot-item small{color:var(--muted);word-break:break-word}.status{font-size:12px;padding:7px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}.status.running{color:var(--ok);border-color:#2ee59d55;background:#2ee59d12}.status.stopped{color:var(--warn);border-color:#ffcc6655;background:#ffcc6612}
-    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.tab{background:#101936;border:1px solid var(--line);color:var(--muted)}.tab.active{background:var(--brand);color:#fff;border-color:transparent}.panel{display:none}.panel.active{display:block}.table{width:100%;border-collapse:collapse}.table th,.table td{border-bottom:1px solid var(--line);padding:11px;text-align:left;font-size:14px;vertical-align:top}.table th{color:var(--muted);font-size:12px}.table td{word-break:break-word}.log{height:280px;overflow:auto;background:#070b17;border:1px solid var(--line);border-radius:16px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;white-space:pre-wrap;color:#c7d2fe}.toast{position:fixed;right:20px;bottom:20px;background:#111832;border:1px solid var(--line);padding:12px 14px;border-radius:14px;box-shadow:0 16px 50px #0007}.linkbox{word-break:break-all;background:#070b17;border:1px dashed var(--line);border-radius:14px;padding:12px;color:#c7d2fe;margin-top:10px}.hint{font-size:12px;color:var(--muted);line-height:1.5}.code-badge{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:5px 8px;color:#c7d2fe;background:#070b17;font-size:12px}
-    @media(max-width:850px){.grid{grid-template-columns:1fr}.top{flex-direction:column;align-items:flex-start}.wrap{padding:18px}.row{flex-direction:column;align-items:stretch}}
+    :root {
+      --bg: #070b1a;
+      --card: #10162d;
+      --card2: #151c37;
+      --line: rgba(255,255,255,.09);
+      --text: #eef2ff;
+      --muted: #9aa7c7;
+      --brand: #8b5cf6;
+      --brand2: #6d5dfc;
+      --ok: #22c55e;
+      --danger: #ef4444;
+      --warn: #f59e0b;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(139,92,246,.26), transparent 35%),
+        radial-gradient(circle at top right, rgba(37,99,235,.18), transparent 35%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    button, input, textarea, select { font: inherit; }
+
+    .wrap {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 60px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--brand), #2563eb);
+      box-shadow: 0 16px 35px rgba(139,92,246,.28);
+      font-weight: 900;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    .brand h1 { font-size: 22px; letter-spacing: -.03em; }
+    .brand p { color: var(--muted); font-size: 13px; margin-top: 2px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .card {
+      background: rgba(16,22,45,.88);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-pad { padding: 20px; }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .card-title h2 { font-size: 17px; }
+    .hint { color: var(--muted); font-size: 13px; line-height: 1.45; }
+
+    label {
+      display: block;
+      color: #cdd6f4;
+      font-size: 13px;
+      margin: 12px 0 7px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.12);
+      outline: none;
+      color: var(--text);
+      background: #0b1023;
+      border-radius: 13px;
+      padding: 12px 14px;
+    }
+
+    textarea { min-height: 92px; resize: vertical; }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: rgba(139,92,246,.75);
+      box-shadow: 0 0 0 4px rgba(139,92,246,.13);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 13px;
+      color: white;
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      padding: 11px 14px;
+      cursor: pointer;
+      font-weight: 750;
+      transition: transform .12s ease, opacity .12s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    .btn-ghost { background: rgba(255,255,255,.08); }
+    .btn-danger { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+    .btn-ok { background: linear-gradient(135deg, #22c55e, #15803d); }
+    .btn-warn { background: linear-gradient(135deg, #f59e0b, #b45309); }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--muted);
+      background: rgba(255,255,255,.07);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+
+    .running .dot { background: var(--ok); }
+    .stopped .dot { background: var(--danger); }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      background: rgba(255,255,255,.035);
+      border-bottom: 1px solid var(--line);
+      overflow-x: auto;
+    }
+
+    .tab {
+      background: transparent;
+      color: var(--muted);
+      white-space: nowrap;
+      padding: 10px 12px;
+    }
+
+    .tab.active {
+      background: rgba(139,92,246,.22);
+      color: white;
+    }
+
+    .panel { display: none; padding: 20px; }
+    .panel.active { display: block; }
+
+    .bot-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .bot-item {
+      padding: 13px;
+      border-radius: 15px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.045);
+      cursor: pointer;
+    }
+
+    .bot-item.active {
+      border-color: rgba(139,92,246,.75);
+      background: rgba(139,92,246,.16);
+    }
+
+    .bot-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .bot-name { font-weight: 850; }
+    .bot-meta { color: var(--muted); font-size: 12px; margin-top: 6px; word-break: break-all; }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .item {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.045);
+      border-radius: 15px;
+      padding: 13px;
+    }
+
+    .item-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .item-title { font-weight: 800; word-break: break-word; }
+    .item-sub { color: var(--muted); font-size: 12px; margin-top: 5px; word-break: break-word; }
+
+    .mini { padding: 8px 10px; font-size: 12px; border-radius: 11px; }
+
+    .empty {
+      border: 1px dashed rgba(255,255,255,.14);
+      border-radius: 15px;
+      padding: 18px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .logbox {
+      height: 360px;
+      overflow: auto;
+      background: #070b1a;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      padding: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      max-width: 420px;
+      background: #111936;
+      border: 1px solid var(--line);
+      color: white;
+      border-radius: 15px;
+      box-shadow: var(--shadow);
+      padding: 13px 15px;
+      display: none;
+      z-index: 10;
+    }
+
+    .hide { display: none !important; }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+      .split { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+    }
   </style>
 </head>
 <body>
-  <div id="loginPage" class="wrap login">
-    <div class="card">
-      <div class="brand" style="margin-bottom:18px"><div class="logo"></div><div><h1>FSubDEV</h1><p>Admin panel bot force subscribe</p></div></div>
-      <label>Backend URL</label>
-      <input id="apiBase" value="https://bot-botfsub.1ynxwv.easypanel.host" />
-      <label>Password Admin</label>
-      <input id="password" type="password" placeholder="ADMIN_PASSWORD" />
-      <button style="width:100%;margin-top:14px" onclick="login()">Login</button>
-      <p class="hint">Login memakai env <b>ADMIN_PASSWORD</b> di EasyPanel.</p>
-    </div>
-  </div>
-
-  <div id="app" class="wrap hidden">
-    <div class="top">
-      <div class="brand"><div class="logo"></div><div><h1>FSubDEV Panel</h1><p>Deploy bot, set owner, channel wajib join, dan lihat link hasil generate.</p></div></div>
-      <div class="actions"><span class="pill" id="connectedText">Connected</span><button class="ghost" onclick="logout()">Logout</button></div>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">FS</div>
+        <div>
+          <h1>FSubDEV Panel</h1>
+          <p>Deploy & kelola bot force subscribe multibot</p>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="btn-ghost" onclick="loadAll()">Refresh</button>
+        <button class="btn-danger hide" id="logoutBtn" onclick="logout()">Logout</button>
+      </div>
     </div>
 
     <div class="grid">
-      <aside class="card">
-        <h2>Deploy Bot Baru</h2>
-        <label>Token BotFather</label>
-        <input id="botToken" placeholder="123456:ABC..." />
-        <label>Nama internal</label>
-        <input id="botName" placeholder="Contoh: FSub Movie" />
-        <label>Owner Telegram ID</label>
-        <input id="ownerUserId" type="number" placeholder="Contoh: 123456789" />
-        <p class="hint">Hanya Telegram ID owner ini yang bisa kirim media/text ke bot untuk generate link.</p>
-        <button style="width:100%;margin-top:8px" onclick="createBot()">Validasi & Simpan Bot</button>
-        <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
-        <h2>Daftar Bot</h2>
-        <div id="botList" class="bot-list"></div>
-      </aside>
-
-      <main class="card">
-        <div id="emptyState"><h2>Pilih bot</h2><p class="muted">Pilih bot dari daftar kiri atau deploy token baru.</p></div>
-        <div id="botDetail" class="hidden">
-          <div class="row" style="align-items:center;margin-bottom:14px">
-            <div><h2 id="detailTitle" style="margin-bottom:4px"></h2><div class="muted" id="detailMeta"></div></div>
-            <span id="detailStatus" class="status">-</span>
+      <div class="card">
+        <div class="card-pad" id="loginBox">
+          <div class="card-title">
+            <h2>Login Admin</h2>
           </div>
-          <div class="actions">
-            <button class="ok" onclick="startBot()">Start Bot</button>
-            <button class="danger" onclick="stopBot()">Stop Bot</button>
-            <button class="secondary" onclick="refreshAll()">Refresh</button>
+          <p class="hint">Masukkan URL backend EasyPanel dan password admin.</p>
+
+          <label>Backend URL</label>
+          <input id="apiBase" placeholder="https://bot-botfsub.xxx.easypanel.host" />
+
+          <label>Admin Password</label>
+          <input id="password" type="password" placeholder="Password admin" />
+
+          <div class="btn-row">
+            <button onclick="login()">Login</button>
           </div>
-
-          <div class="tabs">
-            <button class="tab active" onclick="showTab('channels', this)">Channel Wajib Join</button>
-            <button class="tab" onclick="showTab('message', this)">Pesan FSub</button>
-            <button class="tab" onclick="showTab('links', this)">Link Hasil Generate</button>
-            <button class="tab" onclick="showTab('manual', this)">Manual Text</button>
-            <button class="tab" onclick="showTab('logs', this)">Log</button>
-          </div>
-
-          <section id="tab-channels" class="panel active">
-            <div class="row">
-              <div><label>Username/ID Channel</label><input id="channelRef" placeholder="@channel atau -100xxxxxxxxxx" /></div>
-              <div><label>URL Join</label><input id="channelUrl" placeholder="https://t.me/namachannel atau invite link" /></div>
-            </div>
-            <button style="margin-top:10px" onclick="addChannel()">Tambah Channel</button>
-            <table class="table" style="margin-top:14px"><thead><tr><th>Channel</th><th>URL Join</th><th>Aksi</th></tr></thead><tbody id="channelsBody"></tbody></table>
-          </section>
-
-          <section id="tab-message" class="panel">
-            <label>Pesan saat user belum join</label>
-            <textarea id="forceMessage"></textarea>
-            <button style="margin-top:10px" onclick="saveForceMessage()">Simpan Pesan</button>
-          </section>
-
-          <section id="tab-links" class="panel">
-            <p class="hint">Link di bawah dibuat otomatis saat owner mengirim media/file/text langsung ke bot Telegram.</p>
-            <table class="table"><thead><tr><th>Jenis</th><th>Kode</th><th>Link</th><th>Waktu</th></tr></thead><tbody id="codesBody"></tbody></table>
-          </section>
-
-          <section id="tab-manual" class="panel">
-            <p class="hint">Opsional untuk test teks dari panel. Untuk media, kirim langsung ke bot dari akun owner.</p>
-            <label>Konten text</label>
-            <textarea id="manualContent" placeholder="Tulis konten text yang akan dikirim ke user..."></textarea>
-            <button style="margin-top:10px" onclick="createManualCode()">Buat Link Text</button>
-            <div id="generatedLink" class="linkbox hidden"></div>
-          </section>
-
-          <section id="tab-logs" class="panel">
-            <div class="log" id="logsBox"></div>
-          </section>
         </div>
-      </main>
+
+        <div class="card-pad hide" id="botBox">
+          <div class="card-title">
+            <h2>Daftar Bot</h2>
+            <span class="status" id="apiStatus"><span class="dot"></span>API</span>
+          </div>
+
+          <label>Token BotFather</label>
+          <input id="botToken" placeholder="123456:ABCDEF..." />
+
+          <label>Owner Telegram ID</label>
+          <input id="ownerId" placeholder="contoh: 123456789" />
+
+          <div class="btn-row">
+            <button onclick="createBot()">Tambah Bot</button>
+          </div>
+
+          <div class="bot-list" id="botList"></div>
+        </div>
+      </div>
+
+      <div class="card hide" id="mainBox">
+        <div class="tabs">
+          <button class="tab active" onclick="openTab('overview')">Overview</button>
+          <button class="tab" onclick="openTab('channels')">Channel Wajib Join</button>
+          <button class="tab" onclick="openTab('storage')">Channel Database</button>
+          <button class="tab" onclick="openTab('message')">Pesan FSub</button>
+          <button class="tab" onclick="openTab('links')">Link & Konten</button>
+          <button class="tab" onclick="openTab('logs')">Log</button>
+        </div>
+
+        <div class="panel active" id="panel-overview">
+          <div class="card-title">
+            <div>
+              <h2 id="selectedBotName">Pilih bot</h2>
+              <p class="hint" id="selectedBotMeta">Belum ada bot dipilih.</p>
+            </div>
+            <span class="status stopped" id="selectedBotStatus"><span class="dot"></span>Stopped</span>
+          </div>
+          <div class="btn-row">
+            <button class="btn-ok" onclick="startBot()">Start Bot</button>
+            <button class="btn-danger" onclick="stopBot()">Stop Bot</button>
+            <button class="btn-warn" onclick="deleteBot()">Hapus Bot</button>
+          </div>
+          <p class="hint" style="margin-top:16px">Owner cukup kirim media/text ke bot. Bot otomatis simpan ke channel database jika sudah diset, lalu membalas link generate.</p>
+        </div>
+
+        <div class="panel" id="panel-channels">
+          <div class="card-title">
+            <div>
+              <h2>Channel Wajib Join</h2>
+              <p class="hint">Cukup isi satu field. Bisa @channel, https://t.me/channel, invite link, atau ID -100.</p>
+            </div>
+          </div>
+          <label>Channel / Group</label>
+          <input id="channelInput" placeholder="@channel atau https://t.me/channel atau -100xxxxxxxxxx" />
+          <div class="btn-row">
+            <button onclick="addChannel()">Tambah Channel</button>
+          </div>
+          <div class="list" id="channelList"></div>
+        </div>
+
+        <div class="panel" id="panel-storage">
+          <div class="card-title">
+            <div>
+              <h2>Channel Database Media</h2>
+              <p class="hint">Media/text dari owner akan dicopy ke channel ini, lalu bot simpan message_id.</p>
+            </div>
+          </div>
+          <label>Channel Database</label>
+          <input id="storageChannel" placeholder="@database_media atau -100xxxxxxxxxx" />
+          <div class="btn-row">
+            <button onclick="saveStorageChannel()">Simpan Channel Database</button>
+            <button class="btn-ghost" onclick="clearStorageChannel()">Kosongkan</button>
+          </div>
+          <p class="hint" style="margin-top:14px">Bot wajib menjadi admin di channel database agar bisa copy media ke sana.</p>
+        </div>
+
+        <div class="panel" id="panel-message">
+          <div class="card-title">
+            <div>
+              <h2>Pesan Force Subscribe</h2>
+              <p class="hint">Pesan ini dikirim saat user belum join channel wajib.</p>
+            </div>
+          </div>
+          <label>Pesan</label>
+          <textarea id="forceMessage" placeholder="Silakan join channel terlebih dahulu."></textarea>
+          <div class="btn-row">
+            <button onclick="saveForceMessage()">Simpan Pesan</button>
+          </div>
+        </div>
+
+        <div class="panel" id="panel-links">
+          <div class="card-title">
+            <div>
+              <h2>Link & Konten</h2>
+              <p class="hint">Konten biasanya dibuat otomatis saat owner kirim media/text ke bot.</p>
+            </div>
+            <button class="btn-ghost" onclick="loadCodes()">Refresh</button>
+          </div>
+
+          <div class="split">
+            <div>
+              <label>Kode Manual</label>
+              <input id="manualCode" placeholder="contoh: TEST01 atau kosong untuk auto" />
+            </div>
+            <div>
+              <label>Konten Manual</label>
+              <input id="manualContent" placeholder="Text/link konten" />
+            </div>
+          </div>
+          <div class="btn-row">
+            <button onclick="createManualCode()">Buat Link Manual</button>
+          </div>
+          <div class="list" id="codeList"></div>
+        </div>
+
+        <div class="panel" id="panel-logs">
+          <div class="card-title">
+            <div>
+              <h2>Log Aktivitas</h2>
+              <p class="hint">Aktivitas bot dan panel.</p>
+            </div>
+            <button class="btn-ghost" onclick="loadLogs()">Refresh Log</button>
+          </div>
+          <div class="logbox" id="logBox">Belum ada log.</div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div id="toast" class="toast hidden"></div>
+  <div class="toast" id="toast"></div>
 
   <script>
-    let API = localStorage.getItem('fsub_api') || 'https://bot-botfsub.1ynxwv.easypanel.host';
-    let TOKEN = localStorage.getItem('fsub_token') || '';
-    let selectedBot = null;
-    let bots = [];
+    let API_BASE = localStorage.getItem('fsub_api_base') || 'https://bot-botfsub.1ynxwv.easypanel.host';
+    let ADMIN_TOKEN = localStorage.getItem('fsub_admin_token') || '';
+    let BOTS = [];
+    let SELECTED_BOT_ID = localStorage.getItem('fsub_selected_bot_id') || '';
 
-    document.getElementById('apiBase').value = API;
+    document.getElementById('apiBase').value = API_BASE;
 
-    function toast(message){
+    function toast(msg) {
       const el = document.getElementById('toast');
-      el.textContent = message;
-      el.classList.remove('hidden');
-      setTimeout(()=>el.classList.add('hidden'), 2600);
+      el.textContent = msg;
+      el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 3600);
     }
 
-    async function api(path, options = {}){
-      const headers = options.headers || {};
-      headers['Content-Type'] = 'application/json';
-      if(TOKEN) headers['Authorization'] = 'Bearer ' + TOKEN;
-      const res = await fetch(API + path, {...options, headers});
+    function cleanBase(url) {
+      return String(url || '').trim().replace(/\/+$/, '');
+    }
+
+    function headers() {
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + ADMIN_TOKEN
+      };
+    }
+
+    async function api(path, options = {}) {
+      const res = await fetch(API_BASE + path, {
+        ...options,
+        headers: {
+          ...headers(),
+          ...(options.headers || {})
+        }
+      });
+      const text = await res.text();
       let data = null;
-      try{ data = await res.json(); }catch(e){ data = {}; }
-      if(!res.ok){ throw new Error(data.detail || data.message || 'Request gagal'); }
+      try { data = text ? JSON.parse(text) : null; } catch { data = { detail: text }; }
+      if (!res.ok) {
+        throw new Error((data && (data.detail || data.message)) || 'Request gagal');
+      }
       return data;
     }
 
-    async function login(){
-      API = document.getElementById('apiBase').value.trim().replace(/\/$/, '');
-      const password = document.getElementById('password').value;
-      const data = await api('/auth/login', {method:'POST', body:JSON.stringify({password})}).catch(err => {toast(err.message); return null});
-      if(!data) return;
-      TOKEN = data.token;
-      localStorage.setItem('fsub_api', API);
-      localStorage.setItem('fsub_token', TOKEN);
-      document.getElementById('loginPage').classList.add('hidden');
-      document.getElementById('app').classList.remove('hidden');
-      document.getElementById('connectedText').textContent = API;
-      await refreshAll();
+    async function login() {
+      try {
+        API_BASE = cleanBase(document.getElementById('apiBase').value);
+        const password = document.getElementById('password').value;
+        if (!API_BASE || !password) return toast('Backend URL dan password wajib diisi.');
+
+        const res = await fetch(API_BASE + '/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Login gagal');
+
+        ADMIN_TOKEN = data.token;
+        localStorage.setItem('fsub_api_base', API_BASE);
+        localStorage.setItem('fsub_admin_token', ADMIN_TOKEN);
+        showApp(true);
+        await loadAll();
+        toast('Login berhasil.');
+      } catch (e) {
+        toast(e.message);
+      }
     }
 
-    function logout(){
-      localStorage.removeItem('fsub_token');
-      TOKEN = '';
-      selectedBot = null;
-      document.getElementById('loginPage').classList.remove('hidden');
-      document.getElementById('app').classList.add('hidden');
+    function logout() {
+      ADMIN_TOKEN = '';
+      localStorage.removeItem('fsub_admin_token');
+      showApp(false);
     }
 
-    async function createBot(){
-      const token = document.getElementById('botToken').value.trim();
-      const name = document.getElementById('botName').value.trim() || 'FSub Bot';
-      const owner_user_id = Number(document.getElementById('ownerUserId').value.trim());
-      if(!token || !owner_user_id){ toast('Token dan Owner Telegram ID wajib diisi'); return; }
-      const bot = await api('/bots', {method:'POST', body:JSON.stringify({token, name, owner_user_id})}).catch(err => {toast(err.message); return null});
-      if(!bot) return;
-      toast('Bot berhasil disimpan');
-      document.getElementById('botToken').value = '';
-      document.getElementById('botName').value = '';
-      document.getElementById('ownerUserId').value = '';
-      await refreshAll();
-      selectBot(bot.id);
+    function showApp(isLogged) {
+      document.getElementById('loginBox').classList.toggle('hide', isLogged);
+      document.getElementById('botBox').classList.toggle('hide', !isLogged);
+      document.getElementById('mainBox').classList.toggle('hide', !isLogged);
+      document.getElementById('logoutBtn').classList.toggle('hide', !isLogged);
     }
 
-    async function refreshAll(){
-      bots = await api('/bots').catch(err => {toast(err.message); return []});
-      renderBots();
-      if(selectedBot) await loadBotDetail(selectedBot.id);
-    }
-
-    function renderBots(){
-      const box = document.getElementById('botList');
-      box.innerHTML = '';
-      if(!bots.length){ box.innerHTML = '<p class="hint">Belum ada bot.</p>'; return; }
-      bots.forEach(bot => {
-        const div = document.createElement('div');
-        div.className = 'bot-item' + (selectedBot && selectedBot.id === bot.id ? ' active' : '');
-        div.onclick = () => selectBot(bot.id);
-        div.innerHTML = `<b>${escapeHtml(bot.name || bot.first_name || 'Bot')}</b><small>@${escapeHtml(bot.username || '-')} · owner ${escapeHtml(String(bot.owner_user_id || '-'))}</small><br><span class="status ${bot.status}">${bot.status}</span>`;
-        box.appendChild(div);
-      });
-    }
-
-    async function selectBot(id){
-      selectedBot = bots.find(b => b.id === id) || {id};
-      renderBots();
-      await loadBotDetail(id);
-    }
-
-    async function loadBotDetail(id){
-      const bot = await api('/bots/' + id).catch(err => {toast(err.message); return null});
-      if(!bot) return;
-      selectedBot = bot;
-      document.getElementById('emptyState').classList.add('hidden');
-      document.getElementById('botDetail').classList.remove('hidden');
-      document.getElementById('detailTitle').textContent = `${bot.name} (@${bot.username || '-'})`;
-      document.getElementById('detailMeta').textContent = `ID ${bot.id} · owner ${bot.owner_user_id || '-'} · Telegram bot ID ${bot.telegram_bot_id || '-'}`;
-      const st = document.getElementById('detailStatus');
-      st.textContent = bot.status;
-      st.className = 'status ' + bot.status;
-      document.getElementById('forceMessage').value = bot.force_message || '';
-      await Promise.all([loadChannels(), loadCodes(), loadLogs()]);
-      renderBots();
-    }
-
-    async function startBot(){
-      if(!selectedBot) return;
-      await api(`/bots/${selectedBot.id}/start`, {method:'POST', body:'{}'}).catch(err => {toast(err.message); return null});
-      toast('Bot start');
-      await refreshAll();
-    }
-
-    async function stopBot(){
-      if(!selectedBot) return;
-      await api(`/bots/${selectedBot.id}/stop`, {method:'POST', body:'{}'}).catch(err => {toast(err.message); return null});
-      toast('Bot stop');
-      await refreshAll();
-    }
-
-    async function addChannel(){
-      const channel_ref = document.getElementById('channelRef').value.trim();
-      const invite_url = document.getElementById('channelUrl').value.trim();
-      if(!selectedBot || !channel_ref || !invite_url){ toast('Channel dan URL wajib diisi'); return; }
-      await api(`/bots/${selectedBot.id}/channels`, {method:'POST', body:JSON.stringify({channel_ref, invite_url})}).catch(err => {toast(err.message); return null});
-      document.getElementById('channelRef').value = '';
-      document.getElementById('channelUrl').value = '';
-      toast('Channel ditambahkan');
-      await loadChannels();
-    }
-
-    async function deleteChannel(id){
-      if(!selectedBot) return;
-      await api(`/bots/${selectedBot.id}/channels/${id}`, {method:'DELETE'}).catch(err => {toast(err.message); return null});
-      toast('Channel dihapus');
-      await loadChannels();
-    }
-
-    async function loadChannels(){
-      if(!selectedBot) return;
-      const rows = await api(`/bots/${selectedBot.id}/channels`).catch(err => {toast(err.message); return []});
-      const body = document.getElementById('channelsBody');
-      body.innerHTML = '';
-      if(!rows.length){ body.innerHTML = '<tr><td colspan="3" class="muted">Belum ada channel wajib join.</td></tr>'; return; }
-      rows.forEach(r => {
-        body.innerHTML += `<tr><td>${escapeHtml(r.channel_ref)}</td><td>${escapeHtml(r.invite_url)}</td><td><button class="danger" onclick="deleteChannel(${r.id})">Hapus</button></td></tr>`;
-      });
-    }
-
-    async function saveForceMessage(){
-      if(!selectedBot) return;
-      const force_message = document.getElementById('forceMessage').value;
-      await api(`/bots/${selectedBot.id}/force-message`, {method:'POST', body:JSON.stringify({force_message})}).catch(err => {toast(err.message); return null});
-      toast('Pesan disimpan');
-      await loadBotDetail(selectedBot.id);
-    }
-
-    async function createManualCode(){
-      if(!selectedBot) return;
-      const content = document.getElementById('manualContent').value.trim();
-      if(!content){ toast('Konten text wajib diisi'); return; }
-      const data = await api(`/bots/${selectedBot.id}/codes`, {method:'POST', body:JSON.stringify({content})}).catch(err => {toast(err.message); return null});
-      if(!data) return;
-      const box = document.getElementById('generatedLink');
-      box.classList.remove('hidden');
-      box.textContent = data.link;
-      document.getElementById('manualContent').value = '';
-      toast('Link text dibuat');
-      await loadCodes();
-    }
-
-    async function loadCodes(){
-      if(!selectedBot) return;
-      const rows = await api(`/bots/${selectedBot.id}/codes`).catch(err => {toast(err.message); return []});
-      const body = document.getElementById('codesBody');
-      body.innerHTML = '';
-      if(!rows.length){ body.innerHTML = '<tr><td colspan="4" class="muted">Belum ada link. Kirim media/text ke bot dari akun owner.</td></tr>'; return; }
-      rows.forEach(r => {
-        body.innerHTML += `<tr><td>${escapeHtml(r.content_type)}</td><td><span class="code-badge">${escapeHtml(r.code)}</span></td><td><a style="color:#c7d2fe" href="${escapeHtml(r.link)}" target="_blank">${escapeHtml(r.link)}</a></td><td>${escapeHtml(r.created_at)}</td></tr>`;
-      });
-    }
-
-    async function loadLogs(){
-      if(!selectedBot) return;
-      const rows = await api(`/bots/${selectedBot.id}/logs`).catch(err => {toast(err.message); return []});
-      const log = rows.map(r => `[${r.created_at}] ${r.message}`).reverse().join('\n');
-      document.getElementById('logsBox').textContent = log || 'Belum ada log.';
-    }
-
-    function showTab(name, btn){
+    function openTab(name) {
       document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
       document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('tab-' + name).classList.add('active');
-      if(name === 'logs') loadLogs();
-      if(name === 'links') loadCodes();
+      event.target.classList.add('active');
+      document.getElementById('panel-' + name).classList.add('active');
+      if (name === 'links') loadCodes();
+      if (name === 'logs') loadLogs();
     }
 
-    function escapeHtml(value){
-      return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[c]));
+    function selectedBot() {
+      return BOTS.find(b => String(b.id || b._id) === String(SELECTED_BOT_ID));
     }
 
-    if(TOKEN){
-      document.getElementById('loginPage').classList.add('hidden');
-      document.getElementById('app').classList.remove('hidden');
-      document.getElementById('connectedText').textContent = API;
-      refreshAll();
+    function requireBot() {
+      const bot = selectedBot();
+      if (!bot) throw new Error('Pilih bot dulu.');
+      return bot;
+    }
+
+    async function loadAll() {
+      if (!ADMIN_TOKEN) return;
+      try {
+        await loadBots();
+        document.getElementById('apiStatus').className = 'status running';
+        document.getElementById('apiStatus').innerHTML = '<span class="dot"></span>API Online';
+      } catch (e) {
+        document.getElementById('apiStatus').className = 'status stopped';
+        document.getElementById('apiStatus').innerHTML = '<span class="dot"></span>API Error';
+        toast(e.message);
+      }
+    }
+
+    async function loadBots() {
+      const data = await api('/api/bots');
+      BOTS = data.bots || data || [];
+      if (BOTS.length && !BOTS.some(b => String(b.id || b._id) === String(SELECTED_BOT_ID))) {
+        SELECTED_BOT_ID = String(BOTS[0].id || BOTS[0]._id);
+        localStorage.setItem('fsub_selected_bot_id', SELECTED_BOT_ID);
+      }
+      renderBots();
+      await loadSelectedBotDetails();
+    }
+
+    function renderBots() {
+      const box = document.getElementById('botList');
+      if (!BOTS.length) {
+        box.innerHTML = '<div class="empty">Belum ada bot.</div>';
+        updateSelectedHeader(null);
+        return;
+      }
+      box.innerHTML = BOTS.map(bot => {
+        const id = bot.id || bot._id;
+        const username = bot.username || bot.bot_username || 'unknown_bot';
+        const owner = bot.owner_user_id || '-';
+        const running = bot.is_running || bot.status === 'running';
+        return `
+          <div class="bot-item ${String(id) === String(SELECTED_BOT_ID) ? 'active' : ''}" onclick="selectBot('${id}')">
+            <div class="bot-head">
+              <div class="bot-name">@${escapeHtml(username)}</div>
+              <span class="status ${running ? 'running' : 'stopped'}"><span class="dot"></span>${running ? 'Running' : 'Stopped'}</span>
+            </div>
+            <div class="bot-meta">Owner: ${escapeHtml(owner)}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function selectBot(id) {
+      SELECTED_BOT_ID = String(id);
+      localStorage.setItem('fsub_selected_bot_id', SELECTED_BOT_ID);
+      renderBots();
+      await loadSelectedBotDetails();
+    }
+
+    async function loadSelectedBotDetails() {
+      const bot = selectedBot();
+      updateSelectedHeader(bot);
+      if (!bot) return;
+      document.getElementById('forceMessage').value = bot.force_message || bot.force_sub_message || 'Silakan join channel terlebih dahulu.';
+      document.getElementById('storageChannel').value = bot.storage_channel || bot.database_channel || '';
+      await Promise.allSettled([loadChannels(), loadCodes(), loadLogs()]);
+    }
+
+    function updateSelectedHeader(bot) {
+      if (!bot) {
+        document.getElementById('selectedBotName').textContent = 'Pilih bot';
+        document.getElementById('selectedBotMeta').textContent = 'Belum ada bot dipilih.';
+        return;
+      }
+      const username = bot.username || bot.bot_username || 'unknown_bot';
+      const id = bot.id || bot._id;
+      const owner = bot.owner_user_id || '-';
+      const running = bot.is_running || bot.status === 'running';
+      document.getElementById('selectedBotName').textContent = '@' + username;
+      document.getElementById('selectedBotMeta').textContent = `ID: ${id} • Owner: ${owner}`;
+      document.getElementById('selectedBotStatus').className = 'status ' + (running ? 'running' : 'stopped');
+      document.getElementById('selectedBotStatus').innerHTML = `<span class="dot"></span>${running ? 'Running' : 'Stopped'}`;
+    }
+
+    async function createBot() {
+      try {
+        const token = document.getElementById('botToken').value.trim();
+        const owner_user_id = document.getElementById('ownerId').value.trim();
+        if (!token || !owner_user_id) return toast('Token bot dan Owner Telegram ID wajib diisi.');
+        const data = await api('/api/bots', {
+          method: 'POST',
+          body: JSON.stringify({ token, owner_user_id })
+        });
+        document.getElementById('botToken').value = '';
+        document.getElementById('ownerId').value = '';
+        SELECTED_BOT_ID = String(data.bot?.id || data.id || data.bot_id || data.bot?._id || '');
+        if (SELECTED_BOT_ID) localStorage.setItem('fsub_selected_bot_id', SELECTED_BOT_ID);
+        await loadBots();
+        toast('Bot berhasil ditambahkan.');
+      } catch (e) { toast(e.message); }
+    }
+
+    async function startBot() {
+      try {
+        const bot = requireBot();
+        await api(`/api/bots/${bot.id || bot._id}/start`, { method: 'POST', body: '{}' });
+        await loadBots();
+        toast('Bot distart.');
+      } catch (e) { toast(e.message); }
+    }
+
+    async function stopBot() {
+      try {
+        const bot = requireBot();
+        await api(`/api/bots/${bot.id || bot._id}/stop`, { method: 'POST', body: '{}' });
+        await loadBots();
+        toast('Bot distop.');
+      } catch (e) { toast(e.message); }
+    }
+
+    async function deleteBot() {
+      try {
+        const bot = requireBot();
+        if (!confirm('Hapus bot ini dari database?')) return;
+        await api(`/api/bots/${bot.id || bot._id}`, { method: 'DELETE' });
+        SELECTED_BOT_ID = '';
+        localStorage.removeItem('fsub_selected_bot_id');
+        await loadBots();
+        toast('Bot dihapus.');
+      } catch (e) { toast(e.message); }
+    }
+
+    async function addChannel() {
+      try {
+        const bot = requireBot();
+        const value = document.getElementById('channelInput').value.trim();
+        if (!value) return toast('Channel wajib diisi.');
+        await api(`/api/bots/${bot.id || bot._id}/channels`, {
+          method: 'POST',
+          body: JSON.stringify({ channel: value })
+        });
+        document.getElementById('channelInput').value = '';
+        await loadChannels();
+        toast('Channel wajib join ditambahkan.');
+      } catch (e) { toast(e.message); }
+    }
+
+    async function loadChannels() {
+      const bot = selectedBot();
+      if (!bot) return;
+      const data = await api(`/api/bots/${bot.id || bot._id}/channels`);
+      const channels = data.channels || data || [];
+      const box = document.getElementById('channelList');
+      if (!channels.length) {
+        box.innerHTML = '<div class="empty">Belum ada channel wajib join.</div>';
+        return;
+      }
+      box.innerHTML = channels.map(ch => {
+        const id = ch.id || ch._id;
+        const title = ch.title || ch.button_text || ch.channel_title || ch.channel_id || ch.username || 'Channel';
+        const cid = ch.channel_id || ch.username || ch.channel || '-';
+        const url = ch.join_url || ch.url || '-';
+        return `
+          <div class="item">
+            <div class="item-top">
+              <div>
+                <div class="item-title">${escapeHtml(title)}</div>
+                <div class="item-sub">${escapeHtml(cid)}</div>
+                <div class="item-sub">${escapeHtml(url)}</div>
+              </div>
+              <button class="btn-danger mini" onclick="deleteChannel('${id}')">Hapus</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function deleteChannel(channelId) {
+      try {
+        const bot = requireBot();
+        await api(`/api/bots/${bot.id || bot._id}/channels/${channelId}`, { method: 'DELETE' });
+        await loadChannels();
+        toast('Channel dihapus.');
+      } catch (e) { toast(e.message); }
+    }
+
+    async function saveStorageChannel() {
+      try {
+        const bot = requireBot();
+        const storage_channel = document.getElementById('storageChannel').value.trim();
+        await api(`/api/bots/${bot.id || bot._id}/storage-channel`, {
+          method: 'PUT',
+          body: JSON.stringify({ storage_channel })
+        });
+        await loadBots();
+        toast('Channel database disimpan.');
+      } catch (e) { toast(e.message); }
+    }
+
+    async function clearStorageChannel() {
+      document.getElementById('storageChannel').value = '';
+      await saveStorageChannel();
+    }
+
+    async function saveForceMessage() {
+      try {
+        const bot = requireBot();
+        const force_message = document.getElementById('forceMessage').value.trim();
+        await api(`/api/bots/${bot.id || bot._id}/force-message`, {
+          method: 'PUT',
+          body: JSON.stringify({ force_message })
+        });
+        await loadBots();
+        toast('Pesan force subscribe disimpan.');
+      } catch (e) { toast(e.message); }
+    }
+
+    async function createManualCode() {
+      try {
+        const bot = requireBot();
+        const code = document.getElementById('manualCode').value.trim();
+        const content = document.getElementById('manualContent').value.trim();
+        if (!content) return toast('Konten manual wajib diisi.');
+        await api(`/api/bots/${bot.id || bot._id}/codes`, {
+          method: 'POST',
+          body: JSON.stringify({ code, content, content_type: 'text' })
+        });
+        document.getElementById('manualCode').value = '';
+        document.getElementById('manualContent').value = '';
+        await loadCodes();
+        toast('Link manual dibuat.');
+      } catch (e) { toast(e.message); }
+    }
+
+    async function loadCodes() {
+      const bot = selectedBot();
+      if (!bot) return;
+      const data = await api(`/api/bots/${bot.id || bot._id}/codes`);
+      const codes = data.codes || data || [];
+      const username = bot.username || bot.bot_username || 'bot';
+      const box = document.getElementById('codeList');
+      if (!codes.length) {
+        box.innerHTML = '<div class="empty">Belum ada konten/link. Kirim media/text ke bot sebagai owner.</div>';
+        return;
+      }
+      box.innerHTML = codes.map(c => {
+        const id = c.id || c._id;
+        const code = c.code || '-';
+        const type = c.content_type || 'text';
+        const link = `https://t.me/${username}?start=${code}`;
+        const preview = c.caption || c.content || c.file_id || (c.storage_message_id ? 'Storage message #' + c.storage_message_id : 'Media');
+        return `
+          <div class="item">
+            <div class="item-top">
+              <div>
+                <div class="item-title">${escapeHtml(type)} • ${escapeHtml(code)}</div>
+                <div class="item-sub">${escapeHtml(preview)}</div>
+                <div class="item-sub">${escapeHtml(link)}</div>
+              </div>
+              <div class="btn-row" style="margin-top:0">
+                <button class="btn-ghost mini" onclick="copyText('${link}')">Copy</button>
+                <button class="btn-danger mini" onclick="deleteCode('${id}')">Hapus</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function deleteCode(codeId) {
+      try {
+        const bot = requireBot();
+        await api(`/api/bots/${bot.id || bot._id}/codes/${codeId}`, { method: 'DELETE' });
+        await loadCodes();
+        toast('Kode dihapus.');
+      } catch (e) { toast(e.message); }
+    }
+
+    async function loadLogs() {
+      const bot = selectedBot();
+      if (!bot) return;
+      const data = await api(`/api/bots/${bot.id || bot._id}/logs`);
+      const logs = data.logs || data || [];
+      const box = document.getElementById('logBox');
+      if (!logs.length) {
+        box.textContent = 'Belum ada log.';
+        return;
+      }
+      box.textContent = logs.map(l => `[${l.created_at || l.time || '-'}] ${l.message || l.event || JSON.stringify(l)}`).join('\n');
+    }
+
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() => toast('Link dicopy.'));
+    }
+
+    function escapeHtml(v) {
+      return String(v ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    if (ADMIN_TOKEN) {
+      showApp(true);
+      loadAll();
     }
   </script>
 </body>
