@@ -211,6 +211,7 @@
     .stat span{display:block;margin-top:4px;color:var(--muted);font-size:11.5px}
 
     .bot-select-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px}
+    .bot-select-row.single{grid-template-columns:1fr}
     .bot-list{display:grid;gap:8px}
     .bot-card{
       border:1px solid var(--line);
@@ -417,9 +418,8 @@
       </section>
 
       <section class="page" id="page-channel">
-        <div class="bot-select-row">
-          <select id="botSelectChannel"></select>
-          <button class="btn-secondary" type="button" onclick="syncSelectBot('botSelectChannel')">Ganti Bot</button>
+        <div class="bot-select-row single">
+          <select id="botSelectChannel" onchange="syncSelectBot('botSelectChannel')"></select>
         </div>
 
         <div class="grid">
@@ -448,14 +448,13 @@
       </section>
 
       <section class="page" id="page-template">
-        <div class="bot-select-row">
-          <select id="botSelectTemplate"></select>
-          <button class="btn-secondary" type="button" onclick="syncSelectBot('botSelectTemplate')">Ganti Bot</button>
+        <div class="bot-select-row single">
+          <select id="botSelectTemplate" onchange="syncSelectBot('botSelectTemplate')"></select>
         </div>
 
         <div class="card">
-          <h2>Template & Proteksi</h2>
-          <p>Custom text, protect content, anti chain, dan admin konten dalam satu tempat.</p>
+          <h2>Template</h2>
+          <p>Custom text bot, protect content, anti chain, dan admin konten dalam satu tempat.</p>
 
           <div class="menu-card">
             <div class="subnav">
