@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FSub Panel</title>
-  <!-- FUNCTIONAL VERSION: connected to backend API. Sidebar layout, Template + Proteksi combined. -->
+  <!-- FUNCTIONAL VERSION: connected to backend API. Sidebar layout, Template + Proteksi combined. Template example button added. -->
   <style>
     :root{
       --bg:#0a1018;
@@ -274,6 +274,13 @@
       border-radius:12px;background:rgba(255,105,0,.045);
       padding:10px;color:#d6deea;font-size:12px;white-space:pre-wrap;line-height:1.5;
     }
+    .example-head{
+      display:flex;align-items:center;justify-content:space-between;gap:8px;
+      margin-bottom:7px;white-space:normal;
+    }
+    .example-head strong{font-size:12px;color:#ffd3a4}
+    .example-head button{padding:6px 9px;font-size:11.5px;border-radius:9px;box-shadow:none}
+    .example-text{white-space:pre-wrap;color:#d6deea;font-size:12px;line-height:1.5}
 
     .toggle-row{
       display:flex;align-items:center;justify-content:space-between;gap:12px;
@@ -472,46 +479,86 @@
               <div class="template-panel active" id="tpl-start">
                 <label for="startMessage">Pesan /start</label>
                 <textarea id="startMessage"></textarea>
-                <div class="example">Contoh:
-👋 Halo {mention}
+                <div class="example">
+                  <div class="example-head"><strong>Template bawaan</strong><button type="button" onclick="useTemplateExample('startMessage')">Gunakan</button></div>
+                  <div class="example-text">👋 Halo {mention}
 
-Selamat datang di {bot_name}.</div>
+Selamat datang di {bot_name}.
+Gunakan link FSub yang sudah dibagikan untuk membuka konten.</div>
+                </div>
               </div>
 
               <div class="template-panel" id="tpl-help">
                 <label for="helpMessage">Pesan Bantuan</label>
                 <textarea id="helpMessage"></textarea>
-                <div class="example">Pesan saat user klik tombol Bantuan.</div>
+                <div class="example">
+                  <div class="example-head"><strong>Template bawaan</strong><button type="button" onclick="useTemplateExample('helpMessage')">Gunakan</button></div>
+                  <div class="example-text">ℹ️ Bantuan
+
+Gunakan link FSub yang sudah dibagikan.
+Jika belum bisa membuka konten, pastikan kamu sudah join channel wajib.
+
+Jika masih bermasalah, minta link baru ke admin.</div>
+                </div>
               </div>
 
               <div class="template-panel" id="tpl-join">
                 <label for="joinRequiredMessage">Pesan Belum Join</label>
                 <textarea id="joinRequiredMessage"></textarea>
-                <div class="example">Placeholder cocok: {mention}, {first_name}, {required_count}</div>
+                <div class="example">
+                  <div class="example-head"><strong>Template bawaan</strong><button type="button" onclick="useTemplateExample('joinRequiredMessage')">Gunakan</button></div>
+                  <div class="example-text">📢 Halo {mention}
+
+Kamu harus join {required_count} channel wajib terlebih dahulu.
+Klik tombol channel di bawah, lalu kembali ke bot dan tekan Saya Sudah Join.</div>
+                </div>
               </div>
 
               <div class="template-panel" id="tpl-denied">
                 <label for="notAllowedMessage">Pesan Akses Ditolak</label>
                 <textarea id="notAllowedMessage"></textarea>
-                <div class="example">Muncul saat user biasa mencoba generate link.</div>
+                <div class="example">
+                  <div class="example-head"><strong>Template bawaan</strong><button type="button" onclick="useTemplateExample('notAllowedMessage')">Gunakan</button></div>
+                  <div class="example-text">🚫 Maaf {first_name}, akses ditolak.
+
+Kamu tidak memiliki izin untuk membuat link FSub.
+Silakan gunakan link yang sudah dibagikan oleh admin.</div>
+                </div>
               </div>
 
               <div class="template-panel" id="tpl-external">
                 <label for="externalBlockedMessage">Pesan Link Bot Luar Ditolak</label>
                 <textarea id="externalBlockedMessage"></textarea>
-                <div class="example">Placeholder wajib: {blocked_detail}</div>
+                <div class="example">
+                  <div class="example-head"><strong>Template bawaan</strong><button type="button" onclick="useTemplateExample('externalBlockedMessage')">Gunakan</button></div>
+                  <div class="example-text">🛡️ Konten ditolak.
+
+Terdeteksi link atau username bot Telegram luar:
+{blocked_detail}
+
+Silakan upload konten langsung atau gunakan link dari bot internal yang terdaftar.</div>
+                </div>
               </div>
 
               <div class="template-panel" id="tpl-invalid">
                 <label for="invalidCodeMessage">Pesan Kode Invalid</label>
                 <textarea id="invalidCodeMessage"></textarea>
-                <div class="example">Jangan tampilkan kode mentah agar tetap clean.</div>
+                <div class="example">
+                  <div class="example-head"><strong>Template bawaan</strong><button type="button" onclick="useTemplateExample('invalidCodeMessage')">Gunakan</button></div>
+                  <div class="example-text">⚠️ Maaf {mention}, link tidak valid atau konten sudah tidak tersedia.
+
+Silakan minta link baru ke admin.</div>
+                </div>
               </div>
 
               <div class="template-panel" id="tpl-success">
                 <label for="linkCreatedMessage">Pesan Link Berhasil Dibuat</label>
                 <textarea id="linkCreatedMessage"></textarea>
-                <div class="example">Wajib pakai {link}. Tombol Copy Link muncul dari backend.</div>
+                <div class="example">
+                  <div class="example-head"><strong>Template bawaan</strong><button type="button" onclick="useTemplateExample('linkCreatedMessage')">Gunakan</button></div>
+                  <div class="example-text">✅ Link FSub berhasil dibuat:
+&lt;code&gt;{link}&lt;/code&gt;</div>
+                </div>
               </div>
 
               <div class="template-panel" id="tpl-protection">
@@ -601,6 +648,16 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       stats: {},
       settings: {},
       selectedBotId: localStorage.getItem(SELECTED_KEY) || ""
+    };
+
+    const DEFAULT_TEMPLATES = {
+      startMessage: "👋 Halo {mention}\n\nSelamat datang di {bot_name}.\nGunakan link FSub yang sudah dibagikan untuk membuka konten.",
+      helpMessage: "ℹ️ Bantuan\n\nGunakan link FSub yang sudah dibagikan.\nJika belum bisa membuka konten, pastikan kamu sudah join channel wajib.\n\nJika masih bermasalah, minta link baru ke admin.",
+      joinRequiredMessage: "📢 Halo {mention}\n\nKamu harus join {required_count} channel wajib terlebih dahulu.\nKlik tombol channel di bawah, lalu kembali ke bot dan tekan Saya Sudah Join.",
+      notAllowedMessage: "🚫 Maaf {first_name}, akses ditolak.\n\nKamu tidak memiliki izin untuk membuat link FSub.\nSilakan gunakan link yang sudah dibagikan oleh admin.",
+      externalBlockedMessage: "🛡️ Konten ditolak.\n\nTerdeteksi link atau username bot Telegram luar:\n{blocked_detail}\n\nSilakan upload konten langsung atau gunakan link dari bot internal yang terdaftar.",
+      invalidCodeMessage: "⚠️ Maaf {mention}, link tidak valid atau konten sudah tidak tersedia.\n\nSilakan minta link baru ke admin.",
+      linkCreatedMessage: "✅ Link FSub berhasil dibuat:\n<code>{link}</code>"
     };
 
     function headers(){ return { "Content-Type":"application/json", Authorization:`Bearer ${state.token}` }; }
@@ -778,6 +835,20 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
         </div>
         <button class="btn-red" onclick="removeRequired('${esc(ch.chat_id)}')" type="button">Hapus</button>
       </div>`).join("");
+    }
+
+
+    function useTemplateExample(fieldId){
+      const el = $(fieldId);
+      if(!el) return;
+      const value = DEFAULT_TEMPLATES[fieldId] || "";
+      if(!value) return;
+      if(el.value.trim()){
+        const ok = confirm("Field ini sudah berisi teks. Ganti dengan template bawaan?");
+        if(!ok) return;
+      }
+      el.value = value;
+      el.focus();
     }
 
     function syncSelectBot(selectId){
@@ -1036,6 +1107,7 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
     window.selectBot = selectBot;
     window.syncSelectBot = syncSelectBot;
     window.removeRequired = removeRequired;
+    window.useTemplateExample = useTemplateExample;
 
     (async function init(){
       initNav();
