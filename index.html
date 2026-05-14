@@ -226,6 +226,13 @@
                 Protect Content
               </label>
               <p class="muted small">Jika aktif, Telegram akan mencoba membatasi forward/save konten.</p>
+
+              <label style="display:flex;gap:10px;align-items:center;margin-top:14px">
+                <input id="antiExternalLinks" type="checkbox" style="width:auto" />
+                Blok Link Bot Luar
+              </label>
+              <p class="muted small">Jika aktif, konten owner/admin akan ditolak kalau berisi link atau username bot Telegram yang tidak terdaftar di panel ini.</p>
+
               <div class="btns"><button id="saveSettingsBtn" type="button">Simpan Pengaturan</button></div>
               <div id="settingsMsg" class="notice hidden"></div>
             </section>
@@ -362,6 +369,7 @@
       $("botStatusPill").className = `pill ${bot.is_running ? "run" : "stop"}`;
       $("storageChannel").value = bot.storage_channel?.username ? `@${bot.storage_channel.username}` : (bot.storage_channel?.input || bot.storage_channel?.chat_id || "");
       $("protectContent").checked = Boolean(bot.protect_content);
+      $("antiExternalLinks").checked = Boolean(bot.anti_external_telegram_links);
       renderChecklist(bot);
       renderRequiredChannels(bot);
     }
@@ -472,7 +480,10 @@
       const bot = selectedBot();
       if(!bot) return;
       try{
-        const data = await api(`/api/bots/${bot.id}/settings`, {method:"POST", body:JSON.stringify({protect_content:$("protectContent").checked})});
+        const data = await api(`/api/bots/${bot.id}/settings`, {method:"POST", body:JSON.stringify({
+          protect_content:$("protectContent").checked,
+          anti_external_telegram_links:$("antiExternalLinks").checked
+        })});
         showMsg("settingsMsg", data.message || "Pengaturan disimpan.", "ok");
         await loadDashboard();
       }catch(err){ showMsg("settingsMsg", err.message, "error"); }
