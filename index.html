@@ -5,215 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FSubDEV Admin</title>
   <style>
-    :root {
-      --bg: #0f172a;
-      --card: #111827;
-      --muted: #94a3b8;
-      --text: #e5e7eb;
-      --line: #1f2937;
-      --primary: #38bdf8;
-      --primary-dark: #0284c7;
-      --danger: #fb7185;
-      --ok: #34d399;
-      --warn: #fbbf24;
-      --input: #020617;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 34rem),
-        radial-gradient(circle at bottom right, rgba(52, 211, 153, 0.12), transparent 28rem),
-        var(--bg);
-      color: var(--text);
-    }
-
-    .wrap {
-      width: min(1080px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 32px 0 48px;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    h1, h2, h3, p { margin-top: 0; }
-
-    h1 {
-      font-size: clamp(28px, 5vw, 44px);
-      letter-spacing: -0.04em;
-      margin-bottom: 6px;
-    }
-
-    h2 {
-      font-size: 20px;
-      margin-bottom: 16px;
-    }
-
-    h3 {
-      font-size: 16px;
-      margin-bottom: 8px;
-    }
-
-    .muted { color: var(--muted); }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 16px;
-    }
-
-    .card {
-      grid-column: span 12;
-      background: rgba(17, 24, 39, 0.88);
-      border: 1px solid rgba(148, 163, 184, 0.14);
-      border-radius: 22px;
-      padding: 20px;
-      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
-      backdrop-filter: blur(12px);
-    }
-
-    @media (min-width: 860px) {
-      .span-5 { grid-column: span 5; }
-      .span-7 { grid-column: span 7; }
-      .span-6 { grid-column: span 6; }
-    }
-
-    label {
-      display: block;
-      font-size: 13px;
-      color: var(--muted);
-      margin: 12px 0 7px;
-    }
-
-    input, textarea {
-      width: 100%;
-      border: 1px solid rgba(148, 163, 184, 0.18);
-      background: rgba(2, 6, 23, 0.8);
-      color: var(--text);
-      border-radius: 14px;
-      padding: 12px 13px;
-      outline: none;
-      font: inherit;
-    }
-
-    textarea { min-height: 92px; resize: vertical; }
-
-    input:focus, textarea:focus {
-      border-color: rgba(56, 189, 248, 0.78);
-      box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1);
-    }
-
-    button {
-      border: 0;
-      border-radius: 14px;
-      padding: 11px 14px;
-      color: #001018;
-      background: var(--primary);
-      font-weight: 800;
-      cursor: pointer;
-      transition: transform .15s ease, opacity .15s ease, background .15s ease;
-    }
-
-    button:hover { transform: translateY(-1px); background: #7dd3fc; }
-    button:disabled { cursor: not-allowed; opacity: .55; transform: none; }
-
-    .btn-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .secondary {
-      background: #1f2937;
-      color: var(--text);
-      border: 1px solid rgba(148, 163, 184, 0.18);
-    }
-
-    .danger { background: var(--danger); color: #2b0710; }
-    .ok { background: var(--ok); color: #04120d; }
-    .warn { background: var(--warn); color: #241a02; }
-
-    .hidden { display: none !important; }
-
-    .status {
-      border: 1px solid rgba(148, 163, 184, 0.14);
-      background: rgba(2, 6, 23, 0.48);
-      border-radius: 16px;
-      padding: 12px 14px;
-      margin: 12px 0 0;
-      color: var(--muted);
-      white-space: pre-wrap;
-    }
-
-    .list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .item {
-      border: 1px solid rgba(148, 163, 184, 0.14);
-      background: rgba(2, 6, 23, 0.46);
-      border-radius: 18px;
-      padding: 14px;
-    }
-
-    .item-head {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 8px;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border-radius: 999px;
-      padding: 5px 9px;
-      font-size: 12px;
-      font-weight: 800;
-      border: 1px solid rgba(148, 163, 184, 0.15);
-      color: var(--muted);
-      background: rgba(15, 23, 42, 0.7);
-      white-space: nowrap;
-    }
-
-    .pill.running { color: var(--ok); }
-    .pill.stopped { color: var(--danger); }
-
-    code {
-      color: #bae6fd;
-      background: rgba(56, 189, 248, 0.08);
-      border: 1px solid rgba(56, 189, 248, 0.12);
-      padding: 2px 6px;
-      border-radius: 8px;
-    }
-
-    a { color: #7dd3fc; }
-
-    .top-actions { display: flex; gap: 10px; align-items: center; }
+    :root{--bg:#0f172a;--card:#111827;--muted:#94a3b8;--text:#e5e7eb;--line:#1f2937;--primary:#38bdf8;--danger:#fb7185;--ok:#34d399;--warn:#fbbf24;--input:#020617}*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at top left,rgba(56,189,248,.18),transparent 34rem),radial-gradient(circle at bottom right,rgba(52,211,153,.12),transparent 28rem),var(--bg);color:var(--text)}.wrap{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:32px 0 48px}header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}h1,h2,h3,p{margin-top:0}h1{font-size:clamp(28px,5vw,44px);letter-spacing:-.04em;margin-bottom:6px}h2{font-size:20px;margin-bottom:12px}h3{font-size:16px;margin-bottom:8px}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.card{grid-column:span 12;background:rgba(17,24,39,.88);border:1px solid rgba(148,163,184,.14);border-radius:22px;padding:20px;box-shadow:0 24px 70px rgba(0,0,0,.28);backdrop-filter:blur(12px)}@media (min-width:900px){.span-4{grid-column:span 4}.span-5{grid-column:span 5}.span-6{grid-column:span 6}.span-7{grid-column:span 7}.span-8{grid-column:span 8}}label{display:block;font-size:13px;color:var(--muted);margin:12px 0 7px}input,select,textarea{width:100%;border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.8);color:var(--text);border-radius:14px;padding:12px 13px;outline:none;font:inherit}input:focus,select:focus,textarea:focus{border-color:rgba(56,189,248,.78);box-shadow:0 0 0 4px rgba(56,189,248,.1)}button{border:0;border-radius:14px;padding:11px 14px;color:#001018;background:var(--primary);font-weight:800;cursor:pointer;transition:transform .15s ease,opacity .15s ease,background .15s ease}button:hover{transform:translateY(-1px);background:#7dd3fc}button:disabled{cursor:not-allowed;opacity:.55;transform:none}.btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}.secondary{background:#1f2937;color:var(--text);border:1px solid rgba(148,163,184,.18)}.danger{background:var(--danger);color:#2b0710}.ok{background:var(--ok);color:#04120d}.warn{background:var(--warn);color:#241a02}.hidden{display:none!important}.status{border:1px solid rgba(148,163,184,.14);background:rgba(2,6,23,.48);border-radius:16px;padding:12px 14px;margin:12px 0 0;color:var(--muted);white-space:pre-wrap}.list{display:grid;gap:12px}.item{border:1px solid rgba(148,163,184,.14);background:rgba(2,6,23,.42);border-radius:18px;padding:14px}.item-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}.pill{display:inline-flex;align-items:center;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:900;letter-spacing:.04em}.running{background:rgba(52,211,153,.16);color:#86efac;border:1px solid rgba(52,211,153,.28)}.stopped{background:rgba(251,113,133,.12);color:#fda4af;border:1px solid rgba(251,113,133,.24)}code{color:#bae6fd}.mini{font-size:12px}.split{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:700px){.split{grid-template-columns:1fr 1fr}}a{color:#7dd3fc}.checkline{display:flex;align-items:center;gap:10px;margin-top:14px}.checkline input{width:auto}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <div>
-        <h1>FSubDEV</h1>
-        <p class="muted">Admin panel untuk bot file sharing dengan wajib join dan MongoDB.</p>
+        <h1>FSubDEV Admin</h1>
+        <p class="muted">Model baru: setiap bot punya Channel Database dan Channel Wajib Join sendiri, dikelola dari website.</p>
       </div>
-      <div class="top-actions">
+      <div class="btn-row">
         <button id="refreshBtn" class="secondary hidden" type="button">Refresh</button>
         <button id="logoutBtn" class="danger hidden" type="button">Logout</button>
       </div>
@@ -224,9 +26,7 @@
       <p class="muted">Masukkan password admin dari ENV backend.</p>
       <label for="password">Admin Password</label>
       <input id="password" type="password" autocomplete="current-password" placeholder="ADMIN_PASSWORD" />
-      <div class="btn-row">
-        <button id="loginBtn" type="button">Login</button>
-      </div>
+      <div class="btn-row"><button id="loginBtn" type="button">Login</button></div>
       <div id="loginStatus" class="status hidden"></div>
     </section>
 
@@ -237,51 +37,62 @@
         <input id="botToken" type="password" placeholder="123456:ABC-DEF..." />
         <label for="ownerId">Owner Telegram ID</label>
         <input id="ownerId" type="text" inputmode="numeric" placeholder="123456789" />
-        <div class="btn-row">
-          <button id="addBotBtn" type="button">Simpan Bot</button>
-        </div>
+        <div class="btn-row"><button id="addBotBtn" type="button">Simpan Bot</button></div>
         <div id="botStatus" class="status hidden"></div>
       </section>
 
       <section class="card span-7">
-        <h2>Channel Database</h2>
-        <p class="muted">Bot harus menjadi admin/member di channel database. Input bisa username, link, atau ID channel.</p>
-        <label for="storageChannel">Channel Database</label>
-        <input id="storageChannel" type="text" placeholder="@channeldb / https://t.me/channeldb / -100xxxxxxxxxx" />
-        <div class="btn-row">
-          <button id="saveStorageBtn" type="button">Set Channel Database</button>
-        </div>
-        <div id="storageInfo" class="status"></div>
+        <h2>Atur Bot Terpilih</h2>
+        <p class="muted">Pilih bot dulu. Semua setting di bawah hanya berlaku untuk bot tersebut.</p>
+        <label for="botSelect">Bot</label>
+        <select id="botSelect"></select>
+        <div id="selectedBotInfo" class="status">Belum ada bot dipilih.</div>
       </section>
 
-      <section class="card span-5">
-        <h2>Tambah Channel Wajib Join</h2>
-        <p class="muted">Cukup satu input. Sistem akan deteksi username, link, atau ID.</p>
+      <section class="card span-6">
+        <h2>Channel Database</h2>
+        <p class="muted">Sama seperti repo lama: owner kirim media ke bot, bot copy ke channel ini, lalu user menerima copy dari channel ini.</p>
+        <label for="storageChannel">Channel Database untuk bot terpilih</label>
+        <input id="storageChannel" type="text" placeholder="@channeldb / https://t.me/channeldb / -100xxxxxxxxxx" />
+        <div class="btn-row"><button id="saveStorageBtn" type="button">Set Channel Database</button></div>
+        <div id="storageInfo" class="status">Pilih bot dulu.</div>
+      </section>
+
+      <section class="card span-6">
+        <h2>Channel Wajib Join</h2>
+        <p class="muted">Tambahkan channel wajib join khusus untuk bot terpilih. Bot harus member/admin di channel.</p>
         <label for="requiredChannel">Channel Wajib Join</label>
         <input id="requiredChannel" type="text" placeholder="@channel / https://t.me/channel / -100xxxxxxxxxx" />
-        <div class="btn-row">
-          <button id="addChannelBtn" type="button">Tambah Channel</button>
-        </div>
+        <div class="btn-row"><button id="addChannelBtn" type="button">Tambah Channel</button></div>
         <div id="channelStatus" class="status hidden"></div>
       </section>
 
       <section class="card span-7">
-        <h2>Daftar Channel Wajib Join</h2>
+        <h2>Daftar Channel Wajib Join Bot Terpilih</h2>
         <div id="channelsList" class="list"></div>
       </section>
 
-      <section class="card">
-        <h2>Backup MongoDB</h2>
-        <p class="muted">Download backup JSON berisi settings, daftar bot, dan semua mapping kode konten. File ini berisi data sensitif termasuk token bot, jadi jangan dibagikan.</p>
+      <section class="card span-5">
+        <h2>Setting Tambahan</h2>
+        <label class="checkline"><input id="protectContent" type="checkbox" /> Protect Content</label>
+        <p class="muted mini">Kalau aktif, bot mengirim konten dengan proteksi Telegram agar lebih sulit diteruskan/disimpan.</p>
         <div class="btn-row">
-          <button id="backupBtn" class="secondary" type="button">Download Backup JSON</button>
+          <button id="saveSettingBtn" type="button">Simpan Setting</button>
+          <button id="validateBotBtn" class="secondary" type="button">Validasi Channel</button>
         </div>
-        <div id="backupStatus" class="status hidden"></div>
+        <div id="settingStatus" class="status hidden"></div>
       </section>
 
       <section class="card">
         <h2>Daftar Bot</h2>
         <div id="botsList" class="list"></div>
+      </section>
+
+      <section class="card">
+        <h2>Backup MongoDB</h2>
+        <p class="muted">Download backup JSON berisi bot, setting per-bot, dan semua mapping kode konten. File ini berisi token bot, jadi simpan private.</p>
+        <div class="btn-row"><button id="backupBtn" class="secondary" type="button">Download Backup JSON</button></div>
+        <div id="backupStatus" class="status hidden"></div>
       </section>
     </main>
   </div>
@@ -289,317 +100,218 @@
   <script>
     const API_BASE = "https://bot-botfsub.1ynxwv.easypanel.host";
     const SESSION_KEY = "fsub_admin_session";
-
     const $ = (id) => document.getElementById(id);
+    const state = { token: localStorage.getItem(SESSION_KEY) || "", bots: [], selectedBotId: localStorage.getItem("fsub_selected_bot") || "" };
 
-    const state = {
-      token: localStorage.getItem(SESSION_KEY) || ""
-    };
+    function authHeaders(){ return state.token ? { Authorization: `Bearer ${state.token}` } : {}; }
+    function show(el,msg,isError=false){ el.classList.remove("hidden"); el.textContent=msg; el.style.color=isError?"#fb7185":"#94a3b8"; }
+    function hide(el){ el.classList.add("hidden"); el.textContent=""; }
+    function selectedBot(){ return state.bots.find(b => b.id === state.selectedBotId) || state.bots[0] || null; }
 
-    function authHeaders() {
-      return state.token ? { "Authorization": `Bearer ${state.token}` } : {};
-    }
-
-    function show(el, msg, isError = false) {
-      el.classList.remove("hidden");
-      el.textContent = msg;
-      el.style.color = isError ? "#fb7185" : "#94a3b8";
-    }
-
-    function hide(el) {
-      el.classList.add("hidden");
-      el.textContent = "";
-    }
-
-    async function api(path, options = {}) {
-      const headers = {
-        "Content-Type": "application/json",
-        ...authHeaders(),
-        ...(options.headers || {})
-      };
-
-      const res = await fetch(`${API_BASE}${path}`, {
-        ...options,
-        headers
-      });
-
-      let data = null;
+    async function api(path, options={}){
+      const headers = { "Content-Type":"application/json", ...authHeaders(), ...(options.headers||{}) };
+      const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
       const text = await res.text();
-      if (text) {
-        try { data = JSON.parse(text); } catch { data = { detail: text }; }
-      }
-
-      if (!res.ok) {
-        throw new Error(data?.detail || data?.message || `HTTP ${res.status}`);
-      }
-
+      let data = null;
+      if(text){ try{ data=JSON.parse(text); }catch{ data={detail:text}; } }
+      if(!res.ok) throw new Error(data?.detail || data?.message || `HTTP ${res.status}`);
       return data;
     }
 
-    function setLoggedIn(loggedIn) {
+    function setLoggedIn(loggedIn){
       $("loginView").classList.toggle("hidden", loggedIn);
       $("appView").classList.toggle("hidden", !loggedIn);
       $("refreshBtn").classList.toggle("hidden", !loggedIn);
       $("logoutBtn").classList.toggle("hidden", !loggedIn);
     }
 
-    async function login() {
+    async function login(){
       const password = $("password").value.trim();
-      if (!password) return show($("loginStatus"), "Password wajib diisi.", true);
-
+      if(!password) return show($("loginStatus"), "Password wajib diisi.", true);
       $("loginBtn").disabled = true;
-      try {
-        const data = await api("/api/login", {
-          method: "POST",
-          body: JSON.stringify({ password })
-        });
+      try{
+        const data = await api("/api/login", { method:"POST", body:JSON.stringify({password}) });
         state.token = data.token;
         localStorage.setItem(SESSION_KEY, state.token);
         hide($("loginStatus"));
         setLoggedIn(true);
         await loadDashboard();
-      } catch (err) {
-        show($("loginStatus"), err.message, true);
-      } finally {
-        $("loginBtn").disabled = false;
-      }
+      }catch(err){ show($("loginStatus"), err.message, true); }
+      finally{ $("loginBtn").disabled = false; }
     }
 
-    function logout() {
-      state.token = "";
-      localStorage.removeItem(SESSION_KEY);
-      setLoggedIn(false);
-    }
+    function logout(){ state.token=""; localStorage.removeItem(SESSION_KEY); setLoggedIn(false); }
 
-    async function loadDashboard() {
+    async function loadDashboard(){
       const data = await api("/api/dashboard");
-      renderStorage(data.settings?.storage_channel || null);
-      renderChannels(data.settings?.required_channels || []);
-      renderBots(data.bots || []);
+      state.bots = data.bots || [];
+      if(!state.bots.find(b => b.id === state.selectedBotId)) state.selectedBotId = state.bots[0]?.id || "";
+      if(state.selectedBotId) localStorage.setItem("fsub_selected_bot", state.selectedBotId);
+      renderBotSelect();
+      renderSelectedBot();
+      renderBots();
     }
 
-    function renderStorage(storage) {
-      if (!storage) {
-        $("storageInfo").textContent = "Belum ada Channel Database.";
+    function renderBotSelect(){
+      const sel = $("botSelect");
+      if(!state.bots.length){ sel.innerHTML = `<option value="">Belum ada bot</option>`; return; }
+      sel.innerHTML = state.bots.map(bot => `<option value="${escapeAttr(bot.id)}" ${bot.id===state.selectedBotId?"selected":""}>${escapeHtml(bot.username?"@"+bot.username:"Bot tanpa username")} · Owner ${escapeHtml(String(bot.owner_id))}</option>`).join("");
+    }
+
+    function renderSelectedBot(){
+      const bot = selectedBot();
+      if(!bot){
+        $("selectedBotInfo").textContent = "Belum ada bot. Tambahkan bot dulu.";
+        $("storageInfo").textContent = "Pilih bot dulu.";
+        $("channelsList").innerHTML = `<div class="item muted">Belum ada bot dipilih.</div>`;
+        $("storageChannel").value = "";
+        $("protectContent").checked = false;
         return;
       }
-      $("storageInfo").textContent = `Aktif: ${storage.title || storage.username || storage.chat_id}\nChat ID: ${storage.chat_id}`;
-      $("storageChannel").value = storage.username ? `@${storage.username}` : storage.chat_id;
+      state.selectedBotId = bot.id;
+      localStorage.setItem("fsub_selected_bot", bot.id);
+      $("selectedBotInfo").textContent = `${bot.username?"@"+bot.username:"Bot"}\nBot ID: ${bot.bot_id || "-"}\nOwner ID: ${bot.owner_id}\nStatus: ${bot.is_running ? "RUNNING" : "STOPPED"}${bot.last_error ? "\nLast Error: "+bot.last_error : ""}`;
+      renderStorage(bot.storage_channel || null);
+      renderChannels(bot.required_channels || []);
+      $("protectContent").checked = Boolean(bot.protect_content);
     }
 
-    function renderChannels(channels) {
+    function renderStorage(storage){
+      if(!storage){ $("storageInfo").textContent = "Belum ada Channel Database untuk bot ini."; $("storageChannel").value=""; return; }
+      $("storageInfo").textContent = `Aktif: ${storage.title || storage.username || storage.chat_id}\nChat ID: ${storage.chat_id}\nStatus bot: ${storage.bot_member_status || "-"}`;
+      $("storageChannel").value = storage.username ? `@${storage.username}` : storage.input || storage.chat_id;
+    }
+
+    function renderChannels(channels){
       const box = $("channelsList");
-      if (!channels.length) {
-        box.innerHTML = `<div class="item muted">Belum ada channel wajib join.</div>`;
-        return;
-      }
-
-      box.innerHTML = channels.map((ch) => {
+      if(!channels.length){ box.innerHTML = `<div class="item muted">Belum ada channel wajib join untuk bot ini.</div>`; return; }
+      box.innerHTML = channels.map(ch => {
         const display = ch.title || ch.username || ch.chat_id;
         const username = ch.username ? `@${ch.username}` : "-";
         const link = ch.join_url ? `<a href="${ch.join_url}" target="_blank" rel="noreferrer">Buka link</a>` : "Tidak ada link publik";
-        return `
-          <div class="item">
-            <div class="item-head">
-              <div>
-                <h3>${escapeHtml(display)}</h3>
-                <div class="muted">Chat ID: <code>${escapeHtml(String(ch.chat_id))}</code></div>
-                <div class="muted">Username: ${escapeHtml(username)} · ${link}</div>
-              </div>
-              <button class="danger" onclick="removeChannel('${escapeAttr(String(ch.chat_id))}')">Hapus</button>
-            </div>
-          </div>
-        `;
+        return `<div class="item"><div class="item-head"><div><h3>${escapeHtml(display)}</h3><div class="muted">Chat ID: <code>${escapeHtml(String(ch.chat_id))}</code></div><div class="muted">Username: ${escapeHtml(username)} · ${link}</div><div class="muted mini">Status bot: ${escapeHtml(ch.bot_member_status || "-")}</div></div><button class="danger" onclick="removeChannel('${escapeAttr(String(ch.chat_id))}')">Hapus</button></div></div>`;
       }).join("");
     }
 
-    function renderBots(bots) {
+    function renderBots(){
       const box = $("botsList");
-      if (!bots.length) {
-        box.innerHTML = `<div class="item muted">Belum ada bot.</div>`;
-        return;
-      }
-
-      box.innerHTML = bots.map((bot) => {
+      if(!state.bots.length){ box.innerHTML = `<div class="item muted">Belum ada bot.</div>`; return; }
+      box.innerHTML = state.bots.map(bot => {
         const statusClass = bot.is_running ? "running" : "stopped";
         const statusText = bot.is_running ? "RUNNING" : "STOPPED";
         const uname = bot.username ? `@${bot.username}` : "Username belum terbaca";
-        return `
-          <div class="item">
-            <div class="item-head">
-              <div>
-                <h3>${escapeHtml(uname)}</h3>
-                <div class="muted">Bot ID: <code>${escapeHtml(String(bot.bot_id || "-"))}</code></div>
-                <div class="muted">Owner ID: <code>${escapeHtml(String(bot.owner_id))}</code></div>
-              </div>
-              <span class="pill ${statusClass}">${statusText}</span>
-            </div>
-            <div class="btn-row">
-              <button class="ok" onclick="startBot('${escapeAttr(bot.id)}')">Start</button>
-              <button class="warn" onclick="stopBot('${escapeAttr(bot.id)}')">Stop</button>
-              <button class="danger" onclick="deleteBot('${escapeAttr(bot.id)}')">Hapus</button>
-            </div>
-          </div>
-        `;
+        const storage = bot.storage_channel ? (bot.storage_channel.title || bot.storage_channel.username || bot.storage_channel.chat_id) : "Belum diset";
+        const reqCount = (bot.required_channels || []).length;
+        return `<div class="item"><div class="item-head"><div><h3>${escapeHtml(uname)}</h3><div class="muted">Bot ID: <code>${escapeHtml(String(bot.bot_id || "-"))}</code></div><div class="muted">Owner ID: <code>${escapeHtml(String(bot.owner_id))}</code></div><div class="muted">Database: ${escapeHtml(String(storage))} · Wajib join: ${reqCount}</div></div><span class="pill ${statusClass}">${statusText}</span></div><div class="btn-row"><button class="secondary" onclick="selectBot('${escapeAttr(bot.id)}')">Kelola</button><button class="ok" onclick="startBot('${escapeAttr(bot.id)}')">Start</button><button class="warn" onclick="stopBot('${escapeAttr(bot.id)}')">Stop</button><button class="danger" onclick="deleteBot('${escapeAttr(bot.id)}')">Hapus</button></div></div>`;
       }).join("");
     }
 
-    async function addBot() {
+    async function addBot(){
       const token = $("botToken").value.trim();
       const ownerId = $("ownerId").value.trim();
-      if (!token || !ownerId) return show($("botStatus"), "Bot token dan Owner Telegram ID wajib diisi.", true);
-
+      if(!token || !ownerId) return show($("botStatus"), "Bot token dan Owner Telegram ID wajib diisi.", true);
       $("addBotBtn").disabled = true;
-      try {
-        const data = await api("/api/bots", {
-          method: "POST",
-          body: JSON.stringify({ token, owner_id: Number(ownerId) })
-        });
+      try{
+        const data = await api("/api/bots", { method:"POST", body:JSON.stringify({token, owner_id:Number(ownerId)}) });
         show($("botStatus"), data.message || "Bot tersimpan.");
-        $("botToken").value = "";
-        $("ownerId").value = "";
+        $("botToken").value=""; $("ownerId").value="";
+        state.selectedBotId = data.bot?.id || state.selectedBotId;
         await loadDashboard();
-      } catch (err) {
-        show($("botStatus"), err.message, true);
-      } finally {
-        $("addBotBtn").disabled = false;
-      }
+      }catch(err){ show($("botStatus"), err.message, true); }
+      finally{ $("addBotBtn").disabled = false; }
     }
 
-    async function setStorageChannel() {
+    async function setStorageChannel(){
+      const bot = selectedBot();
+      if(!bot) return show($("storageInfo"), "Pilih bot dulu.", true);
       const value = $("storageChannel").value.trim();
-      if (!value) return show($("storageInfo"), "Channel Database wajib diisi.", true);
-
+      if(!value) return show($("storageInfo"), "Channel Database wajib diisi.", true);
       $("saveStorageBtn").disabled = true;
-      try {
-        await api("/api/settings/storage-channel", {
-          method: "POST",
-          body: JSON.stringify({ channel: value })
-        });
-        await loadDashboard();
-      } catch (err) {
-        show($("storageInfo"), err.message, true);
-      } finally {
-        $("saveStorageBtn").disabled = false;
-      }
+      try{ await api(`/api/bots/${bot.id}/storage-channel`, { method:"POST", body:JSON.stringify({channel:value}) }); await loadDashboard(); }
+      catch(err){ show($("storageInfo"), err.message, true); }
+      finally{ $("saveStorageBtn").disabled = false; }
     }
 
-    async function addRequiredChannel() {
+    async function addRequiredChannel(){
+      const bot = selectedBot();
+      if(!bot) return show($("channelStatus"), "Pilih bot dulu.", true);
       const value = $("requiredChannel").value.trim();
-      if (!value) return show($("channelStatus"), "Channel wajib join wajib diisi.", true);
-
+      if(!value) return show($("channelStatus"), "Channel wajib join wajib diisi.", true);
       $("addChannelBtn").disabled = true;
-      try {
-        await api("/api/settings/required-channels", {
-          method: "POST",
-          body: JSON.stringify({ channel: value })
-        });
-        $("requiredChannel").value = "";
-        hide($("channelStatus"));
-        await loadDashboard();
-      } catch (err) {
-        show($("channelStatus"), err.message, true);
-      } finally {
-        $("addChannelBtn").disabled = false;
-      }
+      try{ await api(`/api/bots/${bot.id}/required-channels`, { method:"POST", body:JSON.stringify({channel:value}) }); $("requiredChannel").value=""; hide($("channelStatus")); await loadDashboard(); }
+      catch(err){ show($("channelStatus"), err.message, true); }
+      finally{ $("addChannelBtn").disabled = false; }
     }
 
-    async function removeChannel(chatId) {
-      await api(`/api/settings/required-channels/${encodeURIComponent(chatId)}`, { method: "DELETE" });
+    async function removeChannel(chatId){
+      const bot = selectedBot();
+      if(!bot) return;
+      await api(`/api/bots/${bot.id}/required-channels/${encodeURIComponent(chatId)}`, { method:"DELETE" });
       await loadDashboard();
     }
 
-    async function startBot(id) {
-      await api(`/api/bots/${id}/start`, { method: "POST" });
-      await loadDashboard();
+    async function saveBotSettings(){
+      const bot = selectedBot();
+      if(!bot) return show($("settingStatus"), "Pilih bot dulu.", true);
+      try{ await api(`/api/bots/${bot.id}/settings`, { method:"POST", body:JSON.stringify({protect_content:$("protectContent").checked}) }); show($("settingStatus"), "Setting disimpan."); await loadDashboard(); }
+      catch(err){ show($("settingStatus"), err.message, true); }
     }
 
-    async function stopBot(id) {
-      await api(`/api/bots/${id}/stop`, { method: "POST" });
-      await loadDashboard();
+    async function validateBot(){
+      const bot = selectedBot();
+      if(!bot) return show($("settingStatus"), "Pilih bot dulu.", true);
+      try{
+        const data = await api(`/api/bots/${bot.id}/validate`, { method:"POST" });
+        show($("settingStatus"), JSON.stringify(data, null, 2));
+      }catch(err){ show($("settingStatus"), err.message, true); }
     }
 
-    async function deleteBot(id) {
-      await api(`/api/bots/${id}`, { method: "DELETE" });
-      await loadDashboard();
-    }
+    async function startBot(id){ await api(`/api/bots/${id}/start`, { method:"POST" }); await loadDashboard(); }
+    async function stopBot(id){ await api(`/api/bots/${id}/stop`, { method:"POST" }); await loadDashboard(); }
+    async function deleteBot(id){ if(!confirm("Hapus bot ini dari panel?")) return; await api(`/api/bots/${id}`, { method:"DELETE" }); await loadDashboard(); }
+    function selectBot(id){ state.selectedBotId = id; localStorage.setItem("fsub_selected_bot", id); renderBotSelect(); renderSelectedBot(); }
 
-    async function downloadBackup() {
-      const btn = $("backupBtn");
-      btn.disabled = true;
-      try {
-        const res = await fetch(`${API_BASE}/api/backup/export`, {
-          headers: authHeaders()
-        });
-
-        if (!res.ok) {
-          let msg = `HTTP ${res.status}`;
-          try {
-            const err = await res.json();
-            msg = err.detail || err.message || msg;
-          } catch {}
-          throw new Error(msg);
-        }
-
+    async function downloadBackup(){
+      const btn = $("backupBtn"); btn.disabled = true;
+      try{
+        const res = await fetch(`${API_BASE}/api/backup/export`, { headers:authHeaders() });
+        if(!res.ok){ let msg=`HTTP ${res.status}`; try{ const err=await res.json(); msg=err.detail||err.message||msg; }catch{} throw new Error(msg); }
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
-        const stamp = new Date().toISOString().replaceAll(":", "-").slice(0, 19);
-        a.href = url;
-        a.download = `fsub-mongodb-backup-${stamp}.json`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
+        const stamp = new Date().toISOString().replaceAll(":","-").slice(0,19);
+        a.href = url; a.download = `fsub-mongodb-backup-${stamp}.json`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
         show($("backupStatus"), "Backup berhasil dibuat dan didownload.");
-      } catch (err) {
-        show($("backupStatus"), err.message, true);
-      } finally {
-        btn.disabled = false;
-      }
+      }catch(err){ show($("backupStatus"), err.message, true); }
+      finally{ btn.disabled = false; }
     }
 
-    function escapeHtml(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    function escapeAttr(value) {
-      return escapeHtml(value).replaceAll("`", "&#096;");
-    }
+    function escapeHtml(value){ return String(value).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+    function escapeAttr(value){ return escapeHtml(value).replaceAll("`","&#096;"); }
 
     $("loginBtn").addEventListener("click", login);
-    $("password").addEventListener("keydown", (e) => { if (e.key === "Enter") login(); });
+    $("password").addEventListener("keydown", e => { if(e.key === "Enter") login(); });
     $("logoutBtn").addEventListener("click", logout);
-    $("refreshBtn").addEventListener("click", async () => {
-      try { await loadDashboard(); } catch (err) { alert(err.message); }
-    });
+    $("refreshBtn").addEventListener("click", async () => { try{ await loadDashboard(); }catch(err){ alert(err.message); } });
     $("addBotBtn").addEventListener("click", addBot);
+    $("botSelect").addEventListener("change", e => selectBot(e.target.value));
     $("saveStorageBtn").addEventListener("click", setStorageChannel);
     $("addChannelBtn").addEventListener("click", addRequiredChannel);
+    $("saveSettingBtn").addEventListener("click", saveBotSettings);
+    $("validateBotBtn").addEventListener("click", validateBot);
     $("backupBtn").addEventListener("click", downloadBackup);
 
     window.removeChannel = removeChannel;
     window.startBot = startBot;
     window.stopBot = stopBot;
     window.deleteBot = deleteBot;
+    window.selectBot = selectBot;
 
-    (async function init() {
-      if (!state.token) {
-        setLoggedIn(false);
-        return;
-      }
+    (async function init(){
+      if(!state.token){ setLoggedIn(false); return; }
       setLoggedIn(true);
-      try {
-        await loadDashboard();
-      } catch (err) {
-        logout();
-        show($("loginStatus"), "Session tidak valid. Silakan login ulang.", true);
-      }
+      try{ await loadDashboard(); }
+      catch(err){ logout(); show($("loginStatus"), "Session tidak valid. Silakan login ulang.", true); }
     })();
   </script>
 </body>
