@@ -62,6 +62,41 @@
     }
     input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(37,99,235,.10)}
 
+
+    textarea{
+      width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:12px;
+      background:#fff;color:var(--text);font:inherit;outline:none;resize:vertical;min-height:96px;
+    }
+    textarea:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(37,99,235,.10)}
+
+    .orange-tabs{
+      display:flex;
+      gap:10px;
+      overflow-x:auto;
+      padding:4px 2px 10px;
+      margin:12px 0 12px;
+      scrollbar-width:thin;
+    }
+    .orange-tab{
+      flex:0 0 auto;
+      border:0;
+      border-radius:13px;
+      padding:10px 14px;
+      color:#fff;
+      font-weight:900;
+      font-size:13px;
+      background:linear-gradient(180deg,#ff9f1c 0%,#ff7a00 100%);
+      box-shadow:0 7px 16px rgba(255,122,0,.25);
+      white-space:nowrap;
+    }
+    .orange-tab:hover{background:linear-gradient(180deg,#ff8f00 0%,#f76707 100%);transform:translateY(-1px)}
+    .orange-tab.active{background:linear-gradient(180deg,#f97316 0%,#ea580c 100%);box-shadow:0 8px 20px rgba(234,88,12,.34)}
+    .tab-panel{display:none;border:1px solid var(--line);border-radius:16px;background:#fff;padding:14px;margin-top:8px}
+    .tab-panel.active{display:block}
+    .tab-panel label{margin-top:0}
+    .setting-row{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+
+
     .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
     button{
       border:0;border-radius:12px;padding:11px 14px;background:var(--primary);color:#fff;
@@ -239,27 +274,49 @@
 987654321"></textarea>
               <p class="muted small">Admin konten hanya bisa kirim media/text ke bot untuk generate link. Mereka tidak bisa mengubah setting website. Owner ID tidak perlu dimasukkan lagi.</p>
 
-              <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
-              <h3 style="margin:0 0 8px">Custom Text Bot</h3>
-              <p class="muted small">Kosongkan field untuk memakai teks bawaan. Placeholder yang bisa dipakai: {bot_name}, {bot_username}, {required_count}, {join_note}, {link}, {note}</p>
+              <div class="setting-row">
+                <h3 style="margin:0 0 8px">Custom Text Bot</h3>
+                <p class="muted small">Kosongkan field untuk memakai teks bawaan. Placeholder: <code>{bot_name}</code>, <code>{bot_username}</code>, <code>{required_count}</code>, <code>{join_note}</code>, <code>{link}</code>, <code>{note}</code></p>
 
-              <label for="startMessage">Pesan /start</label>
-              <textarea id="startMessage" rows="6" placeholder="Pesan saat user mengetik /start tanpa kode"></textarea>
+                <div class="orange-tabs" id="customTextTabs">
+                  <button class="orange-tab active" type="button" data-panel="panelStart">🎯 /start</button>
+                  <button class="orange-tab" type="button" data-panel="panelHelp">💬 Bantuan</button>
+                  <button class="orange-tab" type="button" data-panel="panelJoin">📢 Belum Join</button>
+                  <button class="orange-tab" type="button" data-panel="panelDenied">🚫 Akses Ditolak</button>
+                  <button class="orange-tab" type="button" data-panel="panelInvalid">⚠️ Kode Invalid</button>
+                  <button class="orange-tab" type="button" data-panel="panelSuccess">✅ Link Berhasil</button>
+                </div>
 
-              <label for="helpMessage">Pesan Bantuan</label>
-              <textarea id="helpMessage" rows="5" placeholder="Pesan saat user klik tombol Bantuan"></textarea>
+                <div id="panelStart" class="tab-panel active">
+                  <label for="startMessage">Pesan /start</label>
+                  <textarea id="startMessage" rows="7" placeholder="Pesan saat user mengetik /start tanpa kode"></textarea>
+                </div>
 
-              <label for="joinRequiredMessage">Pesan Belum Join</label>
-              <textarea id="joinRequiredMessage" rows="3" placeholder="Kamu harus join channel wajib dulu..."></textarea>
+                <div id="panelHelp" class="tab-panel">
+                  <label for="helpMessage">Pesan Bantuan</label>
+                  <textarea id="helpMessage" rows="7" placeholder="Pesan saat user klik tombol Bantuan"></textarea>
+                </div>
 
-              <label for="notAllowedMessage">Pesan Akses Ditolak</label>
-              <textarea id="notAllowedMessage" rows="3" placeholder="Pesan untuk user biasa yang mencoba generate"></textarea>
+                <div id="panelJoin" class="tab-panel">
+                  <label for="joinRequiredMessage">Pesan Belum Join</label>
+                  <textarea id="joinRequiredMessage" rows="7" placeholder="Kamu harus join channel wajib dulu..."></textarea>
+                </div>
 
-              <label for="invalidCodeMessage">Pesan Kode Tidak Valid</label>
-              <textarea id="invalidCodeMessage" rows="2" placeholder="Kode tidak ditemukan atau sudah tidak valid."></textarea>
+                <div id="panelDenied" class="tab-panel">
+                  <label for="notAllowedMessage">Pesan Akses Ditolak</label>
+                  <textarea id="notAllowedMessage" rows="7" placeholder="Pesan untuk user biasa yang mencoba generate"></textarea>
+                </div>
 
-              <label for="linkCreatedMessage">Pesan Link Berhasil Dibuat</label>
-              <textarea id="linkCreatedMessage" rows="4" placeholder="{note}&#10;&#10;✅ Link FSub berhasil dibuat:&#10;&lt;code&gt;{link}&lt;/code&gt;"></textarea>
+                <div id="panelInvalid" class="tab-panel">
+                  <label for="invalidCodeMessage">Pesan Kode Tidak Valid</label>
+                  <textarea id="invalidCodeMessage" rows="7" placeholder="Kode tidak ditemukan atau sudah tidak valid."></textarea>
+                </div>
+
+                <div id="panelSuccess" class="tab-panel">
+                  <label for="linkCreatedMessage">Pesan Link Berhasil Dibuat</label>
+                  <textarea id="linkCreatedMessage" rows="7" placeholder="{note}&#10;&#10;✅ Link FSub berhasil dibuat:&#10;&lt;code&gt;{link}&lt;/code&gt;"></textarea>
+                </div>
+              </div>
 
               <div class="btns"><button id="saveSettingsBtn" type="button">Simpan Pengaturan</button></div>
               <div id="settingsMsg" class="notice hidden"></div>
@@ -652,6 +709,22 @@
     window.selectBot = selectBot;
     window.removeRequired = removeRequired;
 
+
+    function initCustomTextTabs(){
+      const tabs = document.querySelectorAll("#customTextTabs .orange-tab");
+      tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+          const panelId = tab.dataset.panel;
+          document.querySelectorAll("#customTextTabs .orange-tab").forEach(t => t.classList.remove("active"));
+          document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+          tab.classList.add("active");
+          const panel = document.getElementById(panelId);
+          if(panel) panel.classList.add("active");
+        });
+      });
+    }
+
+
     $("loginBtn").addEventListener("click", login);
     $("password").addEventListener("keydown", e => { if(e.key === "Enter") login(); });
     $("logoutBtn").addEventListener("click", logout);
@@ -670,6 +743,7 @@
     $("backupBtn").addEventListener("click", downloadBackup);
 
     (async function init(){
+      initCustomTextTabs();
       if(!state.token){ setLoginView(false); return; }
       setLoginView(true);
       try{ await loadDashboard(); }
