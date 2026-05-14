@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FSubDEV Panel</title>
+  <style>
+    :root{
+      --bg:#0b1020;--card:#111832;--card2:#151f3f;--line:#263258;--text:#e9eefc;--muted:#94a3c7;
+      --brand:#7c5cff;--brand2:#19c7a8;--danger:#ff5b7f;--warn:#ffcc66;--ok:#2ee59d;
+    }
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(circle at top left,#182653 0,#0b1020 35%,#070b17 100%);color:var(--text)}
+    .wrap{max-width:1180px;margin:0 auto;padding:28px} .top{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:22px}
+    .brand{display:flex;align-items:center;gap:12px}.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 16px 50px #7c5cff55}.brand h1{font-size:24px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:13px}
+    .pill{border:1px solid var(--line);background:#0d1430aa;color:var(--muted);padding:10px 12px;border-radius:999px;font-size:13px}
+    .grid{display:grid;grid-template-columns:330px 1fr;gap:18px}.card{background:linear-gradient(180deg,var(--card),#0e1530);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 18px 60px #0004}.card h2{font-size:16px;margin:0 0 14px}.muted{color:var(--muted)}
+    input,textarea,select{width:100%;border:1px solid var(--line);background:#0a1025;color:var(--text);border-radius:14px;padding:12px 13px;outline:none} textarea{min-height:92px;resize:vertical} label{display:block;font-size:12px;color:var(--muted);margin:12px 0 7px}
+    button{border:0;border-radius:14px;padding:11px 13px;color:white;background:var(--brand);font-weight:700;cursor:pointer} button:hover{filter:brightness(1.1)} button.secondary{background:#22305f} button.danger{background:var(--danger)} button.ok{background:var(--brand2)} button.ghost{background:transparent;border:1px solid var(--line);color:var(--muted)}
+    .row{display:flex;gap:10px;align-items:center}.row>*{flex:1}.actions{display:flex;gap:8px;flex-wrap:wrap}.hidden{display:none!important}.status{font-size:12px;padding:7px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}.status.running{color:var(--ok);border-color:#2ee59d55;background:#2ee59d12}.status.stopped{color:var(--warn);border-color:#ffcc6655;background:#ffcc6612}
+    .bot-list{display:flex;flex-direction:column;gap:10px}.bot-item{padding:12px;border:1px solid var(--line);background:var(--card2);border-radius:16px;cursor:pointer}.bot-item.active{outline:2px solid var(--brand)}.bot-item b{display:block}.bot-item small{color:var(--muted)}
+    .tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}.tab{background:#101936;border:1px solid var(--line);color:var(--muted)}.tab.active{background:var(--brand);color:white;border-color:transparent}.panel{display:none}.panel.active{display:block}.table{width:100%;border-collapse:collapse}.table th,.table td{border-bottom:1px solid var(--line);padding:11px;text-align:left;font-size:14px}.table th{color:var(--muted);font-size:12px}.log{height:260px;overflow:auto;background:#070b17;border:1px solid var(--line);border-radius:16px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;white-space:pre-wrap;color:#c7d2fe}.toast{position:fixed;right:20px;bottom:20px;background:#111832;border:1px solid var(--line);padding:12px 14px;border-radius:14px;box-shadow:0 16px 50px #0007}.login{max-width:420px;margin:12vh auto}.linkbox{word-break:break-all;background:#070b17;border:1px dashed var(--line);border-radius:14px;padding:12px;color:#c7d2fe}
+    @media(max-width:850px){.grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.wrap{padding:18px}}
+  </style>
+</head>
+<body>
+  <div id="loginPage" class="wrap login">
+    <div class="card">
+      <div class="brand" style="margin-bottom:18px"><div class="logo"></div><div><h1>FSubDEV</h1><p>Admin panel deploy bot force subscribe</p></div></div>
+      <label>Backend URL</label><input id="apiBase" value="http://127.0.0.1:8000" />
+      <label>Password Admin</label><input id="password" type="password" placeholder="ADMIN_PASSWORD" />
+      <button style="width:100%;margin-top:14px" onclick="login()">Login</button>
+      <p class="muted" style="font-size:12px">Default backend memakai env <code>ADMIN_PASSWORD</code>. Ganti sebelum deploy publik.</p>
+    </div>
+  </div>
+
+  <div id="app" class="wrap hidden">
+    <div class="top">
+      <div class="brand"><div class="logo"></div><div><h1>FSubDEV Panel</h1><p>Manage bot, channel wajib join, link generator, dan log aktivitas.</p></div></div>
+      <div class="row" style="flex:0 0 auto"><span class="pill" id="whoami">Connected</span><button class="ghost" onclick="logout()">Logout</button></div>
+    </div>
+
+    <div class="grid">
+      <aside class="card">
+        <h2>Deploy Bot Baru</h2>
+        <label>Token BotFather</label><input id="botToken" placeholder="123456:ABC..." />
+        <label>Nama internal</label><input id="botName" placeholder="Contoh: FSub Movie" />
+        <button style="width:100%;margin-top:12px" onclick="createBot()">Validasi & Simpan Bot</button>
+        <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+        <h2>Daftar Bot</h2>
+        <div id="botList" class="bot-list"></div>
+      </aside>
+
+      <main class="card">
+        <div id="emptyState"><h2>Pilih bot</h2><p class="muted">Pilih bot dari daftar kiri atau deploy token baru.</p></div>
+        <div id="botDetail" class="hidden">
+          <div class="row" style="justify-content:space-between;margin-bottom:14px">
+            <div><h2 id="detailTitle" style="margin-bottom:4px"></h2><div class="muted" id="detailMeta"></div></div>
+            <span id="detailStatus" class="status">-</span>
+          </div>
+          <div class="actions" style="margin-bottom:16px">
+            <button class="ok" onclick="startBot()">Start</button><button class="danger" onclick="stopBot()">Stop</button><button class="secondary" onclick="refreshAll()">Refresh</button>
+          </div>
+
+          <div class="tabs">
+            <button class="tab active" onclick="showTab('channels', this)">Channel Wajib Join</button>
+            <button class="tab" onclick="showTab('message', this)">Pesan FSub</button>
+            <button class="tab" onclick="showTab('links', this)">Link Generator</button>
+            <button class="tab" onclick="showTab('logs', this)">Log Aktivitas</button>
+          </div>
+
+          <section id="tab-channels" class="panel active">
+            <div class="row"><div><label>Username/ID Channel</label><input id="channelRef" placeholder="@channel atau -100xxxxxxxxxx" /></div><div><label>URL Join</label><input id="channelUrl" placeholder="https://t.me/namachannel" /></div></div>
+            <button style="margin-top:10px" onclick="addChannel()">Tambah Channel</button>
+            <table class="table" style="margin-top:14px"><thead><tr><th>Channel</th><th>URL</th><th>Aksi</th></tr></thead><tbody id="channelsBody"></tbody></table>
+          </section>
+
+          <section id="tab-message" class="panel">
+            <label>Pesan saat user belum join</label><textarea id="forceMessage"></textarea>
+            <button style="margin-top:10px" onclick="saveForceMessage()">Simpan Pesan</button>
+          </section>
+
+          <section id="tab-links" class="panel">
+            <div class="row"><div><label>Kode</label><input id="codeKey" placeholder="MOVIE01" /></div><div><label>Konten/link yang dikirim</label><input id="codeContent" placeholder="https://example.com/file" /></div></div>
+            <button style="margin-top:10px" onclick="saveCode()">Simpan / Update Kode</button>
+            <div id="generatedLink" class="linkbox" style="margin-top:12px">Link akan muncul di sini.</div>
+            <table class="table" style="margin-top:14px"><thead><tr><th>Kode</th><th>Konten</th><th>Link</th><th>Aksi</th></tr></thead><tbody id="codesBody"></tbody></table>
+          </section>
+
+          <section id="tab-logs" class="panel"><div id="logBox" class="log"></div></section>
+        </div>
+      </main>
+    </div>
+  </div>
+  <div id="toast" class="toast hidden"></div>
+
+<script>
+let API = localStorage.getItem('apiBase') || 'http://127.0.0.1:8000';
+let TOKEN = localStorage.getItem('adminToken') || '';
+let bots = []; let selectedBot = null;
+const $ = id => document.getElementById(id);
+function toast(msg){ $('toast').textContent=msg; $('toast').classList.remove('hidden'); setTimeout(()=>$('toast').classList.add('hidden'), 2600); }
+async function api(path, opts={}){
+  const res = await fetch(API + path, { ...opts, headers:{'Content-Type':'application/json','Authorization':'Bearer '+TOKEN, ...(opts.headers||{})} });
+  const data = await res.json().catch(()=>({})); if(!res.ok) throw new Error(data.detail || 'Request gagal'); return data;
+}
+async function login(){
+  API = $('apiBase').value.trim().replace(/\/$/,''); localStorage.setItem('apiBase', API);
+  const res = await fetch(API + '/api/login', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({password:$('password').value})});
+  const data = await res.json().catch(()=>({})); if(!res.ok){toast(data.detail||'Login gagal');return}
+  TOKEN = data.access_token; localStorage.setItem('adminToken', TOKEN); $('loginPage').classList.add('hidden'); $('app').classList.remove('hidden'); refreshAll();
+}
+function logout(){localStorage.removeItem('adminToken'); location.reload();}
+function showTab(name, btn){ document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); btn.classList.add('active'); document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active')); $('tab-'+name).classList.add('active'); if(name==='logs') loadLogs(); }
+async function refreshAll(){ try{ bots = await api('/api/bots'); renderBots(); if(selectedBot){ selectedBot = bots.find(b=>b.id===selectedBot.id) || bots[0]; await openBot(selectedBot.id); } }catch(e){ if(TOKEN){toast(e.message)} } }
+function renderBots(){ $('botList').innerHTML = bots.map(b=>`<div class="bot-item ${selectedBot&&selectedBot.id===b.id?'active':''}" onclick="openBot(${b.id})"><b>${escapeHtml(b.name)}</b><small>@${escapeHtml(b.username||'-')} • ${b.is_running?'running':'stopped'}</small></div>`).join('') || '<p class="muted">Belum ada bot.</p>'; }
+async function createBot(){ try{ const data = await api('/api/bots',{method:'POST',body:JSON.stringify({token:$('botToken').value.trim(),name:$('botName').value.trim()})}); $('botToken').value=''; $('botName').value=''; toast('Bot valid dan tersimpan'); await refreshAll(); await openBot(data.id); }catch(e){toast(e.message)} }
+async function openBot(id){ selectedBot = bots.find(b=>b.id===id) || (await api('/api/bots/'+id)); $('emptyState').classList.add('hidden'); $('botDetail').classList.remove('hidden'); renderBots(); $('detailTitle').textContent = selectedBot.name; $('detailMeta').textContent = '@'+(selectedBot.username||'-')+' • id '+selectedBot.id; $('detailStatus').textContent = selectedBot.is_running?'RUNNING':'STOPPED'; $('detailStatus').className='status '+(selectedBot.is_running?'running':'stopped'); $('forceMessage').value = selectedBot.force_message || ''; await Promise.all([loadChannels(), loadCodes(), loadLogs()]); }
+async function startBot(){ try{ await api(`/api/bots/${selectedBot.id}/start`,{method:'POST'}); toast('Bot started'); await refreshAll(); }catch(e){toast(e.message)} }
+async function stopBot(){ try{ await api(`/api/bots/${selectedBot.id}/stop`,{method:'POST'}); toast('Bot stopped'); await refreshAll(); }catch(e){toast(e.message)} }
+async function loadChannels(){ const rows=await api(`/api/bots/${selectedBot.id}/channels`); $('channelsBody').innerHTML=rows.map(c=>`<tr><td>${escapeHtml(c.channel_ref)}</td><td>${escapeHtml(c.invite_url||'')}</td><td><button class="danger" onclick="deleteChannel(${c.id})">Hapus</button></td></tr>`).join('') || '<tr><td colspan="3" class="muted">Belum ada channel.</td></tr>'; }
+async function addChannel(){ try{ await api(`/api/bots/${selectedBot.id}/channels`,{method:'POST',body:JSON.stringify({channel_ref:$('channelRef').value.trim(),invite_url:$('channelUrl').value.trim()})}); $('channelRef').value='';$('channelUrl').value=''; await loadChannels(); toast('Channel ditambahkan'); }catch(e){toast(e.message)} }
+async function deleteChannel(id){ try{ await api(`/api/channels/${id}`,{method:'DELETE'}); await loadChannels(); }catch(e){toast(e.message)} }
+async function saveForceMessage(){ try{ await api(`/api/bots/${selectedBot.id}`,{method:'PATCH',body:JSON.stringify({force_message:$('forceMessage').value})}); toast('Pesan disimpan'); await refreshAll(); }catch(e){toast(e.message)} }
+async function loadCodes(){ const rows=await api(`/api/bots/${selectedBot.id}/codes`); $('codesBody').innerHTML=rows.map(c=>`<tr><td>${escapeHtml(c.code)}</td><td>${escapeHtml(c.content)}</td><td><a style="color:#8ee8ff" href="${c.start_link}" target="_blank">Buka</a></td><td><button class="danger" onclick="deleteCode(${c.id})">Hapus</button></td></tr>`).join('') || '<tr><td colspan="4" class="muted">Belum ada kode.</td></tr>'; }
+async function saveCode(){ try{ const row=await api(`/api/bots/${selectedBot.id}/codes`,{method:'POST',body:JSON.stringify({code:$('codeKey').value.trim(),content:$('codeContent').value.trim()})}); $('generatedLink').textContent=row.start_link; $('codeKey').value='';$('codeContent').value=''; await loadCodes(); toast('Kode tersimpan'); }catch(e){toast(e.message)} }
+async function deleteCode(id){ try{ await api(`/api/codes/${id}`,{method:'DELETE'}); await loadCodes(); }catch(e){toast(e.message)} }
+async function loadLogs(){ if(!selectedBot)return; const rows=await api(`/api/bots/${selectedBot.id}/logs`); $('logBox').textContent = rows.map(l=>`[${l.created_at}] ${l.message}`).join('\n') || 'Belum ada log.'; }
+function escapeHtml(s){ return String(s||'').replace(/[&<>'"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+if(TOKEN){ $('loginPage').classList.add('hidden'); $('app').classList.remove('hidden'); refreshAll(); }
+setInterval(()=>{ if(selectedBot) loadLogs().catch(()=>{}); }, 5000);
+</script>
+</body>
+</html>
