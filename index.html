@@ -511,6 +511,46 @@
       max-height:none !important;
     }
 
+  
+    /* v41: tombol Gunakan dibuat sticky agar tetap terlihat saat box contoh di-scroll */
+    .example,
+    .example-box,
+    .template-example,
+    .default-template-box{
+      position:relative !important;
+      overflow:auto !important;
+    }
+
+    .example-title,
+    .template-example-head,
+    .default-template-head{
+      position:sticky !important;
+      top:0 !important;
+      z-index:5 !important;
+      background:#0c1420 !important;
+      padding-bottom:6px !important;
+      margin-bottom:6px !important;
+      border-bottom:1px solid rgba(255,255,255,.08) !important;
+    }
+
+    .example-title button,
+    .template-example-head button,
+    .default-template-head button,
+    .use-example-btn,
+    button[onclick^="useExample"],
+    button[onclick^="useTemplateExample"]{
+      position:static !important;
+      margin-left:auto !important;
+      flex:0 0 auto !important;
+    }
+
+    .example-text,
+    .template-example-text,
+    .default-template-text{
+      max-height:none !important;
+      overflow:visible !important;
+    }
+
   </style>
 </head>
 
