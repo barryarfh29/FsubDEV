@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FSub Admin</title>
+  <title>FSub Panel</title>
   <style>
     :root{
       --bg:#f6f7fb;
@@ -111,7 +111,7 @@
   <div class="page">
     <div class="topbar">
       <div class="brand">
-        <h1>FSub Admin</h1>
+        <h1>FSub Panel</h1>
         <p>Panel sederhana untuk kelola bot, channel database, dan wajib join.</p>
       </div>
       <div class="btns" id="topActions">
@@ -360,7 +360,7 @@
         const name = bot.username ? `@${bot.username}` : (bot.first_name || "Bot");
         return `<div class="bot-card ${active}" onclick="selectBot('${esc(bot.id)}')">
           <div class="bot-head">
-            <div><h3>${esc(name)}</h3><div class="muted small">Owner: <code>${esc(bot.owner_id)}</code></div></div>
+            <div><h3>${esc(name)}</h3><div class="muted small">Owner tersimpan</div></div>
             <span class="pill ${pill}">${status}</span>
           </div>
         </div>`;
@@ -370,7 +370,7 @@
     function renderManage(bot){
       const name = bot.username ? `@${bot.username}` : (bot.first_name || "Bot");
       $("botTitle").textContent = name;
-      $("botSubtitle").textContent = `Owner ID: ${bot.owner_id} · Bot ID: ${bot.bot_id || "-"}`;
+      $("botSubtitle").textContent = `Setup bot untuk generate dan distribusi konten FSub`;
       $("botStatusPill").textContent = bot.is_running ? "RUNNING" : "STOPPED";
       $("botStatusPill").className = `pill ${bot.is_running ? "run" : "stop"}`;
       $("storageChannel").value = bot.storage_channel?.username ? `@${bot.storage_channel.username}` : (bot.storage_channel?.input || bot.storage_channel?.chat_id || "");
@@ -409,7 +409,7 @@
       box.innerHTML = list.map(ch => `<div class="channel-item">
         <div>
           <strong>${esc(channelName(ch))}</strong><br>
-          <span class="muted small">Chat ID: <code>${esc(ch.chat_id)}</code></span>
+          <span class="muted small">Channel wajib join aktif</span>
         </div>
         <button class="btn-red" onclick="removeRequired('${esc(ch.chat_id)}')" type="button">Hapus</button>
       </div>`).join("");
