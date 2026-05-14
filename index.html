@@ -3,977 +3,1347 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FSub Panel</title>
+  <title>FSub Panel Preview - Compact Premium Sidebar Orange Boost Typography</title>
   <style>
-
     :root{
-      --bg:#0f1722;
-      --bg2:#141f2d;
-      --card:#172231;
-      --card2:#1c2a3b;
+      --bg:#0a1018;
+      --bg2:#0f1722;
+      --side:#0d141f;
+      --card:#151f2d;
+      --card2:#1a2637;
+      --card3:#202d40;
+      --line:rgba(255,255,255,.09);
+      --line2:rgba(255,255,255,.14);
       --text:#f8fafc;
       --muted:#9aa8ba;
-      --line:#2b3a4d;
-      --primary:#ff7a00;
-      --primary2:#ff9f1c;
+      --orange:#ff7900;
+      --orange2:#ff9f1c;
+      --orange3:#e85d00;
       --green:#22c55e;
       --red:#ef4444;
       --amber:#f59e0b;
-      --soft-blue:#203047;
-      --soft-green:#143524;
-      --soft-red:#3a1f25;
-      --soft-amber:#3a2b14;
-      --radius:16px;
+      --blue:#38bdf8;
+      --radius:18px;
+      --shadow:0 18px 48px rgba(0,0,0,.30);
     }
 
     *{box-sizing:border-box}
     body{
       margin:0;
-      background:
-        radial-gradient(circle at top left, rgba(255,122,0,.10), transparent 32%),
-        linear-gradient(180deg,var(--bg2) 0%,var(--bg) 55%,#0b111a 100%);
+      min-height:100vh;
       color:var(--text);
       font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      line-height:1.45;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(255,121,0,.18), transparent 28%),
+        radial-gradient(circle at 90% 18%, rgba(255,159,28,.09), transparent 25%),
+        linear-gradient(180deg,#121b28 0%,var(--bg) 55%,#070b11 100%);
     }
 
-    .page{width:min(1060px,calc(100% - 24px));margin:0 auto;padding:20px 0 36px}
+    body:before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px),
+                 linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px);
+      background-size:42px 42px;
+      opacity:.35;
+      mask-image:linear-gradient(180deg,#000,transparent 75%);
+    }
 
-    .topbar{
+    .shell{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns:248px minmax(0,1fr);
+      position:relative;
+      z-index:1;
+    }
+
+    .sidebar{
+      border-right:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(13,20,31,.98),rgba(9,14,22,.98));
+      padding:18px 14px;
+      position:sticky;
+      top:0;
+      height:100vh;
+      overflow:auto;
+    }
+
+    .brand-card{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:11px;
+      border-radius:16px;
+      border:1px solid var(--line2);
+      background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.025));
+      margin-bottom:18px;
+    }
+
+    .brand-logo{
+      width:45px;
+      height:45px;
+      display:grid;
+      place-items:center;
+      border-radius:13px;
+      background:linear-gradient(180deg,var(--orange2),var(--orange));
+      box-shadow:0 10px 22px rgba(255,121,0,.27);
+      color:#fff;
+      font-weight:950;
+      font-size:13px;
+      flex:0 0 auto;
+    }
+
+    .brand-title{
+      font-weight:950;
+      font-size:15px;
+      line-height:1.05;
+      letter-spacing:-.02em;
+    }
+
+    .brand-sub{
+      color:var(--muted);
+      font-size:11.5px;
+      margin-top:4px;
+    }
+
+    .nav{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .nav-btn{
+      width:100%;
+      min-height:45px;
+      border:0;
+      border-radius:13px;
+      display:flex;
+      align-items:center;
+      gap:11px;
+      padding:11px 13px;
+      color:#fff;
+      background:linear-gradient(180deg,var(--orange2) 0%, var(--orange) 92%);
+      box-shadow:0 8px 16px rgba(255,121,0,.19);
+      cursor:pointer;
+      font-weight:900;
+      text-align:left;
+      transition:.15s ease;
+    }
+
+    .nav-btn:hover{transform:translateY(-1px);filter:brightness(1.05)}
+    .nav-btn.active{
+      background:linear-gradient(180deg,#ffb23b 0%,#ff7600 92%);
+      box-shadow:0 12px 24px rgba(255,121,0,.32);
+      outline:1px solid rgba(255,255,255,.18);
+    }
+
+    .nav-icon{
+      width:26px;
+      height:26px;
+      display:grid;
+      place-items:center;
+      border-radius:9px;
+      background:rgba(0,0,0,.18);
+      font-size:13px;
+      flex:0 0 auto;
+    }
+
+    .side-note{
+      margin-top:16px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:rgba(255,255,255,.035);
+      padding:12px;
+    }
+
+    .side-note b{display:block;font-size:13px;margin-bottom:8px}
+    .side-row{
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      padding:7px 0;
+      border-top:1px solid rgba(255,255,255,.06);
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .main{
+      padding:22px;
+      max-width:1180px;
+      width:100%;
+      margin:0 auto;
+    }
+
+    .top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .title h1{
+      margin:0;
+      font-size:30px;
+      line-height:1.08;
+      letter-spacing:-.055em;
+    }
+
+    .title p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:13.5px;
+    }
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      gap:9px;
+    }
+
+    button,.btn{
+      border:0;
+      border-radius:12px;
+      padding:10px 13px;
+      color:#fff;
+      background:linear-gradient(180deg,var(--orange2),var(--orange));
+      box-shadow:0 8px 16px rgba(255,121,0,.20);
+      font:inherit;
+      font-weight:900;
+      cursor:pointer;
+      transition:.15s ease;
+    }
+    button:hover,.btn:hover{transform:translateY(-1px);filter:brightness(1.05)}
+    .btn-secondary{
+      background:#202e40;
+      border:1px solid var(--line2);
+      box-shadow:none;
+      color:#e5e7eb;
+    }
+    .btn-green{background:linear-gradient(180deg,#22c55e,#16a34a)}
+    .btn-red{background:linear-gradient(180deg,#ef4444,#dc2626)}
+    .btn-amber{background:linear-gradient(180deg,#f59e0b,#d97706)}
+    .btn-full{width:100%}
+
+    .page{display:none;animation:fade .13s ease}
+    .page.active{display:block}
+    @keyframes fade{from{opacity:.4;transform:translateY(3px)}to{opacity:1;transform:none}}
+
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+    .card{
+      grid-column:span 12;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.04),transparent 28%),
+        linear-gradient(180deg,var(--card2),var(--card));
+      box-shadow:var(--shadow);
+      padding:17px;
+      overflow:hidden;
+    }
+    .half{grid-column:span 6}
+    .third{grid-column:span 4}
+    .four{grid-column:span 4}
+    .eight{grid-column:span 8}
+
+    .card h2{
+      margin:0 0 7px;
+      font-size:19px;
+      letter-spacing:-.03em;
+    }
+
+    .card p{
+      margin:0 0 12px;
+      color:var(--muted);
+      font-size:13.5px;
+      line-height:1.55;
+    }
+
+    label{
+      display:block;
+      margin:12px 0 6px;
+      font-weight:850;
+      font-size:12.8px;
+      color:#dce5f3;
+    }
+
+    input,textarea,select{
+      width:100%;
+      color:var(--text);
+      background:#0d1623;
+      border:1px solid var(--line2);
+      border-radius:12px;
+      padding:11px 12px;
+      font:inherit;
+      outline:none;
+    }
+    textarea{min-height:124px;resize:vertical;line-height:1.55}
+    input:focus,textarea:focus,select:focus{
+      border-color:rgba(255,121,0,.75);
+      box-shadow:0 0 0 3px rgba(255,121,0,.13);
+    }
+
+    .stat-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin-bottom:14px;
+    }
+
+    .stat{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:linear-gradient(180deg,#1b283a,#131e2d);
+      padding:14px;
+    }
+    .stat b{display:block;font-size:23px;line-height:1;letter-spacing:-.04em}
+    .stat span{display:block;margin-top:5px;color:var(--muted);font-size:12.5px}
+
+    .bot-select-row{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    .bot-card{
+      border:1px solid var(--line);
+      border-radius:15px;
+      padding:13px;
+      background:#142033;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      cursor:pointer;
+      transition:.15s ease;
+    }
+    .bot-card:hover,.bot-card.active{
+      border-color:rgba(255,121,0,.72);
+      background:#1d2d43;
+      box-shadow:0 12px 22px rgba(255,121,0,.10);
+    }
+    .bot-name{font-weight:950;margin-bottom:4px}
+    .bot-meta{color:var(--muted);font-size:12.5px}
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border-radius:999px;
+      padding:5px 9px;
+      font-size:11px;
+      font-weight:950;
+      letter-spacing:.03em;
+      white-space:nowrap;
+    }
+    .run{background:rgba(34,197,94,.13);color:#bbf7d0;border:1px solid rgba(34,197,94,.22)}
+    .stop{background:rgba(239,68,68,.13);color:#fecaca;border:1px solid rgba(239,68,68,.22)}
+    .warn{background:rgba(245,158,11,.13);color:#fde68a;border:1px solid rgba(245,158,11,.22)}
+    .blue{background:rgba(56,189,248,.13);color:#bae6fd;border:1px solid rgba(56,189,248,.22)}
+
+    .checklist{display:grid;gap:9px}
+    .check{
+      display:flex;
+      gap:10px;
+      padding:11px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.025);
+    }
+    .check-dot{
+      width:23px;height:23px;border-radius:50%;
+      display:grid;place-items:center;
+      background:rgba(34,197,94,.13);color:#bbf7d0;
+      font-weight:950;flex:0 0 auto;font-size:12px;
+    }
+    .check strong{display:block;font-size:13.5px}
+    .check span{display:block;color:var(--muted);font-size:12.5px}
+
+    .menu-card{
+      display:grid;
+      grid-template-columns:220px 1fr;
+      gap:14px;
+    }
+
+    .subnav{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .subnav button{
+      text-align:left;
+      box-shadow:none;
+      padding:10px 12px;
+      border-radius:12px;
+      background:#202e40;
+      border:1px solid var(--line2);
+    }
+
+    .subnav button.active{
+      background:linear-gradient(180deg,var(--orange2),var(--orange));
+      border-color:rgba(255,255,255,.12);
+      box-shadow:0 8px 16px rgba(255,121,0,.20);
+    }
+
+    .template-panel{display:none}
+    .template-panel.active{display:block}
+
+    .example{
+      margin-top:11px;
+      border:1px solid rgba(255,121,0,.18);
+      border-radius:14px;
+      background:rgba(255,121,0,.045);
+      padding:12px;
+      color:#d6deea;
+      font-size:12.8px;
+      white-space:pre-wrap;
+      line-height:1.55;
+    }
+
+    .toggle-row{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:14px;
-      margin-bottom:16px;
-      padding:0;
-      background:transparent;
-      border:0;
-      box-shadow:none;
+      padding:13px;
+      border:1px solid var(--line);
+      border-radius:15px;
+      background:rgba(255,255,255,.025);
+      margin-top:10px;
     }
 
-    .brand{
-      min-height:44px;
-      padding-left:54px;
-      position:relative;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
+    .toggle{
+      width:52px;height:29px;border-radius:999px;
+      background:#334155;position:relative;flex:0 0 auto;
+      cursor:pointer;
     }
-
-    .brand:before{
-      content:"VIP";
+    .toggle:before{
+      content:"";
       position:absolute;
-      left:0;
-      top:50%;
-      transform:translateY(-50%);
-      width:42px;
-      height:42px;
-      border-radius:13px;
-      display:grid;
-      place-items:center;
-      color:#fff;
-      font-weight:1000;
-      font-size:12px;
-      background:linear-gradient(180deg,#ff9f1c 0%,#ff6b00 100%);
-      box-shadow:0 8px 18px rgba(255,107,0,.24);
+      width:23px;height:23px;top:3px;left:3px;border-radius:50%;
+      background:#fff;transition:.16s ease;
+    }
+    .toggle.on{background:linear-gradient(180deg,var(--orange2),var(--orange))}
+    .toggle.on:before{left:26px}
+
+    .notice{
+      margin-top:12px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#0d1623;
+      padding:12px;
+      color:var(--muted);
+      font-size:13px;
+      white-space:pre-wrap;
     }
 
-    .brand h1{margin:0;font-size:25px;letter-spacing:-.04em;color:#fff;line-height:1.05}
-    .brand p{margin:4px 0 0;color:#aeb9c8;font-size:13px}
+    .preview-note{
+      border:1px solid rgba(56,189,248,.18);
+      background:rgba(56,189,248,.08);
+      color:#bae6fd;
+      padding:11px 13px;
+      border-radius:14px;
+      margin-bottom:14px;
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    code{
+      background:#0b121d;
+      border:1px solid var(--line);
+      color:#ffd3a4;
+      border-radius:7px;
+      padding:2px 5px;
+      font-size:12px;
+    }
+
+    @media(max-width:900px){
+      .shell{grid-template-columns:1fr}
+      .sidebar{position:relative;height:auto}
+      .nav{display:grid;grid-template-columns:1fr 1fr}
+      .main{padding:16px 12px}
+      .top{flex-direction:column}
+      .actions{justify-content:flex-start}
+      .half,.third,.four,.eight{grid-column:span 12}
+      .stat-grid{grid-template-columns:repeat(2,1fr)!important}
+      .menu-card{grid-template-columns:1fr}
+      .subnav{flex-direction:row;overflow-x:auto}
+      .subnav button{white-space:nowrap}
+      .bot-select-row{grid-template-columns:1fr}
+    }
+  
+    /* Compact override v24: sama seperti v23, tapi elemen diperkecil 15-20% */
+    .shell{grid-template-columns:218px minmax(0,1fr)}
+    .sidebar{padding:14px 10px}
+    .brand-card{padding:9px;border-radius:14px;margin-bottom:14px;gap:9px}
+    .brand-logo{width:36px;height:36px;border-radius:11px;font-size:11px;box-shadow:0 7px 14px rgba(255,121,0,.22)}
+    .brand-title{font-size:13.5px}
+    .brand-sub{font-size:10.5px;margin-top:2px}
+    .nav{gap:7px}
+    .nav-btn{min-height:38px;border-radius:11px;padding:8px 10px;gap:9px;font-size:13px;box-shadow:0 6px 12px rgba(255,121,0,.16)}
+    .nav-icon{width:22px;height:22px;border-radius:8px;font-size:12px}
+    .side-note{margin-top:12px;border-radius:13px;padding:10px}
+    .side-note b{font-size:12px;margin-bottom:6px}
+    .side-row{padding:5px 0;font-size:11px}
+    .main{padding:16px;max-width:1120px}
+    .top{margin-bottom:12px}
+    .title h1{font-size:24px}
+    .title p{font-size:12.5px;margin-top:4px}
+    .actions{gap:7px}
+    button,.btn{border-radius:10px;padding:8px 11px;font-size:13px;box-shadow:0 6px 12px rgba(255,121,0,.16)}
+    .preview-note{padding:9px 11px;border-radius:12px;margin-bottom:11px;font-size:12px}
+    .grid{gap:10px}
+    .card{border-radius:15px;padding:13px;box-shadow:0 10px 28px rgba(0,0,0,.24)}
+    .card h2{font-size:17px;margin-bottom:5px}
+    .card p{font-size:12.5px;margin-bottom:9px}
+    label{margin:9px 0 5px;font-size:12px}
+    input,textarea,select{border-radius:10px;padding:9px 10px;font-size:13px}
+    textarea{min-height:96px}
+    .stat-grid{grid-template-columns:repeat(3,1fr)!important;gap:9px;margin-bottom:10px}
+    .stat{border-radius:13px;padding:11px}
+    .stat b{font-size:20px}
+    .stat span{font-size:11.5px;margin-top:4px}
+    .bot-select-row{gap:8px;margin-bottom:10px}
+    .bot-card{border-radius:12px;padding:10px}
+    .bot-name{font-size:13.5px;margin-bottom:3px}
+    .bot-meta{font-size:11.5px}
+    .pill{padding:4px 7px;font-size:10px}
+    .checklist{gap:7px}
+    .check{gap:8px;padding:9px;border-radius:12px}
+    .check-dot{width:20px;height:20px;font-size:11px}
+    .check strong{font-size:12.5px}
+    .check span{font-size:11.5px}
+    .menu-card{grid-template-columns:190px 1fr;gap:10px}
+    .subnav{gap:6px}
+    .subnav button{padding:8px 10px;border-radius:10px;font-size:12.5px}
+    .example{padding:10px;border-radius:12px;font-size:12px;margin-top:9px}
+    .toggle-row{padding:10px;border-radius:12px;margin-top:8px}
+    .toggle-row strong{font-size:13px}
+    .toggle-row p{font-size:12px!important}
+    .toggle{width:46px;height:25px}
+    .toggle:before{width:19px;height:19px}
+    .toggle.on:before{left:24px}
+    .notice{padding:9px 10px;border-radius:12px;font-size:12px;margin-top:9px}
+    code{font-size:11px}
+    @media(max-width:900px){
+      .shell{grid-template-columns:1fr}
+      .sidebar{padding:12px}
+      .nav{grid-template-columns:1fr 1fr 1fr}
+      .main{padding:12px}
+      .title h1{font-size:22px}
+      .menu-card{grid-template-columns:1fr}
+    }
+
+  
+    /* Orange boost v26 */
+    :root{
+      --orange:#ff6a00;
+      --orange2:#ff8f12;
+      --orange3:#f05200;
+    }
+
+    .nav-btn,
+    button,
+    .btn,
+    .subnav button.active,
+    .toggle.on{
+      background:linear-gradient(180deg,#ff8b12 0%,#ff6500 92%)!important;
+    }
+
+    .nav-btn.active{
+      background:linear-gradient(180deg,#ff9a1f 0%,#ff5f00 92%)!important;
+      box-shadow:0 10px 22px rgba(255,96,0,.34)!important;
+    }
+
+    .brand-logo{
+      background:linear-gradient(180deg,#ff8f12 0%,#ff5f00 100%)!important;
+    }
+
+    .btn-secondary{
+      background:#202e40!important;
+    }
+
+    .btn-green{
+      background:linear-gradient(180deg,#22c55e,#16a34a)!important;
+    }
+
+    .btn-red{
+      background:linear-gradient(180deg,#ef4444,#dc2626)!important;
+    }
+
+    .btn-amber{
+      background:linear-gradient(180deg,#f59e0b,#d97706)!important;
+    }
+
+  
+    /* Typography unify v26 */
+    body{
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+      font-size: 13px !important;
+      letter-spacing: 0 !important;
+    }
+
+    .brand-title,
+    .nav-btn,
+    .subnav button,
+    button,
+    .btn,
+    .bot-name,
+    .card h2,
+    .title h1,
+    label,
+    .stat b,
+    .check strong,
+    .pill{
+      font-family: inherit !important;
+    }
+
+    .brand-title{
+      font-size: 13px !important;
+      font-weight: 850 !important;
+      letter-spacing: -.01em !important;
+      line-height: 1.15 !important;
+    }
+
+    .brand-sub{
+      font-size: 10.5px !important;
+      font-weight: 500 !important;
+      color: #9aa8ba !important;
+      letter-spacing: 0 !important;
+    }
+
+    .title h1{
+      font-size: 23px !important;
+      font-weight: 850 !important;
+      letter-spacing: -.035em !important;
+      line-height: 1.1 !important;
+    }
+
+    .title p,
+    .card p,
+    .bot-meta,
+    .check span,
+    .stat span,
+    .notice,
+    .example,
+    .side-row,
+    .toggle-row p{
+      font-size: 12.5px !important;
+      font-weight: 450 !important;
+      color: #9aa8ba !important;
+      line-height: 1.5 !important;
+      letter-spacing: 0 !important;
+    }
+
+    .card h2{
+      font-size: 16.5px !important;
+      font-weight: 800 !important;
+      letter-spacing: -.02em !important;
+      line-height: 1.18 !important;
+    }
+
+    label{
+      font-size: 12px !important;
+      font-weight: 750 !important;
+      letter-spacing: 0 !important;
+    }
+
+    .nav-btn{
+      font-size: 13px !important;
+      font-weight: 800 !important;
+      letter-spacing: 0 !important;
+      line-height: 1.15 !important;
+    }
+
+    .subnav button{
+      font-size: 12.5px !important;
+      font-weight: 750 !important;
+      letter-spacing: 0 !important;
+      line-height: 1.2 !important;
+    }
+
+    button,
+    .btn{
+      font-size: 12.8px !important;
+      font-weight: 800 !important;
+      letter-spacing: 0 !important;
+      line-height: 1.15 !important;
+    }
+
+    .bot-name{
+      font-size: 13px !important;
+      font-weight: 800 !important;
+      letter-spacing: 0 !important;
+      line-height: 1.2 !important;
+    }
+
+    .pill{
+      font-size: 10px !important;
+      font-weight: 800 !important;
+      letter-spacing: .015em !important;
+    }
+
+    .stat b{
+      font-size: 19px !important;
+      font-weight: 850 !important;
+      letter-spacing: -.03em !important;
+    }
+
+    .check strong{
+      font-size: 12.5px !important;
+      font-weight: 800 !important;
+      letter-spacing: 0 !important;
+    }
+
+    input,
+    textarea,
+    select{
+      font-family: inherit !important;
+      font-size: 12.8px !important;
+      font-weight: 450 !important;
+      line-height: 1.45 !important;
+      letter-spacing: 0 !important;
+    }
+
+    .brand-logo,
+    .nav-icon{
+      font-family: inherit !important;
+      font-weight: 850 !important;
+    }
+
+    code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace !important;
+      font-size: 11px !important;
+      font-weight: 500 !important;
+    }
+
+  
+    /* Clean Premium v28 - Total Konten Removed: icon tidak pakai emoji, typography lebih seragam */
+    :root{
+      --orange:#ff6900;
+      --orange2:#ff8a12;
+      --orange3:#e95700;
+      --text-main:#f8fafc;
+      --text-sub:#9aa8ba;
+    }
+
+    body{
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+      font-size:13px!important;
+    }
+
+    .brand-card{
+      background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02))!important;
+      border-color:rgba(255,255,255,.10)!important;
+    }
+
+    .brand-logo{
+      width:34px!important;
+      height:34px!important;
+      border-radius:10px!important;
+      font-size:10.5px!important;
+      background:linear-gradient(180deg,#ff8a12 0%,#ff6300 100%)!important;
+      box-shadow:0 7px 14px rgba(255,99,0,.22)!important;
+    }
+
+    .brand-title{
+      font-size:13px!important;
+      font-weight:800!important;
+      letter-spacing:0!important;
+    }
+
+    .brand-sub{
+      font-size:10.5px!important;
+      font-weight:450!important;
+      color:#9aa8ba!important;
+    }
+
+    .nav-btn{
+      min-height:38px!important;
+      border-radius:10px!important;
+      padding:8px 10px!important;
+      gap:9px!important;
+      font-size:12.8px!important;
+      font-weight:760!important;
+      letter-spacing:0!important;
+      background:linear-gradient(180deg,#ff8410 0%,#ff6400 100%)!important;
+      box-shadow:0 6px 13px rgba(255,100,0,.18)!important;
+    }
+
+    .nav-btn.active{
+      background:linear-gradient(180deg,#ff8f18 0%,#f45d00 100%)!important;
+      box-shadow:0 8px 17px rgba(255,93,0,.28)!important;
+    }
+
+    .nav-icon{
+      width:20px!important;
+      height:20px!important;
+      border-radius:7px!important;
+      background:rgba(0,0,0,.18)!important;
+      color:#fff!important;
+      font-size:0!important;
+      font-weight:800!important;
+      position:relative;
+      flex:0 0 20px!important;
+    }
+
+    .nav-icon::before{
+      content:"";
+      width:7px;
+      height:7px;
+      border-radius:50%;
+      background:#fff;
+      opacity:.92;
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%);
+      box-shadow:0 0 0 3px rgba(255,255,255,.12);
+    }
+
+    .nav-btn:nth-child(1) .nav-icon::before{border-radius:3px}
+    .nav-btn:nth-child(2) .nav-icon::before{width:8px;height:8px;border-radius:2px}
+    .nav-btn:nth-child(3) .nav-icon::before{width:9px;height:6px;border-radius:2px}
+    .nav-btn:nth-child(4) .nav-icon::before{width:7px;height:9px;border-radius:5px 5px 3px 3px}
+    .nav-btn:nth-child(5) .nav-icon::before{width:8px;height:8px;border-radius:2px;box-shadow:0 0 0 2px rgba(255,255,255,.16)}
+    .nav-btn:nth-child(6) .nav-icon::before{width:9px;height:9px;border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.16)}
+
+    .title h1{
+      font-size:22px!important;
+      font-weight:800!important;
+      letter-spacing:-.025em!important;
+    }
+
+    .title h1::first-letter{
+      font-size:inherit!important;
+    }
+
+    .title p,
+    .card p,
+    .bot-meta,
+    .check span,
+    .stat span,
+    .side-row,
+    .notice,
+    .example,
+    .toggle-row p{
+      color:#9aa8ba!important;
+      font-size:12.3px!important;
+      font-weight:450!important;
+      line-height:1.48!important;
+    }
 
     .card{
-      background:linear-gradient(180deg,var(--card2) 0%,var(--card) 100%);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      padding:16px;
-      box-shadow:0 10px 26px rgba(0,0,0,.22);
-      margin-bottom:12px;
+      border-radius:14px!important;
+      padding:13px!important;
+      background:linear-gradient(180deg,#1b283a 0%,#141f2d 100%)!important;
+      box-shadow:0 10px 24px rgba(0,0,0,.22)!important;
     }
 
-    .hidden{display:none!important}
-    .grid{display:grid;grid-template-columns:1fr;gap:12px}
-    @media(min-width:850px){.grid.two{grid-template-columns:1fr 1fr}.grid.sidebar{grid-template-columns:300px 1fr}}
-
-    h2{font-size:18px;margin:0 0 6px;letter-spacing:-.02em}
-    h3{font-size:14px;margin:0 0 4px}
-    p{margin:0 0 10px}.muted{color:var(--muted)}
-    .small{font-size:12.5px}.danger-text{color:var(--red)}
-
-    label{display:block;margin:11px 0 5px;font-size:12.5px;font-weight:750;color:#d7dee8}
-    input,select{
-      width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:10px;
-      background:#101a27;color:var(--text);font:inherit;outline:none;font-size:14px;
+    .card h2{
+      font-size:16px!important;
+      font-weight:780!important;
+      letter-spacing:-.015em!important;
     }
-    input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(255,122,0,.13)}
 
-    textarea{
-      width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:10px;
-      background:#101a27;color:var(--text);font:inherit;outline:none;resize:vertical;min-height:88px;font-size:14px;
+    .stat{
+      border-radius:12px!important;
+      padding:10px!important;
+      background:linear-gradient(180deg,#1a2636,#141f2d)!important;
     }
-    textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(255,122,0,.13)}
 
-    .orange-tabs{
-      display:flex;
-      gap:8px;
-      overflow-x:auto;
-      padding:3px 1px 8px;
-      margin:10px 0;
-      scrollbar-width:thin;
+    .stat b{
+      font-size:18px!important;
+      font-weight:800!important;
     }
-    .orange-tab{
-      flex:0 0 auto;
-      border:0;
-      border-radius:11px;
-      padding:8px 11px;
-      color:#fff;
-      font-weight:900;
-      font-size:12.5px;
-      background:linear-gradient(180deg,#ff9f1c 0%,#ff6b00 100%);
-      box-shadow:0 6px 13px rgba(255,107,0,.22);
-      white-space:nowrap;
-      transition:.15s ease;
+
+    button,
+    .btn,
+    .subnav button{
+      font-size:12.5px!important;
+      font-weight:760!important;
+      border-radius:10px!important;
+      box-shadow:0 6px 12px rgba(255,100,0,.16)!important;
+      background:linear-gradient(180deg,#ff8410 0%,#ff6400 100%)!important;
     }
-    .orange-tab:hover{background:linear-gradient(180deg,#ffb13b 0%,#ff7600 100%);transform:translateY(-1px)}
-    .orange-tab.active{background:linear-gradient(180deg,#f97316 0%,#ea580c 100%);box-shadow:0 7px 16px rgba(234,88,12,.28)}
 
-    .tab-panel{display:none;border:1px solid var(--line);border-radius:13px;background:#101a27;padding:12px;margin-top:6px}
-    .tab-panel.active{display:block}
-    .tab-panel label{margin-top:0}
-
-    .example-box{margin-top:10px;border:1px solid #32445c;border-radius:12px;background:#0c1420;padding:10px}
-    .example-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
-    .example-title strong{font-size:12.5px;color:#ffd6ad}
-    .example-title button{padding:6px 9px;border-radius:9px;font-size:12px;box-shadow:none}
-    .example-text{white-space:pre-wrap;color:#cbd5e1;font-size:12.5px;line-height:1.5;margin:0;font-family:inherit}
-    .hint-list{margin:7px 0 0;padding-left:17px;color:#aeb9c8;font-size:12.5px;line-height:1.55}
-    .setting-row{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}
-
-    .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-    button{
-      border:0;border-radius:10px;padding:9px 12px;background:linear-gradient(180deg,#ff9f1c 0%,#ff6b00 100%);color:#fff;
-      font-weight:800;cursor:pointer;font:inherit;font-size:13.5px;box-shadow:0 6px 14px rgba(255,107,0,.20);
+    .btn-secondary,
+    .subnav button{
+      background:#202e40!important;
+      box-shadow:none!important;
+      border:1px solid rgba(255,255,255,.10)!important;
     }
-    button:hover{background:linear-gradient(180deg,#ffb13b 0%,#ff7600 100%)}
-    button:disabled{opacity:.55;cursor:not-allowed}
-    .btn-secondary{background:#202e40;color:#e5e7eb;border:1px solid var(--line);box-shadow:none}
-    .btn-secondary:hover{background:#27374d}
-    .btn-green{background:linear-gradient(180deg,#22c55e 0%,#16a34a 100%)}.btn-green:hover{background:linear-gradient(180deg,#34d399 0%,#16a34a 100%)}
-    .btn-red{background:linear-gradient(180deg,#ef4444 0%,#dc2626 100%)}.btn-red:hover{background:linear-gradient(180deg,#f87171 0%,#dc2626 100%)}
-    .btn-amber{background:linear-gradient(180deg,#f59e0b 0%,#d97706 100%)}.btn-amber:hover{background:linear-gradient(180deg,#fbbf24 0%,#d97706 100%)}
-    .btn-full{width:100%}
 
-    .notice{border-radius:12px;padding:10px 12px;margin-top:10px;background:#101a27;border:1px solid var(--line);color:var(--muted);white-space:pre-wrap;font-size:13px}
-    .notice.error{background:var(--soft-red);border-color:#7f2933;color:#fecaca}
-    .notice.ok{background:var(--soft-green);border-color:#286544;color:#bbf7d0}
+    .subnav button.active{
+      background:linear-gradient(180deg,#ff8410 0%,#ff6400 100%)!important;
+      box-shadow:0 6px 12px rgba(255,100,0,.18)!important;
+    }
 
-    .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
-    @media(min-width:700px){.stats{grid-template-columns:repeat(4,1fr)}}
-    .stat{background:#172231;border:1px solid var(--line);border-radius:13px;padding:12px}
-    .stat b{display:block;font-size:22px;letter-spacing:-.04em;line-height:1}.stat span{color:var(--muted);font-size:12.5px}
+    .btn-green{
+      background:linear-gradient(180deg,#22c55e,#16a34a)!important;
+    }
 
-    .steps{display:grid;gap:8px}
-    .step{display:flex;align-items:flex-start;gap:9px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#172231}
-    .dot{width:22px;height:22px;border-radius:999px;display:grid;place-items:center;font-size:12px;font-weight:900;flex:0 0 22px;background:var(--soft-red);color:var(--red)}
-    .step.ok .dot{background:var(--soft-green);color:var(--green)}
-    .step.warn .dot{background:var(--soft-amber);color:var(--amber)}
-    .step strong{display:block;font-size:13.5px}.step span{display:block;color:var(--muted);font-size:12.3px}
+    .btn-red{
+      background:linear-gradient(180deg,#ef4444,#dc2626)!important;
+    }
 
-    .bot-list{display:grid;gap:8px}
-    .bot-card{border:1px solid var(--line);border-radius:12px;padding:11px;background:#172231;cursor:pointer;transition:.15s ease}
-    .bot-card:hover{border-color:#ff7a00;background:#1f3148}
-    .bot-card.active{border-color:var(--primary);background:#1f3148;box-shadow:0 6px 14px rgba(255,122,0,.10)}
-    .bot-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+    .btn-amber{
+      background:linear-gradient(180deg,#f59e0b,#d97706)!important;
+    }
 
-    .pill{display:inline-flex;align-items:center;border-radius:999px;padding:4px 8px;font-size:10.5px;font-weight:900;letter-spacing:.04em;white-space:nowrap}
-    .pill.run{background:var(--soft-green);color:var(--green)}
-    .pill.stop{background:var(--soft-red);color:var(--red)}
+    .bot-card{
+      border-radius:12px!important;
+      padding:10px!important;
+      background:#162234!important;
+    }
 
-    .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
-    .channel-item{border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:8px;background:#172231;display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-    code{background:#101a27;border:1px solid var(--line);padding:2px 5px;border-radius:7px;font-size:12px;color:#ffd6ad}
-    a{color:#ffb13b;font-weight:700;text-decoration:none}
+    .bot-card.active,
+    .bot-card:hover{
+      background:#1b2a40!important;
+      border-color:rgba(255,105,0,.62)!important;
+    }
 
-    input::placeholder, textarea::placeholder{color:#6f7f93}
-    select option{background:#101a27;color:#f8fafc}
-    .brand h1{color:#fff}
-    .brand p{color:#aeb9c8}
+    .bot-name{
+      font-size:12.8px!important;
+      font-weight:780!important;
+    }
 
-    .switch-row{display:flex!important;gap:8px;align-items:flex-start;font-size:12.5px}
-    .switch-row input{width:auto;margin-top:2px}
+    .pill{
+      font-size:9.8px!important;
+      font-weight:760!important;
+    }
 
-    @media(max-width:849px){
-      .page{width:min(100% - 20px,1060px);padding-top:14px}
-      .topbar{align-items:flex-start;flex-direction:column;gap:10px}
-      .brand{padding-left:50px;min-height:40px}
-      .brand:before{width:40px;height:40px;border-radius:12px}
-      .brand h1{font-size:23px}
-      .card{padding:14px}
-      .btns button{flex:1 1 auto}
+    input,
+    textarea,
+    select{
+      border-radius:10px!important;
+      font-size:12.5px!important;
+      font-weight:450!important;
+      background:#0d1623!important;
+    }
+
+    label{
+      font-size:11.8px!important;
+      font-weight:720!important;
+      color:#dce5f3!important;
+    }
+
+    .menu-card{
+      grid-template-columns:178px 1fr!important;
+    }
+
+    .template-panel textarea{
+      min-height:118px!important;
+    }
+
+    .example{
+      background:rgba(255,105,0,.045)!important;
+      border-color:rgba(255,105,0,.16)!important;
+    }
+
+    code{
+      font-size:10.8px!important;
+      font-weight:500!important;
+    }
+
+    .preview-note{
+      font-size:12px!important;
+      border-radius:12px!important;
+    }
+
+    /* Hilangkan emoji di judul halaman agar visual tidak campur gaya */
+    #title{
+      font-size:0!important;
+    }
+    #title::after{
+      content:attr(data-clean-title);
+      font-size:22px!important;
+      font-weight:800!important;
+      letter-spacing:-.025em!important;
+    }
+
+    @media(max-width:900px){
+      .nav{grid-template-columns:1fr 1fr 1fr!important}
+      .menu-card{grid-template-columns:1fr!important}
+      #title::after{font-size:20px!important}
     }
 
   </style>
 </head>
+
 <body>
-  <div class="page">
-    <div class="topbar">
-      <div class="brand">
-        <h1>FSub Panel</h1>
-        <p>Panel untuk kelola bot, channel database, wajib join, dan proteksi konten.</p>
-      </div>
-      <div class="btns" id="topActions">
-        <button class="btn-secondary hidden" id="refreshBtn" type="button">Refresh</button>
-        <button class="btn-red hidden" id="logoutBtn" type="button">Logout</button>
-      </div>
-    </div>
-
-    <section id="loginView" class="card">
-      <h2>Login Admin</h2>
-      <p class="muted">Masukkan password admin dari EasyPanel.</p>
-      <label for="password">Password</label>
-      <input id="password" type="password" placeholder="ADMIN_PASSWORD" autocomplete="current-password" />
-      <div class="btns"><button id="loginBtn" type="button">Login</button></div>
-      <div id="loginMsg" class="notice hidden"></div>
-    </section>
-
-    <main id="appView" class="hidden">
-      <div class="stats">
-        <div class="stat"><b id="statBots">0</b><span>Total Bot</span></div>
-        <div class="stat"><b id="statRunning">0</b><span>Bot Running</span></div>
-        <div class="stat"><b id="statItems">0</b><span>Total Konten</span></div>
-        <div class="stat"><b id="statReady">0</b><span>Bot Siap</span></div>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand-card">
+        <div class="brand-logo">VIP</div>
+        <div>
+          <div class="brand-title">FSub Panel</div>
+          <div class="brand-sub">Bot • Channel • Template</div>
+        </div>
       </div>
 
-      <div class="grid sidebar">
-        <aside>
-          <section class="card">
-            <div class="section-title">
-              <div>
-                <h2>Bot Saya</h2>
-                <p class="muted small">Klik bot untuk mengatur.</p>
-              </div>
-            </div>
-            <div id="botList" class="bot-list"></div>
-            <div class="btns"><button class="btn-secondary btn-full" id="showAddBotBtn" type="button">+ Tambah Bot</button></div>
-          </section>
+      <nav class="nav">
+        <button class="nav-btn active" data-page="bot"><span class="nav-icon">🤖</span> Bot</button>
+        <button class="nav-btn" data-page="channel"><span class="nav-icon">📦</span> Channel</button>
+        <button class="nav-btn" data-page="template"><span class="nav-icon">💬</span> Template</button>
+        <button class="nav-btn" data-page="protect"><span class="nav-icon">🛡️</span> Proteksi</button>
+        <button class="nav-btn" data-page="backup"><span class="nav-icon">💾</span> Backup</button>
+        <button class="nav-btn" data-page="setting"><span class="nav-icon">⚙️</span> Setting</button>
+      </nav>
 
-          <section class="card">
-            <h2>Backup</h2>
-            <p class="muted small">Download data MongoDB. File backup berisi token bot, simpan private.</p>
-            <button class="btn-secondary btn-full" id="backupBtn" type="button">Download Backup JSON</button>
-            <div id="backupMsg" class="notice hidden"></div>
-          </section>
+      <div class="side-note">
+        <b>Bot Aktif</b>
+        <div class="side-row"><span>Dipilih</span><strong>@BotKILLFSUBBot</strong></div>
+        <div class="side-row"><span>Status</span><strong style="color:#bbf7d0">Running</strong></div>
+        <div class="side-row"><span>Setup</span><strong style="color:#fde68a">Preview</strong></div>
+      </div>
+    </aside>
 
-          <section class="card">
-            <h2>Default Owner</h2>
-            <p class="muted small">Set 1 Owner Telegram ID untuk semua bot. Bot baru bisa pakai owner ini otomatis.</p>
-            <label for="defaultOwnerId">Default Owner Telegram ID</label>
-            <input id="defaultOwnerId" type="text" inputmode="numeric" placeholder="123456789" />
-            <label class="switch-row" style="margin-top:10px">
-              <input id="applyDefaultOwnerAll" type="checkbox" />
-              <span>Terapkan juga ke semua bot yang sudah ada</span>
-            </label>
-            <button class="btn-secondary btn-full" id="saveDefaultOwnerBtn" type="button" style="margin-top:10px">Simpan Default Owner</button>
-            <div id="defaultOwnerMsg" class="notice hidden"></div>
-          </section>
-        </aside>
+    <main class="main">
+      <div class="top">
+        <div class="title">
+          <h1 id="title" data-clean-title="Bot">🤖 Bot</h1>
+          <p id="desc">Pilih bot dulu, lalu kelola setup-nya di menu lain.</p>
+        </div>
+        <div class="actions">
+          <button class="btn-secondary">Refresh</button>
+          <button>Simpan Perubahan</button>
+        </div>
+      </div>
 
-        <section>
-          <div id="emptyView" class="card">
-            <h2>Mulai dari Tambah Bot</h2>
-            <p class="muted">Belum ada bot. Tambahkan token bot. Owner bisa memakai Default Owner.</p>
-            <button id="emptyAddBotBtn" type="button">Tambah Bot Sekarang</button>
-          </div>
+      <div class="preview-note">
+        Preview compact ini belum terhubung ke backend. Tujuannya hanya melihat penempatan: pilih bot dulu, lalu Channel, Template, Proteksi, Backup, dan Setting dipisah rapi.
+      </div>
 
-          <div id="addBotView" class="card hidden">
-            <h2>Tambah / Update Bot</h2>
-            <p class="muted">Ambil token dari BotFather. Owner ID boleh dikosongkan kalau sudah set Default Owner.</p>
-            <label for="botToken">Bot Token</label>
-            <input id="botToken" type="password" placeholder="123456:ABCDEF..." />
-            <label for="ownerId">Owner Telegram ID <span class="muted small">(opsional jika Default Owner sudah diset)</span></label>
-            <input id="ownerId" type="text" inputmode="numeric" placeholder="Kosongkan untuk memakai Default Owner" />
-            <div class="btns">
-              <button id="saveBotBtn" type="button">Simpan Bot</button>
-              <button class="btn-secondary" id="cancelAddBotBtn" type="button">Batal</button>
-            </div>
-            <div id="addBotMsg" class="notice hidden"></div>
-          </div>
+      <section class="page active" id="bot">
+        <div class="stat-grid">
+          <div class="stat"><b>3</b><span>Total Bot</span></div>
+          <div class="stat"><b>2</b><span>Running</span></div>
+          <div class="stat"><b>3</b><span>Bot Siap</span></div>
+        </div>
 
-          <div id="manageView" class="hidden">
-            <section class="card">
-              <div class="section-title">
+        <div class="grid">
+          <div class="card eight">
+            <h2>Bot Saya</h2>
+            <p>Pilih bot yang ingin kamu atur. Semua menu setelah ini mengikuti bot yang dipilih.</p>
+
+            <div style="display:grid;gap:10px">
+              <div class="bot-card active">
                 <div>
-                  <h2 id="botTitle">Kelola Bot</h2>
-                  <p class="muted" id="botSubtitle">-</p>
+                  <div class="bot-name">BOT FSUB</div>
+                  <div class="bot-meta">@BotKILLFSUBBot • Default owner aktif</div>
                 </div>
-                <span id="botStatusPill" class="pill stop">STOPPED</span>
+                <span class="pill run">RUNNING</span>
               </div>
 
-              <div class="steps" id="checklist"></div>
-
-              <div class="btns">
-                <button class="btn-green" id="startBotBtn" type="button">Start Bot</button>
-                <button class="btn-amber" id="stopBotBtn" type="button">Stop Bot</button>
-                <button class="btn-secondary" id="validateBtn" type="button">Validasi Setup</button>
-                <button class="btn-red" id="deleteBotBtn" type="button">Hapus Bot</button>
-              </div>
-              <div id="manageMsg" class="notice hidden"></div>
-            </section>
-
-            <section class="card">
-              <h2>1. Channel Database</h2>
-              <p class="muted">Tempat bot menyimpan video/media. Bot harus menjadi admin di channel ini.</p>
-              <label for="storageChannel">Username / Link / ID Channel Database</label>
-              <input id="storageChannel" type="text" placeholder="@channeldb / https://t.me/channeldb / -100xxxx" />
-              <div class="btns"><button id="saveStorageBtn" type="button">Simpan Channel Database</button></div>
-              <div id="storageMsg" class="notice hidden"></div>
-            </section>
-
-            <section class="card">
-              <h2>2. Channel Wajib Join</h2>
-              <p class="muted">User harus join channel ini sebelum menerima konten.</p>
-              <label for="requiredChannel">Username / Link / ID Channel</label>
-              <input id="requiredChannel" type="text" placeholder="@channel / https://t.me/channel / -100xxxx" />
-              <div class="btns"><button id="addRequiredBtn" type="button">Tambah Channel Wajib Join</button></div>
-              <div id="requiredMsg" class="notice hidden"></div>
-              <div id="requiredList"></div>
-            </section>
-
-            <section class="card">
-              <h2>3. Pengaturan Konten</h2>
-              <label style="display:flex;gap:10px;align-items:center;margin-top:8px">
-                <input id="protectContent" type="checkbox" style="width:auto" />
-                Protect Content
-              </label>
-              <p class="muted small">Jika aktif, Telegram akan mencoba membatasi forward/save konten.</p>
-
-              <label style="display:flex;gap:10px;align-items:center;margin-top:14px">
-                <input id="antiExternalLinks" type="checkbox" style="width:auto" />
-                Blok Rantai Bot Luar
-              </label>
-              <p class="muted small">Jika aktif, konten owner/admin akan ditolak kalau berisi link bot luar, atau link internal yang sumbernya pernah berasal dari bot luar.</p>
-
-              <div class="setting-row">
-                <h3 style="margin:0 0 8px">Admin Konten & Custom Text</h3>
-                <p class="muted small">Pilih tombol di bawah agar halaman tidak terlalu panjang. Admin Konten sengaja ditaruh paling depan karena lebih penting untuk kontrol siapa yang boleh generate link.</p>
-                <p class="muted small">Placeholder custom text: <code>{mention}</code>, <code>{first_name}</code>, <code>{user_name}</code>, <code>{username}</code>, <code>{bot_name}</code>, <code>{bot_username}</code>, <code>{required_count}</code>, <code>{join_note}</code>, <code>{link}</code>, <code>{reason}</code>, <code>{blocked_detail}</code></p>
-
-                <div class="orange-tabs" id="customTextTabs">
-                  <button class="orange-tab active" type="button" data-panel="panelContentAdmins">👤 Admin Konten</button>
-                  <button class="orange-tab" type="button" data-panel="panelStart">🎯 /start</button>
-                  <button class="orange-tab" type="button" data-panel="panelHelp">💬 Bantuan</button>
-                  <button class="orange-tab" type="button" data-panel="panelJoin">📢 Belum Join</button>
-                  <button class="orange-tab" type="button" data-panel="panelDenied">🚫 Akses Ditolak</button>
-                  <button class="orange-tab" type="button" data-panel="panelExternalBlocked">🛡️ Link Luar Ditolak</button>
-                  <button class="orange-tab" type="button" data-panel="panelInvalid">⚠️ Kode Invalid</button>
-                  <button class="orange-tab" type="button" data-panel="panelSuccess">✅ Link Berhasil</button>
+              <div class="bot-card">
+                <div>
+                  <div class="bot-name">BOT TEST 2</div>
+                  <div class="bot-meta">@dfasesbot • 2 wajib join</div>
                 </div>
-
-                <div id="panelContentAdmins" class="tab-panel active">
-                  <label for="contentAdmins">Admin Konten Telegram ID</label>
-                  <textarea id="contentAdmins" rows="7" placeholder="Satu ID per baris, contoh:
-123456789
-987654321"></textarea>
-                  <div class="example-box">
-                    <div class="example-title"><strong>Penjelasan</strong></div>
-                    <ul class="hint-list">
-                      <li>Admin konten hanya boleh kirim text/media ke bot untuk generate link.</li>
-                      <li>Mereka tidak bisa ubah setting website, channel database, channel wajib join, atau start/stop bot.</li>
-                      <li>Owner ID tidak perlu dimasukkan lagi.</li>
-                      <li>Satu Telegram ID per baris. Bisa juga dipisah koma atau spasi.</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div id="panelStart" class="tab-panel">
-                  <label for="startMessage">Pesan /start</label>
-                  <textarea id="startMessage" rows="7" placeholder="Pesan saat user mengetik /start tanpa kode"></textarea>
-                  <div class="example-box">
-                    <div class="example-title"><strong>Contoh aman</strong><button type="button" onclick="useExample('startMessage')">Pakai contoh</button></div>
-                    <pre class="example-text" id="exampleStart"></pre>
-                    <ul class="hint-list">
-                      <li>Dipakai saat user mengetik <code>/start</code> tanpa kode.</li>
-                      <li>Boleh pakai <code>{mention}</code>, <code>{first_name}</code>, <code>{bot_name}</code>, dan <code>{join_note}</code>.</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div id="panelHelp" class="tab-panel">
-                  <label for="helpMessage">Pesan Bantuan</label>
-                  <textarea id="helpMessage" rows="7" placeholder="Pesan saat user klik tombol Bantuan"></textarea>
-                  <div class="example-box">
-                    <div class="example-title"><strong>Contoh aman</strong><button type="button" onclick="useExample('helpMessage')">Pakai contoh</button></div>
-                    <pre class="example-text" id="exampleHelp"></pre>
-                    <ul class="hint-list">
-                      <li>Dipakai saat user klik tombol Bantuan.</li>
-                      <li>Boleh pakai <code>{mention}</code> atau <code>{first_name}</code>. Jangan taruh kode rahasia di sini.</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div id="panelJoin" class="tab-panel">
-                  <label for="joinRequiredMessage">Pesan Belum Join</label>
-                  <textarea id="joinRequiredMessage" rows="7" placeholder="Kamu harus join channel wajib dulu..."></textarea>
-                  <div class="example-box">
-                    <div class="example-title"><strong>Contoh aman</strong><button type="button" onclick="useExample('joinRequiredMessage')">Pakai contoh</button></div>
-                    <pre class="example-text" id="exampleJoin"></pre>
-                    <ul class="hint-list">
-                      <li>Dipakai saat user belum join channel wajib.</li>
-                      <li>Boleh pakai <code>{mention}</code>, <code>{first_name}</code>, dan <code>{required_count}</code>.</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div id="panelDenied" class="tab-panel">
-                  <label for="notAllowedMessage">Pesan Akses Ditolak</label>
-                  <textarea id="notAllowedMessage" rows="7" placeholder="Pesan untuk user biasa yang mencoba generate"></textarea>
-                  <div class="example-box">
-                    <div class="example-title"><strong>Contoh aman</strong><button type="button" onclick="useExample('notAllowedMessage')">Pakai contoh</button></div>
-                    <pre class="example-text" id="exampleDenied"></pre>
-                    <ul class="hint-list">
-                      <li>Dipakai saat user biasa mencoba kirim media/text untuk generate link.</li>
-                      <li>Boleh pakai <code>{mention}</code> atau <code>{first_name}</code>. Owner dan Admin Konten tetap boleh generate.</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div id="panelExternalBlocked" class="tab-panel">
-                  <label for="externalBlockedMessage">Pesan Link Bot Luar Ditolak</label>
-                  <textarea id="externalBlockedMessage" rows="7" placeholder="Pesan saat admin konten mengirim link/username bot luar"></textarea>
-                  <div class="example-box">
-                    <div class="example-title"><strong>Contoh aman</strong><button type="button" onclick="useExample('externalBlockedMessage')">Pakai contoh</button></div>
-                    <pre class="example-text" id="exampleExternalBlocked"></pre>
-                    <ul class="hint-list">
-                      <li>Dipakai saat Owner/Admin Konten mengirim link atau username bot luar.</li>
-                      <li>Boleh pakai <code>{mention}</code>, <code>{first_name}</code>, <code>{reason}</code>, dan <code>{blocked_detail}</code>.</li>
-                      <li><code>{blocked_detail}</code> akan menampilkan daftar link/username yang terdeteksi.</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div id="panelInvalid" class="tab-panel">
-                  <label for="invalidCodeMessage">Pesan Kode Tidak Valid</label>
-                  <textarea id="invalidCodeMessage" rows="7" placeholder="Kode tidak ditemukan atau sudah tidak valid."></textarea>
-                  <div class="example-box">
-                    <div class="example-title"><strong>Contoh aman</strong><button type="button" onclick="useExample('invalidCodeMessage')">Pakai contoh</button></div>
-                    <pre class="example-text" id="exampleInvalid"></pre>
-                    <ul class="hint-list">
-                      <li>Dipakai saat user membuka link FSub yang kode-nya tidak ditemukan. Boleh pakai <code>{mention}</code>.</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div id="panelSuccess" class="tab-panel">
-                  <label for="linkCreatedMessage">Pesan Link Berhasil Dibuat</label>
-                  <textarea id="linkCreatedMessage" rows="7" placeholder="&#10;&#10;✅ Link FSub berhasil dibuat:&#10;&lt;code&gt;{link}&lt;/code&gt;"></textarea>
-                  <div class="example-box">
-                    <div class="example-title"><strong>Contoh aman</strong><button type="button" onclick="useExample('linkCreatedMessage')">Pakai contoh</button></div>
-                    <pre class="example-text" id="exampleSuccess"></pre>
-                    <ul class="hint-list">
-                      <li>Dipakai setelah owner/admin konten berhasil generate link.</li>
-                      <li>Wajib pakai <code>{link}</code> agar link final muncul.</li>
-                    </ul>
-                  </div>
-                </div>
+                <span class="pill stop">STOPPED</span>
               </div>
 
-              <div class="btns"><button id="saveSettingsBtn" type="button">Simpan Pengaturan</button></div>
-              <div id="settingsMsg" class="notice hidden"></div>
-            </section>
+              <div class="bot-card">
+                <div>
+                  <div class="bot-name">BOT MOVIE</div>
+                  <div class="bot-meta">@moviefsubbot • Setup valid</div>
+                </div>
+                <span class="pill run">RUNNING</span>
+              </div>
+            </div>
           </div>
-        </section>
-      </div>
+
+          <div class="card four">
+            <h2>Tambah Bot</h2>
+            <p>Kalau Default Owner sudah diatur, cukup isi token.</p>
+            <label>Bot Token</label>
+            <input placeholder="Token dari BotFather" />
+            <label>Owner Telegram ID</label>
+            <input placeholder="Opsional" />
+            <div style="margin-top:12px">
+              <button class="btn-full">+ Tambah Bot</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Status Bot Terpilih</h2>
+            <div class="checklist">
+              <div class="check"><div class="check-dot">✓</div><div><strong>Token valid</strong><span>Terdeteksi sebagai @BotKILLFSUBBot</span></div></div>
+              <div class="check"><div class="check-dot">✓</div><div><strong>Owner aktif</strong><span>Default owner dipakai untuk bot ini</span></div></div>
+              <div class="check"><div class="check-dot">✓</div><div><strong>Channel Database valid</strong><span>Bot bisa menyimpan media</span></div></div>
+              <div class="check"><div class="check-dot">✓</div><div><strong>2 Channel wajib join</strong><span>Bot bisa cek status join user</span></div></div>
+            </div>
+
+            <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:13px">
+              <button class="btn-green">Start Bot</button>
+              <button class="btn-amber">Stop Bot</button>
+              <button class="btn-secondary">Validasi Setup</button>
+              <button class="btn-red">Hapus Bot</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="channel">
+        <div class="bot-select-row">
+          <select>
+            <option>BOT FSUB — @BotKILLFSUBBot</option>
+            <option>BOT TEST 2 — @dfasesbot</option>
+            <option>BOT MOVIE — @moviefsubbot</option>
+          </select>
+          <button class="btn-secondary">Ganti Bot</button>
+        </div>
+
+        <div class="grid">
+          <div class="card half">
+            <h2>Channel Database</h2>
+            <p>Channel penyimpanan media. Bot harus menjadi admin dan punya izin post.</p>
+            <label>Username / Link / ID</label>
+            <input value="@storage_channel" />
+            <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:12px">
+              <button>Simpan</button>
+              <button class="btn-secondary">Validasi</button>
+            </div>
+            <div class="notice">✅ Channel Database valid. Bot bisa menyimpan media.</div>
+          </div>
+
+          <div class="card half">
+            <h2>Channel Wajib Join</h2>
+            <p>Satu baris untuk satu channel. Bisa username, link, atau ID.</p>
+            <label>Daftar Channel</label>
+            <textarea>@channel_utama
+@channel_backup</textarea>
+            <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:12px">
+              <button>Simpan</button>
+              <button class="btn-secondary">Validasi</button>
+            </div>
+            <div class="notice">✅ 2 channel valid untuk pengecekan wajib join.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="template">
+        <div class="bot-select-row">
+          <select>
+            <option>BOT FSUB — @BotKILLFSUBBot</option>
+            <option>BOT TEST 2 — @dfasesbot</option>
+            <option>BOT MOVIE — @moviefsubbot</option>
+          </select>
+          <button class="btn-secondary">Ganti Bot</button>
+        </div>
+
+        <div class="card">
+          <h2>Template Pesan</h2>
+          <p>Template hanya untuk bot yang dipilih. Pilih jenis pesan di kiri, edit di kanan.</p>
+
+          <div class="menu-card">
+            <div class="subnav">
+              <button class="active" data-template="start">🎯 /start</button>
+              <button data-template="help">💬 Bantuan</button>
+              <button data-template="join">📢 Belum Join</button>
+              <button data-template="denied">🚫 Akses Ditolak</button>
+              <button data-template="external">🛡️ Link Luar</button>
+              <button data-template="invalid">⚠️ Kode Invalid</button>
+              <button data-template="success">✅ Link Berhasil</button>
+            </div>
+
+            <div>
+              <div class="template-panel active" id="tpl-start">
+                <label>Pesan /start</label>
+                <textarea>👋 Halo {mention}
+
+Selamat datang di {bot_name}.
+Gunakan link FSub yang sudah dibagikan untuk membuka konten.</textarea>
+                <div class="example">Contoh aman:
+👋 Halo {first_name}
+
+Selamat datang di {bot_name}.</div>
+              </div>
+
+              <div class="template-panel" id="tpl-help">
+                <label>Pesan Bantuan</label>
+                <textarea>ℹ️ Bantuan
+
+Gunakan link FSub yang sudah dibagikan.
+Jika belum bisa membuka konten, pastikan sudah join channel wajib.</textarea>
+                <div class="example">Tips: buat pesan bantuan pendek dan jelas.</div>
+              </div>
+
+              <div class="template-panel" id="tpl-join">
+                <label>Pesan Belum Join</label>
+                <textarea>📢 Halo {mention}
+
+Kamu harus join {required_count} channel wajib terlebih dahulu.
+Setelah join, klik tombol Saya Sudah Join.</textarea>
+                <div class="example">Placeholder cocok: {mention}, {first_name}, {required_count}</div>
+              </div>
+
+              <div class="template-panel" id="tpl-denied">
+                <label>Pesan Akses Ditolak</label>
+                <textarea>🚫 Maaf {first_name}, kamu tidak memiliki izin untuk membuat link FSub.</textarea>
+                <div class="example">Muncul saat user biasa mencoba generate link.</div>
+              </div>
+
+              <div class="template-panel" id="tpl-external">
+                <label>Pesan Link Bot Luar Ditolak</label>
+                <textarea>🛡️ Konten ditolak.
+
+Terdeteksi link/username bot Telegram luar:
+{blocked_detail}
+
+Silakan upload konten langsung atau gunakan link dari bot internal.</textarea>
+                <div class="example">Placeholder wajib: {blocked_detail}</div>
+              </div>
+
+              <div class="template-panel" id="tpl-invalid">
+                <label>Pesan Kode Invalid</label>
+                <textarea>⚠️ Link tidak valid atau konten sudah tidak tersedia.</textarea>
+                <div class="example">Jangan tampilkan kode mentah agar tetap clean.</div>
+              </div>
+
+              <div class="template-panel" id="tpl-success">
+                <label>Pesan Link Berhasil Dibuat</label>
+                <textarea>✅ Link FSub berhasil dibuat:
+<code>{link}</code></textarea>
+                <div class="example">Tombol 📋 Copy Link akan muncul di bawah pesan ini.</div>
+              </div>
+
+              <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:13px">
+                <button>Simpan Template</button>
+                <button class="btn-secondary">Pakai Contoh</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="protect">
+        <div class="bot-select-row">
+          <select>
+            <option>BOT FSUB — @BotKILLFSUBBot</option>
+            <option>BOT TEST 2 — @dfasesbot</option>
+            <option>BOT MOVIE — @moviefsubbot</option>
+          </select>
+          <button class="btn-secondary">Ganti Bot</button>
+        </div>
+
+        <div class="grid">
+          <div class="card half">
+            <h2>Proteksi Bot</h2>
+            <p>Semua proteksi berlaku untuk bot yang sedang dipilih.</p>
+
+            <div class="toggle-row">
+              <div>
+                <strong>Protect Content</strong>
+                <p style="margin:4px 0 0">User lebih sulit forward/save konten.</p>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+
+            <div class="toggle-row">
+              <div>
+                <strong>Blok Rantai Bot Luar</strong>
+                <p style="margin:4px 0 0">Mencegah link bot luar dan source chain kotor.</p>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+          </div>
+
+          <div class="card half">
+            <h2>Admin Konten</h2>
+            <p>Admin konten boleh upload/generate link, tapi tidak bisa ubah setting web.</p>
+            <label>Telegram ID Admin Konten</label>
+            <textarea>123456789
+987654321</textarea>
+            <button style="margin-top:12px">Simpan Proteksi</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="backup">
+        <div class="grid">
+          <div class="card half">
+            <h2>Backup MongoDB</h2>
+            <p>Download backup JSON berisi settings, bots, dan items. Simpan private karena bisa berisi token bot.</p>
+            <button>Download Backup JSON</button>
+          </div>
+          <div class="card half">
+            <h2>Status Backup</h2>
+            <div class="notice">Belum ada jadwal auto backup.
+Backup manual disarankan setiap selesai update fitur besar.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="setting">
+        <div class="grid">
+          <div class="card half">
+            <h2>Default Owner</h2>
+            <p>Set satu owner utama untuk semua bot baru.</p>
+            <label>Default Owner Telegram ID</label>
+            <input value="123456789" />
+            <div class="toggle-row">
+              <div>
+                <strong>Terapkan ke semua bot lama</strong>
+                <p style="margin:4px 0 0">Owner bot lama akan disamakan.</p>
+              </div>
+              <div class="toggle"></div>
+            </div>
+            <button style="margin-top:12px">Simpan Default Owner</button>
+          </div>
+
+          <div class="card half">
+            <h2>Info Panel</h2>
+            <p>Backend API, session admin, dan status panel.</p>
+            <div class="notice">Backend: https://bot-botfsub.1ynxwv.easypanel.host
+Frontend: https://fsubdev.vercel.app</div>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 
   <script>
-    const API_BASE = "https://bot-botfsub.1ynxwv.easypanel.host";
-    const SESSION_KEY = "fsub_admin_session";
-    const SELECTED_KEY = "fsub_selected_bot";
-
-    const $ = (id) => document.getElementById(id);
-    const state = {
-      token: localStorage.getItem(SESSION_KEY) || "",
-      bots: [],
-      stats: {},
-      settings: {},
-      selectedBotId: localStorage.getItem(SELECTED_KEY) || ""
+    const pageMeta = {
+      bot:["Bot","Pilih bot dulu, lalu kelola setup-nya di menu lain."],
+      channel:["Channel","Atur Channel Database dan Channel Wajib Join untuk bot yang dipilih."],
+      template:["Template","Custom text per bot, tidak numpuk di satu halaman panjang."],
+      protect:["Proteksi","Protect content, anti source chain, dan admin konten per bot."],
+      backup:["Backup","Download backup MongoDB dengan aman."],
+      setting:["Setting","Default owner dan pengaturan global panel."]
     };
 
-    const TEXT_EXAMPLES = {
-      startMessage: "👋 Halo {mention}\n\nSelamat datang di {bot_name}.\nGunakan link FSub yang sudah dibagikan untuk membuka konten.\n\nKlik tombol Bantuan kalau kamu bingung.",
-      helpMessage: "ℹ️ Bantuan untuk {first_name}\n\n1. Buka link FSub yang kamu dapat.\n2. Join channel wajib jika diminta.\n3. Klik tombol Saya Sudah Join.\n4. Konten akan dikirim otomatis oleh bot.\n\nJika link tidak bisa dibuka, minta link baru ke admin.",
-      joinRequiredMessage: "📢 Halo {mention}\n\nKamu harus join {required_count} channel wajib terlebih dahulu.\nKlik tombol channel di bawah, lalu kembali ke bot dan tekan Saya Sudah Join.",
-      notAllowedMessage: "🚫 Maaf {first_name}, akses ditolak.\n\nKamu tidak memiliki izin untuk membuat link FSub.\nSilakan gunakan link yang sudah dibagikan oleh admin.",
-      externalBlockedMessage: "🛡️ Konten ditolak.\n\nTerdeteksi link atau username bot luar:\n{blocked_detail}\n\nHanya upload langsung atau link dari bot internal yang diperbolehkan.",
-      invalidCodeMessage: "⚠️ Maaf {mention}, link tidak valid atau konten sudah tidak tersedia.\n\nSilakan minta link baru ke admin.",
-      linkCreatedMessage: "✅ Link FSub berhasil dibuat:\n<code>{link}</code>"
-    };
-
-    function headers(){ return { "Content-Type":"application/json", Authorization:`Bearer ${state.token}` }; }
-    function selectedBot(){ return state.bots.find(b => b.id === state.selectedBotId) || state.bots[0] || null; }
-    function esc(v){ return String(v ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
-
-    function showMsg(id, text, type=""){
-      const el = $(id);
-      el.className = `notice ${type}`.trim();
-      el.textContent = text;
-      el.classList.remove("hidden");
-    }
-    function hideMsg(id){ $(id).classList.add("hidden"); $(id).textContent=""; }
-
-    async function api(path, options={}){
-      const res = await fetch(`${API_BASE}${path}`, { ...options, headers:{...headers(), ...(options.headers||{})} });
-      const raw = await res.text();
-      let data = {};
-      if(raw){ try{ data = JSON.parse(raw); }catch{ data = {detail:raw}; } }
-      if(!res.ok) throw new Error(data.detail || data.message || `HTTP ${res.status}`);
-      return data;
-    }
-
-    function setLoginView(loggedIn){
-      $("loginView").classList.toggle("hidden", loggedIn);
-      $("appView").classList.toggle("hidden", !loggedIn);
-      $("refreshBtn").classList.toggle("hidden", !loggedIn);
-      $("logoutBtn").classList.toggle("hidden", !loggedIn);
-    }
-
-    async function login(){
-      const password = $("password").value.trim();
-      if(!password) return showMsg("loginMsg", "Password wajib diisi.", "error");
-      $("loginBtn").disabled = true;
-      try{
-        const data = await fetch(`${API_BASE}/api/login`, {
-          method:"POST",
-          headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({password})
-        }).then(async r => {
-          const d = await r.json().catch(() => ({}));
-          if(!r.ok) throw new Error(d.detail || "Login gagal");
-          return d;
-        });
-        state.token = data.token;
-        localStorage.setItem(SESSION_KEY, state.token);
-        setLoginView(true);
-        await loadDashboard();
-      }catch(err){ showMsg("loginMsg", err.message, "error"); }
-      finally{ $("loginBtn").disabled = false; }
-    }
-
-    function logout(){
-      state.token = "";
-      localStorage.removeItem(SESSION_KEY);
-      setLoginView(false);
-    }
-
-    async function loadDashboard(){
-      const data = await api("/api/dashboard");
-      state.bots = data.bots || [];
-      state.stats = data.stats || {};
-      state.settings = data.settings || {};
-      if($("defaultOwnerId")) $("defaultOwnerId").value = state.settings.default_owner_id || "";
-      if(!state.bots.find(b => b.id === state.selectedBotId)) state.selectedBotId = state.bots[0]?.id || "";
-      if(state.selectedBotId) localStorage.setItem(SELECTED_KEY, state.selectedBotId);
-      render();
-    }
-
-    function render(){
-      renderStats();
-      renderBotList();
-      const bot = selectedBot();
-      $("emptyView").classList.toggle("hidden", Boolean(bot) || !$("addBotView").classList.contains("hidden"));
-      $("manageView").classList.toggle("hidden", !bot);
-      if(bot) renderManage(bot);
-    }
-
-    function renderStats(){
-      const readyCount = state.bots.filter(isReady).length;
-      $("statBots").textContent = state.bots.length;
-      $("statRunning").textContent = state.stats.running_bots || state.bots.filter(b => b.is_running).length;
-      $("statItems").textContent = state.stats.items_count || 0;
-      $("statReady").textContent = readyCount;
-    }
-
-    function isReady(bot){
-      return Boolean(bot.storage_channel && (bot.required_channels || []).length && bot.owner_id && bot.is_running);
-    }
-
-    function renderBotList(){
-      const box = $("botList");
-      if(!state.bots.length){
-        box.innerHTML = `<p class="muted small">Belum ada bot.</p>`;
-        return;
-      }
-      box.innerHTML = state.bots.map(bot => {
-        const active = bot.id === state.selectedBotId ? "active" : "";
-        const status = bot.is_running ? "RUNNING" : "STOPPED";
-        const pill = bot.is_running ? "run" : "stop";
-        const name = bot.username ? `@${bot.username}` : (bot.first_name || "Bot");
-        return `<div class="bot-card ${active}" onclick="selectBot('${esc(bot.id)}')">
-          <div class="bot-head">
-            <div><h3>${esc(name)}</h3><div class="muted small">${esc(bot.owner_label || "Owner")} ${bot.owner_masked ? `· ${esc(bot.owner_masked)}` : ""}</div></div>
-            <span class="pill ${pill}">${status}</span>
-          </div>
-        </div>`;
-      }).join("");
-    }
-
-    function renderManage(bot){
-      const name = bot.username ? `@${bot.username}` : (bot.first_name || "Bot");
-      $("botTitle").textContent = name;
-      $("botSubtitle").textContent = `Setup bot untuk generate dan distribusi konten FSub`;
-      $("botStatusPill").textContent = bot.is_running ? "RUNNING" : "STOPPED";
-      $("botStatusPill").className = `pill ${bot.is_running ? "run" : "stop"}`;
-      $("storageChannel").value = bot.storage_channel?.username ? `@${bot.storage_channel.username}` : (bot.storage_channel?.input || bot.storage_channel?.chat_id || "");
-      $("protectContent").checked = Boolean(bot.protect_content);
-      $("antiExternalLinks").checked = Boolean(bot.anti_external_telegram_links);
-      $("contentAdmins").value = (bot.content_admin_ids || []).join("\n");
-      const customTexts = bot.custom_texts || {};
-      $("startMessage").value = customTexts.start_message || "";
-      $("helpMessage").value = customTexts.help_message || "";
-      $("joinRequiredMessage").value = customTexts.join_required_message || "";
-      $("notAllowedMessage").value = customTexts.not_allowed_message || "";
-      $("externalBlockedMessage").value = customTexts.external_link_blocked_message || "";
-      $("invalidCodeMessage").value = customTexts.invalid_code_message || "";
-      $("linkCreatedMessage").value = customTexts.link_created_message || "";
-      renderChecklist(bot);
-      renderRequiredChannels(bot);
-    }
-
-    function renderChecklist(bot){
-      const storage = Boolean(bot.storage_channel);
-      const required = (bot.required_channels || []).length > 0;
-      const running = Boolean(bot.is_running);
-      const checks = [
-        {ok:Boolean(bot.token_hash || bot.bot_id), title:"Bot token valid", desc: bot.username ? `Terdeteksi sebagai @${bot.username}` : "Token sudah disimpan"},
-        {ok:Boolean(bot.owner_id), title:"Owner ID tersimpan", desc:"Owner bisa generate link dengan kirim media/text ke bot"},
-        {ok:storage, title:"Channel Database", desc: storage ? channelName(bot.storage_channel) : "Belum diset"},
-        {ok:required, title:"Channel Wajib Join", desc: required ? `${(bot.required_channels || []).length} channel aktif` : "Belum ada channel wajib join"},
-        {ok:true, title:"Admin Konten", desc: (bot.content_admin_ids || []).length ? `${(bot.content_admin_ids || []).length} admin konten aktif` : "Opsional, boleh kosong"},
-        {ok:running, title:"Bot running", desc: running ? "Bot sedang aktif menerima pesan" : "Klik Start Bot kalau setup sudah siap"}
-      ];
-      $("checklist").innerHTML = checks.map(c => `<div class="step ${c.ok ? "ok" : "warn"}">
-        <div class="dot">${c.ok ? "✓" : "!"}</div>
-        <div><strong>${esc(c.title)}</strong><span>${esc(c.desc)}</span></div>
-      </div>`).join("");
-    }
-
-    function renderRequiredChannels(bot){
-      const list = bot.required_channels || [];
-      const box = $("requiredList");
-      if(!list.length){
-        box.innerHTML = `<div class="notice">Belum ada channel wajib join.</div>`;
-        return;
-      }
-      box.innerHTML = list.map(ch => `<div class="channel-item">
-        <div>
-          <strong>${esc(channelName(ch))}</strong><br>
-          <span class="muted small">Channel wajib join aktif</span>
-        </div>
-        <button class="btn-red" onclick="removeRequired('${esc(ch.chat_id)}')" type="button">Hapus</button>
-      </div>`).join("");
-    }
-
-    function channelName(ch){ return ch?.title || (ch?.username ? `@${ch.username}` : ch?.chat_id) || "-"; }
-
-    function openAddBot(){
-      $("addBotView").classList.remove("hidden");
-      $("emptyView").classList.add("hidden");
-      $("manageView").classList.add("hidden");
-      hideMsg("addBotMsg");
-    }
-
-    function closeAddBot(){
-      $("addBotView").classList.add("hidden");
-      render();
-    }
-
-    async function saveBot(){
-      const token = $("botToken").value.trim();
-      const owner = $("ownerId").value.trim();
-      if(!token) return showMsg("addBotMsg", "Bot Token wajib diisi.", "error");
-      if(!owner && !state.settings.default_owner_id) return showMsg("addBotMsg", "Isi Owner ID atau set Default Owner dulu.", "error");
-      $("saveBotBtn").disabled = true;
-      try{
-        const body = {token};
-        if(owner) body.owner_id = Number(owner);
-        const data = await api("/api/bots", {method:"POST", body:JSON.stringify(body)});
-        state.selectedBotId = data.bot?.id || state.selectedBotId;
-        $("botToken").value = "";
-        $("ownerId").value = "";
-        showMsg("addBotMsg", data.message || "Bot tersimpan.", "ok");
-        await loadDashboard();
-        closeAddBot();
-      }catch(err){ showMsg("addBotMsg", err.message, "error"); }
-      finally{ $("saveBotBtn").disabled = false; }
-    }
-
-    async function saveStorage(){
-      const bot = selectedBot();
-      const channel = $("storageChannel").value.trim();
-      if(!bot) return;
-      if(!channel) return showMsg("storageMsg", "Channel Database wajib diisi.", "error");
-      $("saveStorageBtn").disabled = true;
-      try{
-        const data = await api(`/api/bots/${bot.id}/storage-channel`, {method:"POST", body:JSON.stringify({channel})});
-        showMsg("storageMsg", data.message || "Channel Database disimpan.", "ok");
-        await loadDashboard();
-      }catch(err){ showMsg("storageMsg", err.message, "error"); }
-      finally{ $("saveStorageBtn").disabled = false; }
-    }
-
-    async function addRequired(){
-      const bot = selectedBot();
-      const channel = $("requiredChannel").value.trim();
-      if(!bot) return;
-      if(!channel) return showMsg("requiredMsg", "Channel wajib join wajib diisi.", "error");
-      $("addRequiredBtn").disabled = true;
-      try{
-        const data = await api(`/api/bots/${bot.id}/required-channels`, {method:"POST", body:JSON.stringify({channel})});
-        $("requiredChannel").value = "";
-        showMsg("requiredMsg", data.message || "Channel ditambahkan.", "ok");
-        await loadDashboard();
-      }catch(err){ showMsg("requiredMsg", err.message, "error"); }
-      finally{ $("addRequiredBtn").disabled = false; }
-    }
-
-    async function removeRequired(chatId){
-      const bot = selectedBot();
-      if(!bot) return;
-      try{
-        await api(`/api/bots/${bot.id}/required-channels/${encodeURIComponent(chatId)}`, {method:"DELETE"});
-        await loadDashboard();
-      }catch(err){ alert(err.message); }
-    }
-
-    async function saveSettings(){
-      const bot = selectedBot();
-      if(!bot) return;
-      try{
-        const contentAdminIds = $("contentAdmins").value
-          .split(/[\n, ]+/)
-          .map(v => v.trim())
-          .filter(Boolean)
-          .map(Number)
-          .filter(v => Number.isInteger(v) && v > 0);
-        const customTexts = {
-          start_message:$("startMessage").value.trim(),
-          help_message:$("helpMessage").value.trim(),
-          join_required_message:$("joinRequiredMessage").value.trim(),
-          not_allowed_message:$("notAllowedMessage").value.trim(),
-          external_link_blocked_message:$("externalBlockedMessage").value.trim(),
-          invalid_code_message:$("invalidCodeMessage").value.trim(),
-          link_created_message:$("linkCreatedMessage").value.trim()
-        };
-        const data = await api(`/api/bots/${bot.id}/settings`, {method:"POST", body:JSON.stringify({
-          protect_content:$("protectContent").checked,
-          anti_external_telegram_links:$("antiExternalLinks").checked,
-          content_admin_ids:contentAdminIds,
-          custom_texts:customTexts
-        })});
-        showMsg("settingsMsg", data.message || "Pengaturan disimpan.", "ok");
-        await loadDashboard();
-      }catch(err){ showMsg("settingsMsg", err.message, "error"); }
-    }
-
-    async function startBot(){
-      const bot = selectedBot();
-      if(!bot) return;
-      try{
-        const data = await api(`/api/bots/${bot.id}/start`, {method:"POST"});
-        showMsg("manageMsg", data.message || "Bot dijalankan.", "ok");
-        await loadDashboard();
-      }catch(err){ showMsg("manageMsg", err.message, "error"); }
-    }
-
-    async function stopBot(){
-      const bot = selectedBot();
-      if(!bot) return;
-      try{
-        const data = await api(`/api/bots/${bot.id}/stop`, {method:"POST"});
-        showMsg("manageMsg", data.message || "Bot dihentikan.", "ok");
-        await loadDashboard();
-      }catch(err){ showMsg("manageMsg", err.message, "error"); }
-    }
-
-    function channelLabel(ch){
-      if(!ch) return "-";
-      if(ch.title) return ch.title;
-      if(ch.username) return `@${ch.username}`;
-      if(ch.input) return ch.input;
-      if(ch.chat_id) return String(ch.chat_id);
-      return "-";
-    }
-
-    function renderValidationResult(data){
-      const summary = data.summary || [];
-      const lines = summary.map(item => `${item.ok ? "✅" : "❌"} ${item.label}: ${item.detail}`);
-
-      const storage = data.storage_channel;
-      if(storage && !summary.some(x => x.label === "Channel Database")){
-        lines.push(`${storage.ok ? "✅" : "❌"} Channel Database: ${storage.ok ? channelLabel(storage) : (storage.detail || "Bermasalah")}`);
-      }
-
-      const required = data.required_channels || [];
-      if(required.length){
-        lines.push("");
-        lines.push("Detail Channel Wajib Join:");
-        required.forEach((ch, i) => {
-          lines.push(`${ch.ok ? "✅" : "❌"} ${i + 1}. ${channelLabel(ch)}${ch.detail ? ` — ${ch.detail}` : ""}`);
-        });
-      }
-
-      if(!lines.length){
-        lines.push("Tidak ada hasil validasi dari backend.");
-      }
-      return lines.join("\n");
-    }
-
-    async function validateBot(){
-      const bot = selectedBot();
-      if(!bot) return;
-      showMsg("manageMsg", "Sedang validasi channel...", "");
-      try{
-        const data = await api(`/api/bots/${bot.id}/validate`, {method:"POST"});
-        showMsg("manageMsg", renderValidationResult(data), data.ok ? "ok" : "error");
-        await loadDashboard();
-      }catch(err){ showMsg("manageMsg", err.message, "error"); }
-    }
-
-    async function deleteBot(){
-      const bot = selectedBot();
-      if(!bot) return;
-      if(!confirm("Hapus bot ini dari panel?")) return;
-      try{
-        await api(`/api/bots/${bot.id}`, {method:"DELETE"});
-        state.selectedBotId = "";
-        localStorage.removeItem(SELECTED_KEY);
-        await loadDashboard();
-      }catch(err){ showMsg("manageMsg", err.message, "error"); }
-    }
-
-
-    async function saveDefaultOwner(){
-      const owner = $("defaultOwnerId").value.trim();
-      const applyAll = $("applyDefaultOwnerAll").checked;
-      if(!owner) return showMsg("defaultOwnerMsg", "Default Owner Telegram ID wajib diisi.", "error");
-      if(applyAll && !confirm("Terapkan Default Owner ini ke semua bot yang sudah ada?")) return;
-      $("saveDefaultOwnerBtn").disabled = true;
-      try{
-        const data = await api("/api/settings/default-owner", {
-          method:"POST",
-          body:JSON.stringify({default_owner_id:Number(owner), apply_to_existing_bots:applyAll})
-        });
-        showMsg("defaultOwnerMsg", data.message || "Default Owner disimpan.", "ok");
-        $("applyDefaultOwnerAll").checked = false;
-        await loadDashboard();
-      }catch(err){ showMsg("defaultOwnerMsg", err.message, "error"); }
-      finally{ $("saveDefaultOwnerBtn").disabled = false; }
-    }
-
-    async function downloadBackup(){
-      $("backupBtn").disabled = true;
-      try{
-        const res = await fetch(`${API_BASE}/api/backup/export`, {headers:{Authorization:`Bearer ${state.token}`}});
-        if(!res.ok){
-          const data = await res.json().catch(() => ({}));
-          throw new Error(data.detail || `HTTP ${res.status}`);
-        }
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        const stamp = new Date().toISOString().replaceAll(":","-").slice(0,19);
-        a.href = url;
-        a.download = `fsub-backup-${stamp}.json`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-        showMsg("backupMsg", "Backup berhasil didownload.", "ok");
-      }catch(err){ showMsg("backupMsg", err.message, "error"); }
-      finally{ $("backupBtn").disabled = false; }
-    }
-
-    function selectBot(id){
-      state.selectedBotId = id;
-      localStorage.setItem(SELECTED_KEY, id);
-      $("addBotView").classList.add("hidden");
-      render();
-      window.scrollTo({top:0, behavior:"smooth"});
-    }
-
-    window.selectBot = selectBot;
-    window.removeRequired = removeRequired;
-    window.useExample = useExample;
-
-
-    function fillExampleBoxes(){
-      const map = {
-        exampleStart: TEXT_EXAMPLES.startMessage,
-        exampleHelp: TEXT_EXAMPLES.helpMessage,
-        exampleJoin: TEXT_EXAMPLES.joinRequiredMessage,
-        exampleDenied: TEXT_EXAMPLES.notAllowedMessage,
-        exampleExternalBlocked: TEXT_EXAMPLES.externalBlockedMessage,
-        exampleInvalid: TEXT_EXAMPLES.invalidCodeMessage,
-        exampleSuccess: TEXT_EXAMPLES.linkCreatedMessage
-      };
-      Object.entries(map).forEach(([id, value]) => {
-        const el = $(id);
-        if(el) el.textContent = value;
+    document.querySelectorAll(".nav-btn").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        const page = btn.dataset.page;
+        document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+        document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(page).classList.add("active");
+        document.getElementById("title").textContent = pageMeta[page][0];
+        document.getElementById("title").setAttribute("data-clean-title", pageMeta[page][0]);
+        document.getElementById("desc").textContent = pageMeta[page][1];
       });
-    }
+    });
 
-    function useExample(fieldId){
-      const el = $(fieldId);
-      if(!el) return;
-      if(el.value.trim()){
-        const ok = confirm("Field ini sudah berisi teks. Ganti dengan contoh?");
-        if(!ok) return;
-      }
-      el.value = TEXT_EXAMPLES[fieldId] || "";
-      el.focus();
-    }
-
-    function initCustomTextTabs(){
-      const tabs = document.querySelectorAll("#customTextTabs .orange-tab");
-      tabs.forEach(tab => {
-        tab.addEventListener("click", () => {
-          const panelId = tab.dataset.panel;
-          document.querySelectorAll("#customTextTabs .orange-tab").forEach(t => t.classList.remove("active"));
-          document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-          tab.classList.add("active");
-          const panel = document.getElementById(panelId);
-          if(panel) panel.classList.add("active");
-        });
+    document.querySelectorAll("[data-template]").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        const name = btn.dataset.template;
+        document.querySelectorAll("[data-template]").forEach(b=>b.classList.remove("active"));
+        document.querySelectorAll(".template-panel").forEach(p=>p.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById("tpl-"+name).classList.add("active");
       });
-    }
+    });
 
-
-    $("loginBtn").addEventListener("click", login);
-    $("password").addEventListener("keydown", e => { if(e.key === "Enter") login(); });
-    $("logoutBtn").addEventListener("click", logout);
-    $("refreshBtn").addEventListener("click", () => loadDashboard().catch(err => alert(err.message)));
-    $("showAddBotBtn").addEventListener("click", openAddBot);
-    $("emptyAddBotBtn").addEventListener("click", openAddBot);
-    $("cancelAddBotBtn").addEventListener("click", closeAddBot);
-    $("saveBotBtn").addEventListener("click", saveBot);
-    $("saveStorageBtn").addEventListener("click", saveStorage);
-    $("addRequiredBtn").addEventListener("click", addRequired);
-    $("saveSettingsBtn").addEventListener("click", saveSettings);
-    $("startBotBtn").addEventListener("click", startBot);
-    $("stopBotBtn").addEventListener("click", stopBot);
-    $("validateBtn").addEventListener("click", validateBot);
-    $("deleteBotBtn").addEventListener("click", deleteBot);
-    $("backupBtn").addEventListener("click", downloadBackup);
-    $("saveDefaultOwnerBtn").addEventListener("click", saveDefaultOwner);
-
-    (async function init(){
-      initCustomTextTabs();
-      fillExampleBoxes();
-      if(!state.token){ setLoginView(false); return; }
-      setLoginView(true);
-      try{ await loadDashboard(); }
-      catch(err){ logout(); showMsg("loginMsg", "Session habis. Silakan login ulang.", "error"); }
-    })();
+    document.querySelectorAll(".toggle").forEach(t=>{
+      t.addEventListener("click",()=>t.classList.toggle("on"));
+    });
   </script>
 </body>
 </html>
