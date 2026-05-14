@@ -470,6 +470,47 @@
       display:block;
     }
 
+  
+    /* v40 fix: tombol Gunakan tidak floating saat scroll */
+    .example,
+    .example-box,
+    .template-example,
+    .default-template-box{
+      position:relative !important;
+      overflow:auto !important;
+    }
+
+    .example-title,
+    .template-example-head,
+    .default-template-head{
+      position:static !important;
+      top:auto !important;
+      right:auto !important;
+      z-index:auto !important;
+      background:transparent !important;
+    }
+
+    .example-title button,
+    .template-example-head button,
+    .default-template-head button,
+    .use-example-btn,
+    button[onclick^="useExample"],
+    button[onclick^="useTemplateExample"]{
+      position:static !important;
+      top:auto !important;
+      right:auto !important;
+      float:none !important;
+      z-index:auto !important;
+      margin-left:auto !important;
+    }
+
+    .example-text,
+    .template-example-text,
+    .default-template-text{
+      overflow:visible !important;
+      max-height:none !important;
+    }
+
   </style>
 </head>
 
