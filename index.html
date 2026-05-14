@@ -551,6 +551,35 @@
       overflow:visible !important;
     }
 
+  
+    /* v42: tombol Gunakan dipindahkan ke samping Simpan Template */
+    .example-title button,
+    .template-example-head button,
+    .default-template-head button,
+    .use-example-btn,
+    button[onclick^="useExample"],
+    button[onclick^="useTemplateExample"]{
+      display:none !important;
+    }
+
+    .example-title,
+    .template-example-head,
+    .default-template-head{
+      position:static !important;
+      top:auto !important;
+      z-index:auto !important;
+      background:transparent !important;
+      border-bottom:0 !important;
+      padding-bottom:0 !important;
+    }
+
+    .template-action-row{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
   </style>
 </head>
 
@@ -823,8 +852,9 @@ Silakan minta link baru ke admin.</div>
                 <div class="example">Admin konten boleh upload/generate link, tapi tidak bisa ubah setting website. Owner tidak perlu dimasukkan.</div>
               </div>
 
-              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+              <div class="template-action-row">
                 <button id="saveSettingsBtn" type="button">Simpan Template & Proteksi</button>
+                <button class="btn-secondary" id="useCurrentTemplateBtn" type="button">Gunakan Template Bawaan</button>
               </div>
               <div id="settingsMsg" class="notice hidden"></div>
             </div>
@@ -1416,6 +1446,58 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       });
     }
 
+
+    const DEFAULT_TEMPLATE_TEXTS = {
+      start: "👋 Halo {mention}\n\nSelamat datang di {bot_name}.\nGunakan link FSub yang sudah dibagikan untuk membuka konten.",
+      help: "ℹ️ Bantuan\n\nGunakan link FSub yang sudah dibagikan.\nJika belum bisa membuka konten, pastikan kamu sudah join channel wajib.",
+      join: "📢 Halo {mention}\n\nKamu harus join {required_count} channel wajib terlebih dahulu.\nSetelah join, klik tombol Saya Sudah Join.",
+      denied: "🚫 Maaf {first_name}, kamu tidak memiliki izin untuk membuat link FSub.",
+      external: "🛡️ Konten ditolak.\n\nTerdeteksi link/username bot Telegram luar:\n{blocked_detail}\n\nSilakan upload konten langsung atau gunakan link dari bot internal.",
+      invalid: "⚠️ Link tidak valid atau konten sudah tidak tersedia.",
+      success: "✅ Link FSub berhasil dibuat:\n<code>{link}</code>"
+    };
+
+    function currentTemplateName(){
+      const active = document.querySelector("[data-template].active");
+      return active ? active.dataset.template : "start";
+    }
+
+    function currentTemplateField(name){
+      const map = {
+        start:"startMessage",
+        help:"helpMessage",
+        join:"joinRequiredMessage",
+        denied:"notAllowedMessage",
+        external:"externalBlockedMessage",
+        invalid:"invalidCodeMessage",
+        success:"linkCreatedMessage"
+      };
+      return map[name] || "";
+    }
+
+    function useCurrentTemplateExample(){
+      const name = currentTemplateName();
+
+      if(name === "protection"){
+        alert("Proteksi & Admin tidak memakai template bawaan. Atur manual lalu klik Simpan.");
+        return;
+      }
+
+      const fieldId = currentTemplateField(name);
+      const field = $(fieldId);
+      const value = DEFAULT_TEMPLATE_TEXTS[name];
+
+      if(!field || !value) return;
+
+      if(field.value.trim()){
+        const ok = confirm("Field ini sudah berisi teks. Ganti dengan template bawaan?");
+        if(!ok) return;
+      }
+
+      field.value = value;
+      field.focus();
+    }
+
     const pageMeta = {
       bot:["Bot","Pilih bot dulu, lalu kelola setup-nya di menu lain."],
       channel:["Channel","Atur Channel Database dan Channel Wajib Join untuk bot yang dipilih."],
@@ -1459,6 +1541,7 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
     $("saveStorageBtn").addEventListener("click", saveStorage);
     $("addRequiredBtn").addEventListener("click", addRequired);
     $("saveSettingsBtn").addEventListener("click", saveSettings);
+    $("useCurrentTemplateBtn").addEventListener("click", useCurrentTemplateExample);
     $("startBotBtn").addEventListener("click", startBot);
     $("stopBotBtn").addEventListener("click", stopBot);
     $("validateBtn").addEventListener("click", validateBot);
