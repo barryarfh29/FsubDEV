@@ -99,6 +99,12 @@
     .tab-panel{display:none;border:1px solid var(--line);border-radius:16px;background:#101a27;padding:14px;margin-top:8px}
     .tab-panel.active{display:block}
     .tab-panel label{margin-top:0}
+    .example-box{margin-top:12px;border:1px solid #32445c;border-radius:14px;background:#0c1420;padding:12px}
+    .example-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+    .example-title strong{font-size:13px;color:#ffd6ad}
+    .example-title button{padding:7px 10px;border-radius:10px;font-size:12px;box-shadow:none}
+    .example-text{white-space:pre-wrap;color:#cbd5e1;font-size:13px;line-height:1.55;margin:0;font-family:inherit}
+    .hint-list{margin:8px 0 0;padding-left:18px;color:#aeb9c8;font-size:13px;line-height:1.6}
     .setting-row{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
 
 
@@ -300,31 +306,78 @@
                 <div id="panelStart" class="tab-panel active">
                   <label for="startMessage">Pesan /start</label>
                   <textarea id="startMessage" rows="7" placeholder="Pesan saat user mengetik /start tanpa kode"></textarea>
+                  <div class="example-box">
+                    <div class="example-title"><strong>Contoh aman</strong><button type="button" onclick="useExample('startMessage')">Pakai contoh</button></div>
+                    <pre class="example-text" id="exampleStart"></pre>
+                    <ul class="hint-list">
+                      <li>Dipakai saat user mengetik <code>/start</code> tanpa kode.</li>
+                      <li>Boleh pakai <code>{bot_name}</code>, <code>{bot_username}</code>, dan <code>{join_note}</code>.</li>
+                    </ul>
+                  </div>
                 </div>
 
                 <div id="panelHelp" class="tab-panel">
                   <label for="helpMessage">Pesan Bantuan</label>
                   <textarea id="helpMessage" rows="7" placeholder="Pesan saat user klik tombol Bantuan"></textarea>
+                  <div class="example-box">
+                    <div class="example-title"><strong>Contoh aman</strong><button type="button" onclick="useExample('helpMessage')">Pakai contoh</button></div>
+                    <pre class="example-text" id="exampleHelp"></pre>
+                    <ul class="hint-list">
+                      <li>Dipakai saat user klik tombol Bantuan.</li>
+                      <li>Jangan taruh kode rahasia di sini.</li>
+                    </ul>
+                  </div>
                 </div>
 
                 <div id="panelJoin" class="tab-panel">
                   <label for="joinRequiredMessage">Pesan Belum Join</label>
                   <textarea id="joinRequiredMessage" rows="7" placeholder="Kamu harus join channel wajib dulu..."></textarea>
+                  <div class="example-box">
+                    <div class="example-title"><strong>Contoh aman</strong><button type="button" onclick="useExample('joinRequiredMessage')">Pakai contoh</button></div>
+                    <pre class="example-text" id="exampleJoin"></pre>
+                    <ul class="hint-list">
+                      <li>Dipakai saat user belum join channel wajib.</li>
+                      <li>Boleh pakai <code>{required_count}</code> untuk jumlah channel.</li>
+                    </ul>
+                  </div>
                 </div>
 
                 <div id="panelDenied" class="tab-panel">
                   <label for="notAllowedMessage">Pesan Akses Ditolak</label>
                   <textarea id="notAllowedMessage" rows="7" placeholder="Pesan untuk user biasa yang mencoba generate"></textarea>
+                  <div class="example-box">
+                    <div class="example-title"><strong>Contoh aman</strong><button type="button" onclick="useExample('notAllowedMessage')">Pakai contoh</button></div>
+                    <pre class="example-text" id="exampleDenied"></pre>
+                    <ul class="hint-list">
+                      <li>Dipakai saat user biasa mencoba kirim media/text untuk generate link.</li>
+                      <li>Owner dan Admin Konten tetap boleh generate.</li>
+                    </ul>
+                  </div>
                 </div>
 
                 <div id="panelInvalid" class="tab-panel">
                   <label for="invalidCodeMessage">Pesan Kode Tidak Valid</label>
                   <textarea id="invalidCodeMessage" rows="7" placeholder="Kode tidak ditemukan atau sudah tidak valid."></textarea>
+                  <div class="example-box">
+                    <div class="example-title"><strong>Contoh aman</strong><button type="button" onclick="useExample('invalidCodeMessage')">Pakai contoh</button></div>
+                    <pre class="example-text" id="exampleInvalid"></pre>
+                    <ul class="hint-list">
+                      <li>Dipakai saat user membuka link FSub yang kode-nya tidak ditemukan.</li>
+                    </ul>
+                  </div>
                 </div>
 
                 <div id="panelSuccess" class="tab-panel">
                   <label for="linkCreatedMessage">Pesan Link Berhasil Dibuat</label>
                   <textarea id="linkCreatedMessage" rows="7" placeholder="{note}&#10;&#10;✅ Link FSub berhasil dibuat:&#10;&lt;code&gt;{link}&lt;/code&gt;"></textarea>
+                  <div class="example-box">
+                    <div class="example-title"><strong>Contoh aman</strong><button type="button" onclick="useExample('linkCreatedMessage')">Pakai contoh</button></div>
+                    <pre class="example-text" id="exampleSuccess"></pre>
+                    <ul class="hint-list">
+                      <li>Dipakai setelah owner/admin konten berhasil generate link.</li>
+                      <li>Wajib pakai <code>{link}</code> agar link final muncul.</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
 
@@ -348,6 +401,15 @@
       bots: [],
       stats: {},
       selectedBotId: localStorage.getItem(SELECTED_KEY) || ""
+    };
+
+    const TEXT_EXAMPLES = {
+      startMessage: "👋 Selamat datang di {bot_name}\n\nBot ini digunakan untuk membuka konten dari link FSub yang sudah dibagikan.\n\n{join_note}\n\nKlik tombol Bantuan kalau kamu bingung.",
+      helpMessage: "ℹ️ Bantuan\n\n1. Buka link FSub yang kamu dapat.\n2. Join channel wajib jika diminta.\n3. Klik tombol Saya Sudah Join.\n4. Konten akan dikirim otomatis oleh bot.\n\nJika link tidak bisa dibuka, minta link baru ke admin.",
+      joinRequiredMessage: "📢 Kamu harus join {required_count} channel wajib terlebih dahulu.\n\nKlik tombol channel di bawah, lalu kembali ke bot dan tekan Saya Sudah Join.",
+      notAllowedMessage: "🚫 Akses ditolak.\n\nKamu tidak memiliki izin untuk membuat link FSub.\nSilakan gunakan link yang sudah dibagikan oleh admin.",
+      invalidCodeMessage: "⚠️ Link tidak valid atau konten sudah tidak tersedia.\n\nSilakan minta link baru ke admin.",
+      linkCreatedMessage: "{note}\n\n✅ Link FSub berhasil dibuat:\n<code>{link}</code>"
     };
 
     function headers(){ return { "Content-Type":"application/json", Authorization:`Bearer ${state.token}` }; }
@@ -718,7 +780,34 @@
 
     window.selectBot = selectBot;
     window.removeRequired = removeRequired;
+    window.useExample = useExample;
 
+
+    function fillExampleBoxes(){
+      const map = {
+        exampleStart: TEXT_EXAMPLES.startMessage,
+        exampleHelp: TEXT_EXAMPLES.helpMessage,
+        exampleJoin: TEXT_EXAMPLES.joinRequiredMessage,
+        exampleDenied: TEXT_EXAMPLES.notAllowedMessage,
+        exampleInvalid: TEXT_EXAMPLES.invalidCodeMessage,
+        exampleSuccess: TEXT_EXAMPLES.linkCreatedMessage
+      };
+      Object.entries(map).forEach(([id, value]) => {
+        const el = $(id);
+        if(el) el.textContent = value;
+      });
+    }
+
+    function useExample(fieldId){
+      const el = $(fieldId);
+      if(!el) return;
+      if(el.value.trim()){
+        const ok = confirm("Field ini sudah berisi teks. Ganti dengan contoh?");
+        if(!ok) return;
+      }
+      el.value = TEXT_EXAMPLES[fieldId] || "";
+      el.focus();
+    }
 
     function initCustomTextTabs(){
       const tabs = document.querySelectorAll("#customTextTabs .orange-tab");
@@ -754,6 +843,7 @@
 
     (async function init(){
       initCustomTextTabs();
+      fillExampleBoxes();
       if(!state.token){ setLoginView(false); return; }
       setLoginView(true);
       try{ await loadDashboard(); }
