@@ -1085,11 +1085,36 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
 
     function selectBotFromSearch(id, searchId){
       selectBot(id);
+
+      // Setelah bot dipilih dari hasil pencarian, kosongkan kolom search
+      // dan sembunyikan hasil live-search agar tampilan bersih lagi.
       const input = $(searchId);
-      if(input){
-        const bot = state.bots.find(b => b.id === id);
-        input.value = bot ? botDisplayName(bot) : "";
+      if(input) input.value = "";
+
+      const liveMap = {
+        botSearchChannel: "botLiveChannel",
+        botSearchTemplate: "botLiveTemplate"
+      };
+      const hintMap = {
+        botSearchChannel: "botHintChannel",
+        botSearchTemplate: "botHintTemplate"
+      };
+      const emptyMap = {
+        botSearchChannel: "botEmptyChannel",
+        botSearchTemplate: "botEmptyTemplate"
+      };
+
+      const live = $(liveMap[searchId]);
+      const hint = $(hintMap[searchId]);
+      const empty = $(emptyMap[searchId]);
+
+      if(live){
+        live.innerHTML = "";
+        live.classList.remove("show");
       }
+      if(hint) hint.classList.remove("show");
+      if(empty) empty.classList.remove("show");
+
       renderBotSelects();
     }
 
