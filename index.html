@@ -390,6 +390,42 @@
       min-height: 105px !important;
     }
 
+  
+    /* v36 template search */
+    .template-search{
+      margin-bottom:8px;
+    }
+    .template-search input{
+      width:100%;
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid var(--line2, rgba(255,255,255,.14));
+      background:#0d1623;
+      color:var(--text,#f8fafc);
+      font-size:12.5px;
+      outline:none;
+    }
+    .template-search input:focus{
+      border-color:rgba(255,105,0,.75);
+      box-shadow:0 0 0 3px rgba(255,105,0,.13);
+    }
+    .subnav button.template-hidden{
+      display:none!important;
+    }
+    .template-empty{
+      display:none;
+      padding:9px 10px;
+      border-radius:10px;
+      background:#0d1623;
+      border:1px dashed var(--line2, rgba(255,255,255,.14));
+      color:var(--muted,#9aa8ba);
+      font-size:12px;
+      line-height:1.45;
+    }
+    .template-empty.show{
+      display:block;
+    }
+
   </style>
 </head>
 
@@ -524,14 +560,18 @@
 
           <div class="menu-card">
             <div class="subnav">
-              <button class="active" type="button" data-template="start">/start</button>
-              <button type="button" data-template="help">Bantuan</button>
-              <button type="button" data-template="join">Belum Join</button>
-              <button type="button" data-template="denied">Akses Ditolak</button>
-              <button type="button" data-template="external">Link Luar</button>
-              <button type="button" data-template="invalid">Kode Invalid</button>
-              <button type="button" data-template="success">Link Berhasil</button>
-              <button type="button" data-template="protection">Proteksi & Admin</button>
+              <div class="template-search">
+                <input id="templateSearch" type="search" placeholder="Cari template... contoh: start, bantuan, join, admin" autocomplete="off" />
+              </div>
+              <div id="templateEmpty" class="template-empty">Template tidak ditemukan.</div>
+              <button class="active" type="button" data-template="start" data-keywords="start awal welcome sambutan">/start</button>
+              <button type="button" data-template="help" data-keywords="bantuan help panduan info">Bantuan</button>
+              <button type="button" data-template="join" data-keywords="belum join wajib channel gabung">Belum Join</button>
+              <button type="button" data-template="denied" data-keywords="akses ditolak dilarang tidak boleh user biasa">Akses Ditolak</button>
+              <button type="button" data-template="external" data-keywords="link luar bot luar external blocked blok rantai">Link Luar</button>
+              <button type="button" data-template="invalid" data-keywords="kode invalid tidak valid error salah">Kode Invalid</button>
+              <button type="button" data-template="success" data-keywords="link berhasil sukses generate created copy">Link Berhasil</button>
+              <button type="button" data-template="protection" data-keywords="proteksi admin konten protect content anti chain">Proteksi & Admin</button>
             </div>
 
             <div>
@@ -1112,6 +1152,34 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       finally{ $("backupBtn").disabled = false; }
     }
 
+
+    function initTemplateSearch(){
+      const input = $("templateSearch");
+      const empty = $("templateEmpty");
+      if(!input) return;
+
+      input.addEventListener("input", () => {
+        const q = input.value.trim().toLowerCase();
+        const buttons = Array.from(document.querySelectorAll("[data-template]"));
+        let visible = [];
+
+        buttons.forEach(btn => {
+          const text = (btn.textContent || "").toLowerCase();
+          const keys = (btn.dataset.keywords || "").toLowerCase();
+          const match = !q || text.includes(q) || keys.includes(q);
+          btn.classList.toggle("template-hidden", !match);
+          if(match) visible.push(btn);
+        });
+
+        if(empty) empty.classList.toggle("show", visible.length === 0);
+
+        const active = document.querySelector("[data-template].active");
+        if(q && visible.length && (!active || active.classList.contains("template-hidden"))){
+          visible[0].click();
+        }
+      });
+    }
+
     const pageMeta = {
       bot:["Bot","Pilih bot dulu, lalu kelola setup-nya di menu lain."],
       channel:["Channel","Atur Channel Database dan Channel Wajib Join untuk bot yang dipilih."],
@@ -1170,6 +1238,7 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
 
     (async function init(){
       initNav();
+      initTemplateSearch();
       if(!state.token){ setLoginView(false); return; }
       setLoginView(true);
       try{ await loadDashboard(); }
