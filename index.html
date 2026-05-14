@@ -292,7 +292,7 @@
 
               <div class="setting-row">
                 <h3 style="margin:0 0 8px">Custom Text Bot</h3>
-                <p class="muted small">Kosongkan field untuk memakai teks bawaan. Placeholder: <code>{bot_name}</code>, <code>{bot_username}</code>, <code>{required_count}</code>, <code>{join_note}</code>, <code>{link}</code>, <code>{note}</code></p>
+                <p class="muted small">Kosongkan field untuk memakai teks bawaan. Placeholder: <code>{mention}</code>, <code>{first_name}</code>, <code>{user_name}</code>, <code>{username}</code>, <code>{bot_name}</code>, <code>{bot_username}</code>, <code>{required_count}</code>, <code>{join_note}</code>, <code>{link}</code>, <code>{note}</code></p>
 
                 <div class="orange-tabs" id="customTextTabs">
                   <button class="orange-tab active" type="button" data-panel="panelStart">🎯 /start</button>
@@ -311,7 +311,7 @@
                     <pre class="example-text" id="exampleStart"></pre>
                     <ul class="hint-list">
                       <li>Dipakai saat user mengetik <code>/start</code> tanpa kode.</li>
-                      <li>Boleh pakai <code>{bot_name}</code>, <code>{bot_username}</code>, dan <code>{join_note}</code>.</li>
+                      <li>Boleh pakai <code>{mention}</code>, <code>{first_name}</code>, <code>{bot_name}</code>, dan <code>{join_note}</code>.</li>
                     </ul>
                   </div>
                 </div>
@@ -324,7 +324,7 @@
                     <pre class="example-text" id="exampleHelp"></pre>
                     <ul class="hint-list">
                       <li>Dipakai saat user klik tombol Bantuan.</li>
-                      <li>Jangan taruh kode rahasia di sini.</li>
+                      <li>Boleh pakai <code>{mention}</code> atau <code>{first_name}</code>. Jangan taruh kode rahasia di sini.</li>
                     </ul>
                   </div>
                 </div>
@@ -337,7 +337,7 @@
                     <pre class="example-text" id="exampleJoin"></pre>
                     <ul class="hint-list">
                       <li>Dipakai saat user belum join channel wajib.</li>
-                      <li>Boleh pakai <code>{required_count}</code> untuk jumlah channel.</li>
+                      <li>Boleh pakai <code>{mention}</code>, <code>{first_name}</code>, dan <code>{required_count}</code>.</li>
                     </ul>
                   </div>
                 </div>
@@ -350,7 +350,7 @@
                     <pre class="example-text" id="exampleDenied"></pre>
                     <ul class="hint-list">
                       <li>Dipakai saat user biasa mencoba kirim media/text untuk generate link.</li>
-                      <li>Owner dan Admin Konten tetap boleh generate.</li>
+                      <li>Boleh pakai <code>{mention}</code> atau <code>{first_name}</code>. Owner dan Admin Konten tetap boleh generate.</li>
                     </ul>
                   </div>
                 </div>
@@ -362,7 +362,7 @@
                     <div class="example-title"><strong>Contoh aman</strong><button type="button" onclick="useExample('invalidCodeMessage')">Pakai contoh</button></div>
                     <pre class="example-text" id="exampleInvalid"></pre>
                     <ul class="hint-list">
-                      <li>Dipakai saat user membuka link FSub yang kode-nya tidak ditemukan.</li>
+                      <li>Dipakai saat user membuka link FSub yang kode-nya tidak ditemukan. Boleh pakai <code>{mention}</code>.</li>
                     </ul>
                   </div>
                 </div>
@@ -404,11 +404,11 @@
     };
 
     const TEXT_EXAMPLES = {
-      startMessage: "👋 Selamat datang di {bot_name}\n\nBot ini digunakan untuk membuka konten dari link FSub yang sudah dibagikan.\n\n{join_note}\n\nKlik tombol Bantuan kalau kamu bingung.",
-      helpMessage: "ℹ️ Bantuan\n\n1. Buka link FSub yang kamu dapat.\n2. Join channel wajib jika diminta.\n3. Klik tombol Saya Sudah Join.\n4. Konten akan dikirim otomatis oleh bot.\n\nJika link tidak bisa dibuka, minta link baru ke admin.",
-      joinRequiredMessage: "📢 Kamu harus join {required_count} channel wajib terlebih dahulu.\n\nKlik tombol channel di bawah, lalu kembali ke bot dan tekan Saya Sudah Join.",
-      notAllowedMessage: "🚫 Akses ditolak.\n\nKamu tidak memiliki izin untuk membuat link FSub.\nSilakan gunakan link yang sudah dibagikan oleh admin.",
-      invalidCodeMessage: "⚠️ Link tidak valid atau konten sudah tidak tersedia.\n\nSilakan minta link baru ke admin.",
+      startMessage: "👋 Halo {mention}\n\nSelamat datang di {bot_name}.\nGunakan link FSub yang sudah dibagikan untuk membuka konten.\n\nKlik tombol Bantuan kalau kamu bingung.",
+      helpMessage: "ℹ️ Bantuan untuk {first_name}\n\n1. Buka link FSub yang kamu dapat.\n2. Join channel wajib jika diminta.\n3. Klik tombol Saya Sudah Join.\n4. Konten akan dikirim otomatis oleh bot.\n\nJika link tidak bisa dibuka, minta link baru ke admin.",
+      joinRequiredMessage: "📢 Halo {mention}\n\nKamu harus join {required_count} channel wajib terlebih dahulu.\nKlik tombol channel di bawah, lalu kembali ke bot dan tekan Saya Sudah Join.",
+      notAllowedMessage: "🚫 Maaf {first_name}, akses ditolak.\n\nKamu tidak memiliki izin untuk membuat link FSub.\nSilakan gunakan link yang sudah dibagikan oleh admin.",
+      invalidCodeMessage: "⚠️ Maaf {mention}, link tidak valid atau konten sudah tidak tersedia.\n\nSilakan minta link baru ke admin.",
       linkCreatedMessage: "{note}\n\n✅ Link FSub berhasil dibuat:\n<code>{link}</code>"
     };
 
