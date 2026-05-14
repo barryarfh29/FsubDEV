@@ -287,7 +287,7 @@
               <div class="setting-row">
                 <h3 style="margin:0 0 8px">Admin Konten & Custom Text</h3>
                 <p class="muted small">Pilih tombol di bawah agar halaman tidak terlalu panjang. Admin Konten sengaja ditaruh paling depan karena lebih penting untuk kontrol siapa yang boleh generate link.</p>
-                <p class="muted small">Placeholder custom text: <code>{mention}</code>, <code>{first_name}</code>, <code>{user_name}</code>, <code>{username}</code>, <code>{bot_name}</code>, <code>{bot_username}</code>, <code>{required_count}</code>, <code>{join_note}</code>, <code>{link}</code></p>
+                <p class="muted small">Placeholder custom text: <code>{mention}</code>, <code>{first_name}</code>, <code>{user_name}</code>, <code>{username}</code>, <code>{bot_name}</code>, <code>{bot_username}</code>, <code>{required_count}</code>, <code>{join_note}</code>, <code>{link}</code>, <code>{reason}</code>, <code>{blocked_detail}</code></p>
 
                 <div class="orange-tabs" id="customTextTabs">
                   <button class="orange-tab active" type="button" data-panel="panelContentAdmins">👤 Admin Konten</button>
@@ -295,6 +295,7 @@
                   <button class="orange-tab" type="button" data-panel="panelHelp">💬 Bantuan</button>
                   <button class="orange-tab" type="button" data-panel="panelJoin">📢 Belum Join</button>
                   <button class="orange-tab" type="button" data-panel="panelDenied">🚫 Akses Ditolak</button>
+                  <button class="orange-tab" type="button" data-panel="panelExternalBlocked">🛡️ Link Luar Ditolak</button>
                   <button class="orange-tab" type="button" data-panel="panelInvalid">⚠️ Kode Invalid</button>
                   <button class="orange-tab" type="button" data-panel="panelSuccess">✅ Link Berhasil</button>
                 </div>
@@ -367,6 +368,20 @@
                   </div>
                 </div>
 
+                <div id="panelExternalBlocked" class="tab-panel">
+                  <label for="externalBlockedMessage">Pesan Link Bot Luar Ditolak</label>
+                  <textarea id="externalBlockedMessage" rows="7" placeholder="Pesan saat admin konten mengirim link/username bot luar"></textarea>
+                  <div class="example-box">
+                    <div class="example-title"><strong>Contoh aman</strong><button type="button" onclick="useExample('externalBlockedMessage')">Pakai contoh</button></div>
+                    <pre class="example-text" id="exampleExternalBlocked"></pre>
+                    <ul class="hint-list">
+                      <li>Dipakai saat Owner/Admin Konten mengirim link atau username bot luar.</li>
+                      <li>Boleh pakai <code>{mention}</code>, <code>{first_name}</code>, <code>{reason}</code>, dan <code>{blocked_detail}</code>.</li>
+                      <li><code>{blocked_detail}</code> akan menampilkan daftar link/username yang terdeteksi.</li>
+                    </ul>
+                  </div>
+                </div>
+
                 <div id="panelInvalid" class="tab-panel">
                   <label for="invalidCodeMessage">Pesan Kode Tidak Valid</label>
                   <textarea id="invalidCodeMessage" rows="7" placeholder="Kode tidak ditemukan atau sudah tidak valid."></textarea>
@@ -420,6 +435,7 @@
       helpMessage: "ℹ️ Bantuan untuk {first_name}\n\n1. Buka link FSub yang kamu dapat.\n2. Join channel wajib jika diminta.\n3. Klik tombol Saya Sudah Join.\n4. Konten akan dikirim otomatis oleh bot.\n\nJika link tidak bisa dibuka, minta link baru ke admin.",
       joinRequiredMessage: "📢 Halo {mention}\n\nKamu harus join {required_count} channel wajib terlebih dahulu.\nKlik tombol channel di bawah, lalu kembali ke bot dan tekan Saya Sudah Join.",
       notAllowedMessage: "🚫 Maaf {first_name}, akses ditolak.\n\nKamu tidak memiliki izin untuk membuat link FSub.\nSilakan gunakan link yang sudah dibagikan oleh admin.",
+      externalBlockedMessage: "🛡️ Konten ditolak.\n\nTerdeteksi link atau username bot luar:\n{blocked_detail}\n\nHanya upload langsung atau link dari bot internal yang diperbolehkan.",
       invalidCodeMessage: "⚠️ Maaf {mention}, link tidak valid atau konten sudah tidak tersedia.\n\nSilakan minta link baru ke admin.",
       linkCreatedMessage: "✅ Link FSub berhasil dibuat:\n<code>{link}</code>"
     };
@@ -545,6 +561,7 @@
       $("helpMessage").value = customTexts.help_message || "";
       $("joinRequiredMessage").value = customTexts.join_required_message || "";
       $("notAllowedMessage").value = customTexts.not_allowed_message || "";
+      $("externalBlockedMessage").value = customTexts.external_link_blocked_message || "";
       $("invalidCodeMessage").value = customTexts.invalid_code_message || "";
       $("linkCreatedMessage").value = customTexts.link_created_message || "";
       renderChecklist(bot);
@@ -669,6 +686,7 @@
           help_message:$("helpMessage").value.trim(),
           join_required_message:$("joinRequiredMessage").value.trim(),
           not_allowed_message:$("notAllowedMessage").value.trim(),
+          external_link_blocked_message:$("externalBlockedMessage").value.trim(),
           invalid_code_message:$("invalidCodeMessage").value.trim(),
           link_created_message:$("linkCreatedMessage").value.trim()
         };
@@ -801,6 +819,7 @@
         exampleHelp: TEXT_EXAMPLES.helpMessage,
         exampleJoin: TEXT_EXAMPLES.joinRequiredMessage,
         exampleDenied: TEXT_EXAMPLES.notAllowedMessage,
+        exampleExternalBlocked: TEXT_EXAMPLES.externalBlockedMessage,
         exampleInvalid: TEXT_EXAMPLES.invalidCodeMessage,
         exampleSuccess: TEXT_EXAMPLES.linkCreatedMessage
       };
