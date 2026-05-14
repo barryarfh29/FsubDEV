@@ -390,7 +390,7 @@
       min-height: 105px !important;
     }
 
-    /* v37 bot search */
+    /* v38 bot search */
     .bot-search{
       margin-bottom:8px;
     }
@@ -420,6 +420,55 @@
       margin-bottom:8px;
     }
     .bot-empty.show{display:block}
+
+  
+    /* v38 live bot search result */
+    .bot-live-results{
+      display:none;
+      gap:7px;
+      margin:8px 0 10px;
+    }
+    .bot-live-results.show{
+      display:grid;
+    }
+    .bot-live-card{
+      border:1px solid var(--line, rgba(255,255,255,.09));
+      border-radius:11px;
+      padding:9px 10px;
+      background:#162234;
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      align-items:flex-start;
+      cursor:pointer;
+      transition:.15s ease;
+    }
+    .bot-live-card:hover,
+    .bot-live-card.active{
+      background:#1b2a40;
+      border-color:rgba(255,105,0,.62);
+      transform:translateY(-1px);
+    }
+    .bot-live-name{
+      font-size:12.5px;
+      font-weight:780;
+      margin-bottom:2px;
+      color:var(--text,#f8fafc);
+    }
+    .bot-live-meta{
+      color:var(--muted,#9aa8ba);
+      font-size:11.3px;
+      line-height:1.35;
+    }
+    .bot-search-hint{
+      display:none;
+      margin:-2px 0 8px;
+      color:var(--muted,#9aa8ba);
+      font-size:11.5px;
+    }
+    .bot-search-hint.show{
+      display:block;
+    }
 
   </style>
 </head>
@@ -520,9 +569,11 @@
 
       <section class="page" id="page-channel">
         <div class="bot-search">
-          <input id="botSearchChannel" type="search" placeholder="Cari bot untuk Channel..." autocomplete="off" />
+          <input id="botSearchChannel" type="search" placeholder="Cari bot untuk Channel... contoh: @Botkil" autocomplete="off" />
         </div>
-        <div class="bot-select-row single">
+        <div id="botHintChannel" class="bot-search-hint">Klik bot dari hasil pencarian untuk memilih.</div>
+        <div id="botLiveChannel" class="bot-live-results"></div>
+        <div class="bot-select-row single hidden">
           <select id="botSelectChannel" onchange="syncSelectBot('botSelectChannel')"></select>
         </div>
         <div id="botEmptyChannel" class="bot-empty">Bot tidak ditemukan.</div>
@@ -554,9 +605,11 @@
 
       <section class="page" id="page-template">
         <div class="bot-search">
-          <input id="botSearchTemplate" type="search" placeholder="Cari bot untuk Template..." autocomplete="off" />
+          <input id="botSearchTemplate" type="search" placeholder="Cari bot untuk Template... contoh: @Botkil" autocomplete="off" />
         </div>
-        <div class="bot-select-row single">
+        <div id="botHintTemplate" class="bot-search-hint">Klik bot dari hasil pencarian untuk memilih.</div>
+        <div id="botLiveTemplate" class="bot-live-results"></div>
+        <div class="bot-select-row single hidden">
           <select id="botSelectTemplate" onchange="syncSelectBot('botSelectTemplate')"></select>
         </div>
         <div id="botEmptyTemplate" class="bot-empty">Bot tidak ditemukan.</div>
@@ -899,27 +952,57 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
 
     function renderBotSelects(){
       const configs = [
-        {selectId:"botSelectChannel", searchId:"botSearchChannel", emptyId:"botEmptyChannel"},
-        {selectId:"botSelectTemplate", searchId:"botSearchTemplate", emptyId:"botEmptyTemplate"}
+        {selectId:"botSelectChannel", searchId:"botSearchChannel", emptyId:"botEmptyChannel", liveId:"botLiveChannel", hintId:"botHintChannel"},
+        {selectId:"botSelectTemplate", searchId:"botSearchTemplate", emptyId:"botEmptyTemplate", liveId:"botLiveTemplate", hintId:"botHintTemplate"}
       ];
 
       configs.forEach(cfg => {
         const select = $(cfg.selectId);
         if(!select) return;
 
-        const query = $(cfg.searchId) ? $(cfg.searchId).value : "";
-        let bots = state.bots.filter(bot => botMatches(bot, query));
-
-        // Selected bot tetap dimunculkan supaya tidak terasa hilang saat search.
+        const input = $(cfg.searchId);
+        const query = input ? input.value : "";
+        const q = String(query || "").trim();
+        const bots = state.bots.filter(bot => botMatches(bot, q));
         const selected = selectedBot();
-        if(selected && !bots.some(bot => bot.id === selected.id)){
-          bots = [selected, ...bots];
-        }
 
-        select.innerHTML = bots.map(bot => `<option value="${esc(bot.id)}" ${bot.id === state.selectedBotId ? "selected" : ""}>${esc(botDisplayName(bot))}</option>`).join("");
+        // Select tetap diisi untuk fallback, tapi disembunyikan di UI.
+        let selectBots = bots;
+        if(selected && !selectBots.some(bot => bot.id === selected.id)){
+          selectBots = [selected, ...selectBots];
+        }
+        select.innerHTML = selectBots.map(bot => `<option value="${esc(bot.id)}" ${bot.id === state.selectedBotId ? "selected" : ""}>${esc(botDisplayName(bot))}</option>`).join("");
 
         const empty = $(cfg.emptyId);
-        if(empty) empty.classList.toggle("show", state.bots.length > 0 && bots.length === 0);
+        if(empty) empty.classList.toggle("show", Boolean(q) && state.bots.length > 0 && bots.length === 0);
+
+        const live = $(cfg.liveId);
+        const hint = $(cfg.hintId);
+        if(!live) return;
+
+        if(!q){
+          live.classList.remove("show");
+          live.innerHTML = "";
+          if(hint) hint.classList.remove("show");
+          return;
+        }
+
+        if(hint) hint.classList.toggle("show", bots.length > 0);
+
+        live.classList.toggle("show", bots.length > 0);
+        live.innerHTML = bots.slice(0, 8).map(bot => {
+          const active = bot.id === state.selectedBotId ? "active" : "";
+          const status = bot.is_running ? "RUNNING" : "STOPPED";
+          const pill = bot.is_running ? "run" : "stop";
+          const name = botDisplayName(bot);
+          return `<div class="bot-live-card ${active}" onclick="selectBotFromSearch('${esc(bot.id)}', '${esc(cfg.searchId)}')">
+            <div>
+              <div class="bot-live-name">${esc(name)}</div>
+              <div class="bot-live-meta">${esc(bot.owner_label || "Owner")} ${bot.owner_masked ? `· ${esc(bot.owner_masked)}` : ""}</div>
+            </div>
+            <span class="pill ${pill}">${status}</span>
+          </div>`;
+        }).join("");
       });
     }
 
@@ -997,6 +1080,17 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       }
       el.value = value;
       el.focus();
+    }
+
+
+    function selectBotFromSearch(id, searchId){
+      selectBot(id);
+      const input = $(searchId);
+      if(input){
+        const bot = state.bots.find(b => b.id === id);
+        input.value = bot ? botDisplayName(bot) : "";
+      }
+      renderBotSelects();
     }
 
     function syncSelectBot(selectId){
@@ -1209,6 +1303,10 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
           renderBotList();
           renderBotSelects();
         });
+        el.addEventListener("focus", () => {
+          renderBotList();
+          renderBotSelects();
+        });
       });
     }
 
@@ -1265,6 +1363,7 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
 
     window.selectBot = selectBot;
     window.syncSelectBot = syncSelectBot;
+    window.selectBotFromSearch = selectBotFromSearch;
     window.removeRequired = removeRequired;
     window.useTemplateExample = useTemplateExample;
 
