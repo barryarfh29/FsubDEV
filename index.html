@@ -284,18 +284,14 @@
               </label>
               <p class="muted small">Jika aktif, konten owner/admin akan ditolak kalau berisi link bot luar, atau link internal yang sumbernya pernah berasal dari bot luar.</p>
 
-              <label for="contentAdmins" style="margin-top:16px">Admin Konten Telegram ID</label>
-              <textarea id="contentAdmins" rows="4" placeholder="Satu ID per baris, contoh:
-123456789
-987654321"></textarea>
-              <p class="muted small">Admin konten hanya bisa kirim media/text ke bot untuk generate link. Mereka tidak bisa mengubah setting website. Owner ID tidak perlu dimasukkan lagi.</p>
-
               <div class="setting-row">
-                <h3 style="margin:0 0 8px">Custom Text Bot</h3>
-                <p class="muted small">Kosongkan field untuk memakai teks bawaan. Placeholder: <code>{mention}</code>, <code>{first_name}</code>, <code>{user_name}</code>, <code>{username}</code>, <code>{bot_name}</code>, <code>{bot_username}</code>, <code>{required_count}</code>, <code>{join_note}</code>, <code>{link}</code>, <code></code></p>
+                <h3 style="margin:0 0 8px">Admin Konten & Custom Text</h3>
+                <p class="muted small">Pilih tombol di bawah agar halaman tidak terlalu panjang. Admin Konten sengaja ditaruh paling depan karena lebih penting untuk kontrol siapa yang boleh generate link.</p>
+                <p class="muted small">Placeholder custom text: <code>{mention}</code>, <code>{first_name}</code>, <code>{user_name}</code>, <code>{username}</code>, <code>{bot_name}</code>, <code>{bot_username}</code>, <code>{required_count}</code>, <code>{join_note}</code>, <code>{link}</code></p>
 
                 <div class="orange-tabs" id="customTextTabs">
-                  <button class="orange-tab active" type="button" data-panel="panelStart">🎯 /start</button>
+                  <button class="orange-tab active" type="button" data-panel="panelContentAdmins">👤 Admin Konten</button>
+                  <button class="orange-tab" type="button" data-panel="panelStart">🎯 /start</button>
                   <button class="orange-tab" type="button" data-panel="panelHelp">💬 Bantuan</button>
                   <button class="orange-tab" type="button" data-panel="panelJoin">📢 Belum Join</button>
                   <button class="orange-tab" type="button" data-panel="panelDenied">🚫 Akses Ditolak</button>
@@ -303,7 +299,23 @@
                   <button class="orange-tab" type="button" data-panel="panelSuccess">✅ Link Berhasil</button>
                 </div>
 
-                <div id="panelStart" class="tab-panel active">
+                <div id="panelContentAdmins" class="tab-panel active">
+                  <label for="contentAdmins">Admin Konten Telegram ID</label>
+                  <textarea id="contentAdmins" rows="7" placeholder="Satu ID per baris, contoh:
+123456789
+987654321"></textarea>
+                  <div class="example-box">
+                    <div class="example-title"><strong>Penjelasan</strong></div>
+                    <ul class="hint-list">
+                      <li>Admin konten hanya boleh kirim text/media ke bot untuk generate link.</li>
+                      <li>Mereka tidak bisa ubah setting website, channel database, channel wajib join, atau start/stop bot.</li>
+                      <li>Owner ID tidak perlu dimasukkan lagi.</li>
+                      <li>Satu Telegram ID per baris. Bisa juga dipisah koma atau spasi.</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div id="panelStart" class="tab-panel">
                   <label for="startMessage">Pesan /start</label>
                   <textarea id="startMessage" rows="7" placeholder="Pesan saat user mengetik /start tanpa kode"></textarea>
                   <div class="example-box">
