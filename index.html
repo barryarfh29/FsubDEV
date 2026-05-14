@@ -233,6 +233,12 @@
               </label>
               <p class="muted small">Jika aktif, konten owner/admin akan ditolak kalau berisi link bot luar, atau link internal yang sumbernya pernah berasal dari bot luar.</p>
 
+              <label for="contentAdmins" style="margin-top:16px">Admin Konten Telegram ID</label>
+              <textarea id="contentAdmins" rows="4" placeholder="Satu ID per baris, contoh:
+123456789
+987654321"></textarea>
+              <p class="muted small">Admin konten hanya bisa kirim media/text ke bot untuk generate link. Mereka tidak bisa mengubah setting website. Owner ID tidak perlu dimasukkan lagi.</p>
+
               <div class="btns"><button id="saveSettingsBtn" type="button">Simpan Pengaturan</button></div>
               <div id="settingsMsg" class="notice hidden"></div>
             </section>
@@ -370,6 +376,7 @@
       $("storageChannel").value = bot.storage_channel?.username ? `@${bot.storage_channel.username}` : (bot.storage_channel?.input || bot.storage_channel?.chat_id || "");
       $("protectContent").checked = Boolean(bot.protect_content);
       $("antiExternalLinks").checked = Boolean(bot.anti_external_telegram_links);
+      $("contentAdmins").value = (bot.content_admin_ids || []).join("\n");
       renderChecklist(bot);
       renderRequiredChannels(bot);
     }
@@ -383,6 +390,7 @@
         {ok:Boolean(bot.owner_id), title:"Owner ID tersimpan", desc:"Owner bisa generate link dengan kirim media/text ke bot"},
         {ok:storage, title:"Channel Database", desc: storage ? channelName(bot.storage_channel) : "Belum diset"},
         {ok:required, title:"Channel Wajib Join", desc: required ? `${(bot.required_channels || []).length} channel aktif` : "Belum ada channel wajib join"},
+        {ok:true, title:"Admin Konten", desc: (bot.content_admin_ids || []).length ? `${(bot.content_admin_ids || []).length} admin konten aktif` : "Opsional, boleh kosong"},
         {ok:running, title:"Bot running", desc: running ? "Bot sedang aktif menerima pesan" : "Klik Start Bot kalau setup sudah siap"}
       ];
       $("checklist").innerHTML = checks.map(c => `<div class="step ${c.ok ? "ok" : "warn"}">
@@ -480,9 +488,16 @@
       const bot = selectedBot();
       if(!bot) return;
       try{
+        const contentAdminIds = $("contentAdmins").value
+          .split(/[\n, ]+/)
+          .map(v => v.trim())
+          .filter(Boolean)
+          .map(Number)
+          .filter(v => Number.isInteger(v) && v > 0);
         const data = await api(`/api/bots/${bot.id}/settings`, {method:"POST", body:JSON.stringify({
           protect_content:$("protectContent").checked,
-          anti_external_telegram_links:$("antiExternalLinks").checked
+          anti_external_telegram_links:$("antiExternalLinks").checked,
+          content_admin_ids:contentAdminIds
         })});
         showMsg("settingsMsg", data.message || "Pengaturan disimpan.", "ok");
         await loadDashboard();
