@@ -194,7 +194,7 @@
               <div class="btns">
                 <button class="btn-green" id="startBotBtn" type="button">Start Bot</button>
                 <button class="btn-amber" id="stopBotBtn" type="button">Stop Bot</button>
-                <button class="btn-secondary" id="validateBtn" type="button">Validasi Channel</button>
+                <button class="btn-secondary" id="validateBtn" type="button">Validasi Setup</button>
                 <button class="btn-red" id="deleteBotBtn" type="button">Hapus Bot</button>
               </div>
               <div id="manageMsg" class="notice hidden"></div>
@@ -498,15 +498,47 @@
       }catch(err){ showMsg("manageMsg", err.message, "error"); }
     }
 
+    function channelLabel(ch){
+      if(!ch) return "-";
+      if(ch.title) return ch.title;
+      if(ch.username) return `@${ch.username}`;
+      if(ch.input) return ch.input;
+      if(ch.chat_id) return String(ch.chat_id);
+      return "-";
+    }
+
+    function renderValidationResult(data){
+      const summary = data.summary || [];
+      const lines = summary.map(item => `${item.ok ? "✅" : "❌"} ${item.label}: ${item.detail}`);
+
+      const storage = data.storage_channel;
+      if(storage && !summary.some(x => x.label === "Channel Database")){
+        lines.push(`${storage.ok ? "✅" : "❌"} Channel Database: ${storage.ok ? channelLabel(storage) : (storage.detail || "Bermasalah")}`);
+      }
+
+      const required = data.required_channels || [];
+      if(required.length){
+        lines.push("");
+        lines.push("Detail Channel Wajib Join:");
+        required.forEach((ch, i) => {
+          lines.push(`${ch.ok ? "✅" : "❌"} ${i + 1}. ${channelLabel(ch)}${ch.detail ? ` — ${ch.detail}` : ""}`);
+        });
+      }
+
+      if(!lines.length){
+        lines.push("Tidak ada hasil validasi dari backend.");
+      }
+      return lines.join("\n");
+    }
+
     async function validateBot(){
       const bot = selectedBot();
       if(!bot) return;
+      showMsg("manageMsg", "Sedang validasi channel...", "");
       try{
         const data = await api(`/api/bots/${bot.id}/validate`, {method:"POST"});
-        const storage = data.storage_channel?.ok === false ? `Storage error: ${data.storage_channel.detail}` : "Storage OK";
-        const requiredErrors = (data.required_channels || []).filter(c => c.ok === false);
-        const required = requiredErrors.length ? `Ada ${requiredErrors.length} channel wajib join error.` : "Wajib join OK";
-        showMsg("manageMsg", `${storage}\n${required}`, requiredErrors.length ? "error" : "ok");
+        showMsg("manageMsg", renderValidationResult(data), data.ok ? "ok" : "error");
+        await loadDashboard();
       }catch(err){ showMsg("manageMsg", err.message, "error"); }
     }
 
