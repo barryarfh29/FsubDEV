@@ -292,7 +292,7 @@
 
               <div class="setting-row">
                 <h3 style="margin:0 0 8px">Custom Text Bot</h3>
-                <p class="muted small">Kosongkan field untuk memakai teks bawaan. Placeholder: <code>{mention}</code>, <code>{first_name}</code>, <code>{user_name}</code>, <code>{username}</code>, <code>{bot_name}</code>, <code>{bot_username}</code>, <code>{required_count}</code>, <code>{join_note}</code>, <code>{link}</code>, <code>{note}</code></p>
+                <p class="muted small">Kosongkan field untuk memakai teks bawaan. Placeholder: <code>{mention}</code>, <code>{first_name}</code>, <code>{user_name}</code>, <code>{username}</code>, <code>{bot_name}</code>, <code>{bot_username}</code>, <code>{required_count}</code>, <code>{join_note}</code>, <code>{link}</code>, <code></code></p>
 
                 <div class="orange-tabs" id="customTextTabs">
                   <button class="orange-tab active" type="button" data-panel="panelStart">🎯 /start</button>
@@ -369,7 +369,7 @@
 
                 <div id="panelSuccess" class="tab-panel">
                   <label for="linkCreatedMessage">Pesan Link Berhasil Dibuat</label>
-                  <textarea id="linkCreatedMessage" rows="7" placeholder="{note}&#10;&#10;✅ Link FSub berhasil dibuat:&#10;&lt;code&gt;{link}&lt;/code&gt;"></textarea>
+                  <textarea id="linkCreatedMessage" rows="7" placeholder="&#10;&#10;✅ Link FSub berhasil dibuat:&#10;&lt;code&gt;{link}&lt;/code&gt;"></textarea>
                   <div class="example-box">
                     <div class="example-title"><strong>Contoh aman</strong><button type="button" onclick="useExample('linkCreatedMessage')">Pakai contoh</button></div>
                     <pre class="example-text" id="exampleSuccess"></pre>
@@ -409,7 +409,7 @@
       joinRequiredMessage: "📢 Halo {mention}\n\nKamu harus join {required_count} channel wajib terlebih dahulu.\nKlik tombol channel di bawah, lalu kembali ke bot dan tekan Saya Sudah Join.",
       notAllowedMessage: "🚫 Maaf {first_name}, akses ditolak.\n\nKamu tidak memiliki izin untuk membuat link FSub.\nSilakan gunakan link yang sudah dibagikan oleh admin.",
       invalidCodeMessage: "⚠️ Maaf {mention}, link tidak valid atau konten sudah tidak tersedia.\n\nSilakan minta link baru ke admin.",
-      linkCreatedMessage: "{note}\n\n✅ Link FSub berhasil dibuat:\n<code>{link}</code>"
+      linkCreatedMessage: "✅ Link FSub berhasil dibuat:\n<code>{link}</code>"
     };
 
     function headers(){ return { "Content-Type":"application/json", Authorization:`Bearer ${state.token}` }; }
