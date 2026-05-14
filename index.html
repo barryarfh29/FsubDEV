@@ -990,7 +990,6 @@
         <button class="nav-btn active" data-page="bot"><span class="nav-icon">🤖</span> Bot</button>
         <button class="nav-btn" data-page="channel"><span class="nav-icon">📦</span> Channel</button>
         <button class="nav-btn" data-page="template"><span class="nav-icon">💬</span> Template</button>
-        <button class="nav-btn" data-page="protect"><span class="nav-icon">🛡️</span> Proteksi</button>
         <button class="nav-btn" data-page="backup"><span class="nav-icon">💾</span> Backup</button>
         <button class="nav-btn" data-page="setting"><span class="nav-icon">⚙️</span> Setting</button>
       </nav>
@@ -1150,6 +1149,7 @@
               <button data-template="external">Link Luar</button>
               <button data-template="invalid">Kode Invalid</button>
               <button data-template="success">Link Berhasil</button>
+              <button data-template="protection">Proteksi & Admin</button>
             </div>
 
             <div>
@@ -1213,54 +1213,40 @@ Silakan upload konten langsung atau gunakan link dari bot internal.</textarea>
                 <div class="example">Tombol Copy Link akan muncul di bawah pesan ini.</div>
               </div>
 
+
+              <div class="template-panel" id="tpl-protection">
+                <label>Proteksi Bot</label>
+
+                <div class="toggle-row">
+                  <div>
+                    <strong>Protect Content</strong>
+                    <p style="margin:4px 0 0">Jika aktif, Telegram akan mencoba membatasi forward/save konten yang dikirim bot.</p>
+                  </div>
+                  <div class="toggle on"></div>
+                </div>
+
+                <div class="toggle-row">
+                  <div>
+                    <strong>Blok Rantai Bot Luar</strong>
+                    <p style="margin:4px 0 0">Jika aktif, konten akan ditolak kalau berisi link bot luar atau source chain kotor.</p>
+                  </div>
+                  <div class="toggle on"></div>
+                </div>
+
+                <label style="margin-top:12px">Admin Konten Telegram ID</label>
+                <textarea placeholder="Satu ID per baris:
+123456789
+987654321">123456789
+987654321</textarea>
+
+                <div class="example">Admin konten boleh upload/generate link, tapi tidak bisa ubah setting website. Owner tidak perlu dimasukkan ke daftar ini.</div>
+              </div>
+
               <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:13px">
-                <button>Simpan Template</button>
+                <button>Simpan Template & Proteksi</button>
                 <button class="btn-secondary">Pakai Contoh</button>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="page" id="protect">
-        <div class="bot-select-row">
-          <select>
-            <option>BOT FSUB — @BotKILLFSUBBot</option>
-            <option>BOT TEST 2 — @dfasesbot</option>
-            <option>BOT MOVIE — @moviefsubbot</option>
-          </select>
-          <button class="btn-secondary">Ganti Bot</button>
-        </div>
-
-        <div class="grid">
-          <div class="card half">
-            <h2>Proteksi Bot</h2>
-            <p>Semua proteksi berlaku untuk bot yang sedang dipilih.</p>
-
-            <div class="toggle-row">
-              <div>
-                <strong>Protect Content</strong>
-                <p style="margin:4px 0 0">User lebih sulit forward/save konten.</p>
-              </div>
-              <div class="toggle on"></div>
-            </div>
-
-            <div class="toggle-row">
-              <div>
-                <strong>Blok Rantai Bot Luar</strong>
-                <p style="margin:4px 0 0">Mencegah link bot luar dan source chain kotor.</p>
-              </div>
-              <div class="toggle on"></div>
-            </div>
-          </div>
-
-          <div class="card half">
-            <h2>Admin Konten</h2>
-            <p>Admin konten boleh upload/generate link, tapi tidak bisa ubah setting web.</p>
-            <label>Telegram ID Admin Konten</label>
-            <textarea>123456789
-987654321</textarea>
-            <button style="margin-top:12px">Simpan Proteksi</button>
           </div>
         </div>
       </section>
@@ -1312,8 +1298,7 @@ Frontend: https://fsubdev.vercel.app</div>
     const pageMeta = {
       bot:["Bot","Pilih bot dulu, lalu kelola setup-nya di menu lain."],
       channel:["Channel","Atur Channel Database dan Channel Wajib Join untuk bot yang dipilih."],
-      template:["Template","Custom text per bot, tidak numpuk di satu halaman panjang."],
-      protect:["Proteksi","Protect content, anti source chain, dan admin konten per bot."],
+      template:["Template","Custom text, protect content, anti chain, dan admin konten dalam satu tempat."],
       backup:["Backup","Download backup MongoDB dengan aman."],
       setting:["Setting","Default owner dan pengaturan global panel."]
     };
