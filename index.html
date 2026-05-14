@@ -390,12 +390,11 @@
       min-height: 105px !important;
     }
 
-  
-    /* v36 template search */
-    .template-search{
+    /* v37 bot search */
+    .bot-search{
       margin-bottom:8px;
     }
-    .template-search input{
+    .bot-search input{
       width:100%;
       padding:8px 10px;
       border-radius:10px;
@@ -405,14 +404,11 @@
       font-size:12.5px;
       outline:none;
     }
-    .template-search input:focus{
+    .bot-search input:focus{
       border-color:rgba(255,105,0,.75);
       box-shadow:0 0 0 3px rgba(255,105,0,.13);
     }
-    .subnav button.template-hidden{
-      display:none!important;
-    }
-    .template-empty{
+    .bot-empty{
       display:none;
       padding:9px 10px;
       border-radius:10px;
@@ -421,10 +417,9 @@
       color:var(--muted,#9aa8ba);
       font-size:12px;
       line-height:1.45;
+      margin-bottom:8px;
     }
-    .template-empty.show{
-      display:block;
-    }
+    .bot-empty.show{display:block}
 
   </style>
 </head>
@@ -491,6 +486,10 @@
           <div class="card eight">
             <h2>Bot Saya</h2>
             <p>Pilih bot yang ingin diatur. Semua menu mengikuti bot terpilih.</p>
+            <div class="bot-search">
+              <input id="botSearchMain" type="search" placeholder="Cari bot... contoh: username atau nama bot" autocomplete="off" />
+            </div>
+            <div id="botEmptyMain" class="bot-empty">Bot tidak ditemukan.</div>
             <div id="botList" class="bot-list"></div>
           </div>
 
@@ -520,9 +519,13 @@
       </section>
 
       <section class="page" id="page-channel">
+        <div class="bot-search">
+          <input id="botSearchChannel" type="search" placeholder="Cari bot untuk Channel..." autocomplete="off" />
+        </div>
         <div class="bot-select-row single">
           <select id="botSelectChannel" onchange="syncSelectBot('botSelectChannel')"></select>
         </div>
+        <div id="botEmptyChannel" class="bot-empty">Bot tidak ditemukan.</div>
 
         <div class="grid">
           <div class="card half">
@@ -550,9 +553,13 @@
       </section>
 
       <section class="page" id="page-template">
+        <div class="bot-search">
+          <input id="botSearchTemplate" type="search" placeholder="Cari bot untuk Template..." autocomplete="off" />
+        </div>
         <div class="bot-select-row single">
           <select id="botSelectTemplate" onchange="syncSelectBot('botSelectTemplate')"></select>
         </div>
+        <div id="botEmptyTemplate" class="bot-empty">Bot tidak ditemukan.</div>
 
         <div class="card">
           <h2>Template</h2>
@@ -560,18 +567,14 @@
 
           <div class="menu-card">
             <div class="subnav">
-              <div class="template-search">
-                <input id="templateSearch" type="search" placeholder="Cari template... contoh: start, bantuan, join, admin" autocomplete="off" />
-              </div>
-              <div id="templateEmpty" class="template-empty">Template tidak ditemukan.</div>
-              <button class="active" type="button" data-template="start" data-keywords="start awal welcome sambutan">/start</button>
-              <button type="button" data-template="help" data-keywords="bantuan help panduan info">Bantuan</button>
-              <button type="button" data-template="join" data-keywords="belum join wajib channel gabung">Belum Join</button>
-              <button type="button" data-template="denied" data-keywords="akses ditolak dilarang tidak boleh user biasa">Akses Ditolak</button>
-              <button type="button" data-template="external" data-keywords="link luar bot luar external blocked blok rantai">Link Luar</button>
-              <button type="button" data-template="invalid" data-keywords="kode invalid tidak valid error salah">Kode Invalid</button>
-              <button type="button" data-template="success" data-keywords="link berhasil sukses generate created copy">Link Berhasil</button>
-              <button type="button" data-template="protection" data-keywords="proteksi admin konten protect content anti chain">Proteksi & Admin</button>
+<button class="active" type="button" data-template="start">/start</button>
+              <button type="button" data-template="help">Bantuan</button>
+              <button type="button" data-template="join">Belum Join</button>
+              <button type="button" data-template="denied">Akses Ditolak</button>
+              <button type="button" data-template="external">Link Luar</button>
+              <button type="button" data-template="invalid">Kode Invalid</button>
+              <button type="button" data-template="success">Link Berhasil</button>
+              <button type="button" data-template="protection">Proteksi & Admin</button>
             </div>
 
             <div>
@@ -848,13 +851,38 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       return bot.username ? `@${bot.username}` : (bot.first_name || "Bot");
     }
 
+    function botSearchText(bot){
+      return [
+        botDisplayName(bot),
+        bot.username || "",
+        bot.first_name || "",
+        bot.owner_label || "",
+        bot.owner_masked || "",
+        bot.id || ""
+      ].join(" ").toLowerCase();
+    }
+
+    function botMatches(bot, query){
+      const q = String(query || "").trim().toLowerCase();
+      if(!q) return true;
+      return botSearchText(bot).includes(q);
+    }
+
     function renderBotList(){
       const box = $("botList");
+      const empty = $("botEmptyMain");
+      const query = $("botSearchMain") ? $("botSearchMain").value : "";
+      const bots = state.bots.filter(bot => botMatches(bot, query));
+
       if(!state.bots.length){
         box.innerHTML = `<p class="muted small">Belum ada bot.</p>`;
+        if(empty) empty.classList.remove("show");
         return;
       }
-      box.innerHTML = state.bots.map(bot => {
+
+      if(empty) empty.classList.toggle("show", bots.length === 0);
+
+      box.innerHTML = bots.map(bot => {
         const active = bot.id === state.selectedBotId ? "active" : "";
         const status = bot.is_running ? "RUNNING" : "STOPPED";
         const pill = bot.is_running ? "run" : "stop";
@@ -870,8 +898,29 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
     }
 
     function renderBotSelects(){
-      const options = state.bots.map(bot => `<option value="${esc(bot.id)}" ${bot.id === state.selectedBotId ? "selected" : ""}>${esc(botDisplayName(bot))}</option>`).join("");
-      ["botSelectChannel","botSelectTemplate"].forEach(id => { if($(id)) $(id).innerHTML = options; });
+      const configs = [
+        {selectId:"botSelectChannel", searchId:"botSearchChannel", emptyId:"botEmptyChannel"},
+        {selectId:"botSelectTemplate", searchId:"botSearchTemplate", emptyId:"botEmptyTemplate"}
+      ];
+
+      configs.forEach(cfg => {
+        const select = $(cfg.selectId);
+        if(!select) return;
+
+        const query = $(cfg.searchId) ? $(cfg.searchId).value : "";
+        let bots = state.bots.filter(bot => botMatches(bot, query));
+
+        // Selected bot tetap dimunculkan supaya tidak terasa hilang saat search.
+        const selected = selectedBot();
+        if(selected && !bots.some(bot => bot.id === selected.id)){
+          bots = [selected, ...bots];
+        }
+
+        select.innerHTML = bots.map(bot => `<option value="${esc(bot.id)}" ${bot.id === state.selectedBotId ? "selected" : ""}>${esc(botDisplayName(bot))}</option>`).join("");
+
+        const empty = $(cfg.emptyId);
+        if(empty) empty.classList.toggle("show", state.bots.length > 0 && bots.length === 0);
+      });
     }
 
     function renderSelectedInfo(bot){
@@ -1152,31 +1201,14 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       finally{ $("backupBtn").disabled = false; }
     }
 
-
-    function initTemplateSearch(){
-      const input = $("templateSearch");
-      const empty = $("templateEmpty");
-      if(!input) return;
-
-      input.addEventListener("input", () => {
-        const q = input.value.trim().toLowerCase();
-        const buttons = Array.from(document.querySelectorAll("[data-template]"));
-        let visible = [];
-
-        buttons.forEach(btn => {
-          const text = (btn.textContent || "").toLowerCase();
-          const keys = (btn.dataset.keywords || "").toLowerCase();
-          const match = !q || text.includes(q) || keys.includes(q);
-          btn.classList.toggle("template-hidden", !match);
-          if(match) visible.push(btn);
+    function initBotSearch(){
+      ["botSearchMain","botSearchChannel","botSearchTemplate"].forEach(id => {
+        const el = $(id);
+        if(!el) return;
+        el.addEventListener("input", () => {
+          renderBotList();
+          renderBotSelects();
         });
-
-        if(empty) empty.classList.toggle("show", visible.length === 0);
-
-        const active = document.querySelector("[data-template].active");
-        if(q && visible.length && (!active || active.classList.contains("template-hidden"))){
-          visible[0].click();
-        }
       });
     }
 
@@ -1238,7 +1270,7 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
 
     (async function init(){
       initNav();
-      initTemplateSearch();
+      initBotSearch();
       if(!state.token){ setLoginView(false); return; }
       setLoginView(true);
       try{ await loadDashboard(); }
