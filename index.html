@@ -725,7 +725,13 @@
         </div>
         <div id="botEmptyTemplate" class="bot-empty">Bot tidak ditemukan.</div>
 
-        <div class="card">
+        <div id="templateChooseCard" class="card">
+          <h2>Pilih Bot Dulu</h2>
+          <p>Cari dan klik bot dari hasil pencarian di atas. Setelah bot dipilih, setting Template, Proteksi, Admin, dan Caption Media akan muncul.</p>
+          <div class="notice">Agar tidak salah edit, halaman Template sekarang dikunci sampai kamu memilih bot dari pencarian.</div>
+        </div>
+
+        <div class="card hidden" id="templateSettingsCard">
           <h2>Template</h2>
           <p>Custom text bot, protect content, anti chain, dan admin konten dalam satu tempat.</p>
 
@@ -977,7 +983,8 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       bots: [],
       stats: {},
       settings: {},
-      selectedBotId: localStorage.getItem(SELECTED_KEY) || ""
+      selectedBotId: localStorage.getItem(SELECTED_KEY) || "",
+      templateReady: false
     };
 
     const DEFAULT_TEMPLATES = {
@@ -1062,6 +1069,7 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       renderSelectedInfo(bot);
       renderChecklist(bot);
       if(bot) renderManage(bot);
+      renderTemplateGate();
       renderBackupTools();
     }
 
@@ -1193,6 +1201,24 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
         select.innerHTML = `<option value="">Tidak ada bot sumber lain</option>`;
       }
     }
+    function renderTemplateGate(){
+      const choose = $("templateChooseCard");
+      const settings = $("templateSettingsCard");
+      const input = $("botSearchTemplate");
+      if(!choose || !settings) return;
+
+      const bot = selectedBot();
+      const ready = Boolean(state.templateReady && bot);
+      choose.classList.toggle("hidden", ready);
+      settings.classList.toggle("hidden", !ready);
+
+      if(ready && input){
+        input.placeholder = `Bot terpilih: ${botDisplayName(bot)} — cari bot lain jika ingin ganti`;
+      }else if(input){
+        input.placeholder = "Cari bot untuk Template... contoh: @Botkil";
+      }
+    }
+
 
     function renderSelectedInfo(bot){
       $("sideBotName").textContent = bot ? botDisplayName(bot) : "-";
@@ -1276,6 +1302,7 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
 
 
     function selectBotFromSearch(id, searchId){
+      if(searchId === "botSearchTemplate") state.templateReady = true;
       selectBot(id);
 
       // Setelah bot dipilih dari hasil pencarian, kosongkan kolom search
@@ -1312,6 +1339,7 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
 
     function syncSelectBot(selectId){
       const id = $(selectId).value;
+      if(selectId === "botSelectTemplate") state.templateReady = true;
       if(id) selectBot(id);
     }
 
@@ -1704,7 +1732,7 @@ Field: ${(data.updated_fields || []).join(", ")}`, "ok");
     const pageMeta = {
       bot:["Bot","Pilih bot dulu, lalu kelola setup-nya di menu lain."],
       channel:["Channel","Atur Channel Database dan Channel Wajib Join untuk bot yang dipilih."],
-      template:["Template","Custom text, protect content, anti chain, dan admin konten dalam satu tempat."],
+      template:["Template","Pilih bot dulu, lalu kelola template, proteksi, admin, dan caption media."],
       backup:["Backup","Download backup MongoDB dengan aman."],
       setting:["Setting","Default owner dan pengaturan global panel."]
     };
@@ -1719,6 +1747,12 @@ Field: ${(data.updated_fields || []).join(", ")}`, "ok");
           $("page-" + page).classList.add("active");
           $("pageTitle").textContent = pageMeta[page][0];
           $("pageDesc").textContent = pageMeta[page][1];
+          if(page === "template"){
+            state.templateReady = false;
+            const input = $("botSearchTemplate");
+            if(input) input.value = "";
+          }
+          render();
         });
       });
 
