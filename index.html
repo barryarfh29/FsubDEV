@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FSub Panel</title>
-  <!-- FUNCTIONAL VERSION: connected to backend API. Sidebar layout, Template + Proteksi combined. Template example button added. -->
+  <!-- FUNCTIONAL VERSION: connected to backend API. v63 Caption Media via website. -->
   <style>
     :root{
       --bg:#0a1018;
@@ -737,6 +737,7 @@
               <button type="button" data-template="external">Link Luar</button>
               <button type="button" data-template="invalid">Kode Invalid</button>
               <button type="button" data-template="success">Link Berhasil</button>
+              <button type="button" data-template="media-caption">Caption Media</button>
               <button type="button" data-template="protection">Proteksi & Admin</button>
             </div>
 
@@ -824,6 +825,30 @@ Silakan minta link baru ke admin.</div>
                   <div class="example-text">✅ Link FSub berhasil dibuat:
 &lt;code&gt;{link}&lt;/code&gt;</div>
                 </div>
+              </div>
+
+              <div class="template-panel" id="tpl-media-caption">
+                <label for="mediaCaptionTemplate">Caption Custom Media</label>
+                <textarea id="mediaCaptionTemplate" placeholder="Caption ini dipakai ketika media asli tidak punya caption.
+
+Contoh:
+🔥 Halo {mention}
+
+Ini caption custom untuk media kamu.
+
+button: Channel | https://t.me/channel
+button: Support | https://t.me/support"></textarea>
+                <div class="example">
+                  <div class="example-head"><strong>Format Caption + Tombol</strong><button type="button" onclick="useTemplateExample('mediaCaptionTemplate')">Gunakan</button></div>
+                  <div class="example-text">🔥 Halo {mention}
+
+Ini caption custom untuk media kamu.
+Klik tombol di bawah jika perlu.
+
+button: Channel | https://t.me/channel
+button: Support | https://t.me/support</div>
+                </div>
+                <div class="notice">Caption ini hanya dipakai untuk media yang <b>tidak punya caption</b>. Baris <code>button: Label | URL</code> akan menjadi tombol 2 kolom maksimal 2 tombol per baris.</div>
               </div>
 
               <div class="template-panel" id="tpl-protection">
@@ -923,7 +948,8 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       notAllowedMessage: "🚫 Maaf {first_name}, akses ditolak.\n\nKamu tidak memiliki izin untuk membuat link FSub.\nSilakan gunakan link yang sudah dibagikan oleh admin.",
       externalBlockedMessage: "🛡️ Konten ditolak.\n\nTerdeteksi link atau username bot Telegram luar:\n{blocked_detail}\n\nSilakan upload konten langsung atau gunakan link dari bot internal yang terdaftar.",
       invalidCodeMessage: "⚠️ Maaf {mention}, link tidak valid atau konten sudah tidak tersedia.\n\nSilakan minta link baru ke admin.",
-      linkCreatedMessage: "✅ Link FSub berhasil dibuat:\n<code>{link}</code>"
+      linkCreatedMessage: "✅ Link FSub berhasil dibuat:\n<code>{link}</code>",
+      mediaCaptionTemplate: "🔥 Halo {mention}\n\nIni caption custom untuk media kamu.\nKlik tombol di bawah jika perlu.\n\nbutton: Channel | https://t.me/channel\nbutton: Support | https://t.me/support"
     };
 
     function headers(){ return { "Content-Type":"application/json", Authorization:`Bearer ${state.token}` }; }
@@ -1158,6 +1184,7 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       $("externalBlockedMessage").value = customTexts.external_link_blocked_message || "";
       $("invalidCodeMessage").value = customTexts.invalid_code_message || "";
       $("linkCreatedMessage").value = customTexts.link_created_message || "";
+      $("mediaCaptionTemplate").value = bot.media_caption_template || "";
       renderRequiredChannels(bot);
     }
 
@@ -1317,7 +1344,8 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
           protect_content:$("protectToggle").classList.contains("on"),
           anti_external_telegram_links:$("antiToggle").classList.contains("on"),
           content_admin_ids:contentAdminIds,
-          custom_texts:customTexts
+          custom_texts:customTexts,
+          media_caption_template:$("mediaCaptionTemplate").value.trim()
         })});
         showMsg("settingsMsg", data.message || "Pengaturan disimpan.", "ok");
         await loadDashboard();
@@ -1454,7 +1482,8 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       denied: "🚫 Maaf {first_name}, kamu tidak memiliki izin untuk membuat link FSub.",
       external: "🛡️ Konten ditolak.\n\nTerdeteksi link/username bot Telegram luar:\n{blocked_detail}\n\nSilakan upload konten langsung atau gunakan link dari bot internal.",
       invalid: "⚠️ Link tidak valid atau konten sudah tidak tersedia.",
-      success: "✅ Link FSub berhasil dibuat:\n<code>{link}</code>"
+      success: "✅ Link FSub berhasil dibuat:\n<code>{link}</code>",
+      "media-caption": "🔥 Halo {mention}\n\nIni caption custom untuk media kamu.\nKlik tombol di bawah jika perlu.\n\nbutton: Channel | https://t.me/channel\nbutton: Support | https://t.me/support"
     };
 
     function currentTemplateName(){
@@ -1470,7 +1499,8 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
         denied:"notAllowedMessage",
         external:"externalBlockedMessage",
         invalid:"invalidCodeMessage",
-        success:"linkCreatedMessage"
+        success:"linkCreatedMessage",
+        "media-caption":"mediaCaptionTemplate"
       };
       return map[name] || "";
     }
