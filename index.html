@@ -157,6 +157,18 @@
     .top-bot-pill.running .dot{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.16)}
     .top-bot-pill.stopped .dot{background:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.16)}
     .top-bot-pill b{color:#fff;font-weight:850}
+    .top-bot-change{
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.08)!important;
+      color:#fff;
+      box-shadow:none!important;
+      padding:4px 7px;
+      border-radius:999px;
+      font-size:10.5px;
+      line-height:1;
+      margin-left:4px;
+    }
+    .top-bot-change:hover{transform:none;filter:brightness(1.08)}
 
     .actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:7px}
 
@@ -642,7 +654,7 @@
         <div class="title">
           <div class="title-row">
             <h1 id="pageTitle">Bot</h1>
-            <div id="topBotPill" class="top-bot-pill"><span class="dot"></span><span>Bot terpilih: <b id="topBotName">-</b></span></div>
+            <div id="topBotPill" class="top-bot-pill"><span class="dot"></span><span>Bot terpilih: <b id="topBotName">-</b></span><button id="topChangeBotBtn" class="top-bot-change" type="button">Ganti</button></div>
           </div>
           <p id="pageDesc">Pilih bot dulu, lalu kelola setup-nya di menu lain.</p>
         </div>
@@ -733,7 +745,7 @@
       </section>
 
       <section class="page" id="page-template">
-        <div class="bot-search">
+        <div class="bot-search" id="templateBotPicker">
           <input id="botSearchTemplate" type="search" placeholder="Cari bot untuk Template... contoh: @Botkil" autocomplete="off" />
         </div>
         <div id="botHintTemplate" class="bot-search-hint">Klik bot dari hasil pencarian untuk memilih.</div>
@@ -1223,6 +1235,10 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       const choose = $("templateChooseCard");
       const settings = $("templateSettingsCard");
       const input = $("botSearchTemplate");
+      const picker = $("templateBotPicker");
+      const hint = $("botHintTemplate");
+      const live = $("botLiveTemplate");
+      const empty = $("botEmptyTemplate");
       if(!choose || !settings) return;
 
       const bot = selectedBot();
@@ -1230,8 +1246,11 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       choose.classList.toggle("hidden", ready);
       settings.classList.toggle("hidden", !ready);
 
+      // Setelah bot dipilih, area search di bawah header disembunyikan.
+      // Ganti bot lewat tombol kecil "Ganti" di badge header agar tampilan setting bersih.
+      [picker, hint, live, empty].forEach(el => el && el.classList.toggle("hidden", ready));
       if(ready && input){
-        input.placeholder = `Bot terpilih: ${botDisplayName(bot)} — cari bot lain jika ingin ganti`;
+        input.value = "";
       }else if(input){
         input.placeholder = "Cari bot untuk Template... contoh: @Botkil";
       }
@@ -1784,6 +1803,16 @@ Field: ${(data.updated_fields || []).join(", ")}`, "ok");
           render();
         });
       });
+
+      const topChangeBotBtn = $("topChangeBotBtn");
+      if(topChangeBotBtn){
+        topChangeBotBtn.addEventListener("click", () => {
+          state.templateReady = false;
+          renderTemplateGate();
+          renderSelectedInfo(selectedBot());
+          setTimeout(() => $("botSearchTemplate")?.focus(), 50);
+        });
+      }
 
       document.querySelectorAll("[data-template]").forEach(btn => {
         btn.addEventListener("click", () => {
