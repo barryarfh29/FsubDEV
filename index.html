@@ -143,6 +143,20 @@
     }
     .title h1{margin:0;font-size:22px;font-weight:800;letter-spacing:-.025em;line-height:1.1}
     .title p{margin:4px 0 0;color:var(--muted);font-size:12.3px}
+    .title-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .top-bot-pill{
+      display:none;align-items:center;gap:7px;
+      border:1px solid rgba(255,105,0,.32);
+      background:linear-gradient(180deg,rgba(255,105,0,.13),rgba(255,105,0,.055));
+      color:#ffe1c2;border-radius:999px;padding:6px 10px;
+      font-size:11.5px;font-weight:760;line-height:1;white-space:nowrap;
+      box-shadow:0 6px 16px rgba(255,105,0,.08);
+    }
+    .top-bot-pill.show{display:inline-flex}
+    .top-bot-pill .dot{width:7px;height:7px;border-radius:50%;background:#94a3b8;box-shadow:0 0 0 3px rgba(148,163,184,.13)}
+    .top-bot-pill.running .dot{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.16)}
+    .top-bot-pill.stopped .dot{background:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.16)}
+    .top-bot-pill b{color:#fff;font-weight:850}
 
     .actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:7px}
 
@@ -324,6 +338,7 @@
       .nav{display:grid;grid-template-columns:1fr 1fr 1fr}
       .main{padding:12px}
       .top{flex-direction:column}
+      .top-bot-pill{white-space:normal;line-height:1.25}
       .actions{justify-content:flex-start}
       .half,.third,.four,.eight{grid-column:span 12}
       .menu-card{grid-template-columns:1fr}
@@ -625,7 +640,10 @@
     <main class="main">
       <div class="top">
         <div class="title">
-          <h1 id="pageTitle">Bot</h1>
+          <div class="title-row">
+            <h1 id="pageTitle">Bot</h1>
+            <div id="topBotPill" class="top-bot-pill"><span class="dot"></span><span>Bot terpilih: <b id="topBotName">-</b></span></div>
+          </div>
           <p id="pageDesc">Pilih bot dulu, lalu kelola setup-nya di menu lain.</p>
         </div>
         <div class="actions">
@@ -1224,6 +1242,17 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       $("sideBotName").textContent = bot ? botDisplayName(bot) : "-";
       $("sideBotStatus").textContent = bot ? (bot.is_running ? "Running" : "Stopped") : "-";
       $("sideBotStatus").style.color = bot?.is_running ? "#bbf7d0" : "#fecaca";
+
+      const pill = $("topBotPill");
+      const name = $("topBotName");
+      if(pill && name){
+        const activePage = document.querySelector(".page.active")?.id || "";
+        const showOnPage = activePage === "page-template";
+        pill.classList.toggle("show", Boolean(bot && showOnPage));
+        pill.classList.toggle("running", Boolean(bot?.is_running));
+        pill.classList.toggle("stopped", Boolean(bot && !bot.is_running));
+        name.textContent = bot ? botDisplayName(bot) : "-";
+      }
     }
 
     function renderChecklist(bot){
