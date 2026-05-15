@@ -1223,7 +1223,7 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       if(!choose || !settings) return;
 
       const bot = selectedBot();
-      const ready = Boolean(state.templateReady && bot);
+      const ready = Boolean(state.templateReady && state.selectedBotId && bot);
       choose.classList.toggle("hidden", ready);
       settings.classList.toggle("hidden", !ready);
 
@@ -1244,9 +1244,9 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       if(pill && name){
         const activePage = document.querySelector(".page.active")?.id || "";
         const showOnPage = activePage === "page-template";
-        pill.classList.toggle("show", Boolean(bot && showOnPage));
+        pill.classList.toggle("show", Boolean(state.selectedBotId && bot && showOnPage));
         pill.classList.toggle("running", Boolean(bot?.is_running));
-        pill.classList.toggle("stopped", Boolean(bot && !bot.is_running));
+        pill.classList.toggle("stopped", Boolean(state.selectedBotId && bot && !bot.is_running));
         name.textContent = bot ? botDisplayName(bot) : "-";
       }
     }
