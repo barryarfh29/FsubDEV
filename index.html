@@ -911,8 +911,32 @@ button: Support | https://t.me/support</div>
             <div id="backupMsg" class="notice hidden"></div>
           </div>
           <div class="card half">
+            <h2>Backup Setting Bot Terpilih</h2>
+            <p>Export/import setting 1 bot saja. Token bot dan konten tidak ikut, aman untuk clone setting.</p>
+            <button id="exportBotSettingsBtn" type="button">Export Setting Bot</button>
+            <label for="importBotSettingsFile" style="margin-top:12px">Restore Setting Bot dari JSON</label>
+            <input id="importBotSettingsFile" type="file" accept="application/json,.json" />
+            <button class="btn-secondary" id="importBotSettingsBtn" type="button" style="margin-top:10px">Restore ke Bot Terpilih</button>
+            <div id="botBackupMsg" class="notice hidden"></div>
+          </div>
+          <div class="card">
+            <h2>Clone Setting Bot</h2>
+            <p>Salin channel, template, proteksi, role admin, dan caption dari bot sumber ke bot terpilih.</p>
+            <label for="cloneSourceBot">Bot Sumber</label>
+            <select id="cloneSourceBot"></select>
+            <div class="grid" style="margin-top:8px">
+              <label class="switch-row third"><input id="cloneChannels" type="checkbox" checked /><span>Channel</span></label>
+              <label class="switch-row third"><input id="cloneTemplates" type="checkbox" checked /><span>Template</span></label>
+              <label class="switch-row third"><input id="cloneProtection" type="checkbox" checked /><span>Proteksi</span></label>
+              <label class="switch-row third"><input id="cloneAdminRoles" type="checkbox" checked /><span>Role Admin</span></label>
+              <label class="switch-row third"><input id="cloneCaption" type="checkbox" checked /><span>Caption Media</span></label>
+            </div>
+            <button id="cloneSettingsBtn" type="button" style="margin-top:12px">Clone ke Bot Terpilih</button>
+            <div id="cloneSettingsMsg" class="notice hidden"></div>
+          </div>
+          <div class="card">
             <h2>Catatan</h2>
-            <div class="notice">Backup manual disarankan setiap selesai update fitur besar.</div>
+            <div class="notice">Setelah restore/clone channel, jalankan Validasi Setup pada bot target untuk memastikan bot target sudah admin di channel yang dicopy.</div>
           </div>
         </div>
       </section>
@@ -1038,6 +1062,7 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       renderSelectedInfo(bot);
       renderChecklist(bot);
       if(bot) renderManage(bot);
+      renderBackupTools();
     }
 
     function renderStats(){
@@ -1156,6 +1181,17 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
           </div>`;
         }).join("");
       });
+    }
+
+    function renderBackupTools(){
+      const select = $("cloneSourceBot");
+      if(!select) return;
+      const target = selectedBot();
+      const sources = state.bots.filter(bot => !target || bot.id !== target.id);
+      select.innerHTML = sources.map(bot => `<option value="${esc(bot.id)}">${esc(botDisplayName(bot))}</option>`).join("");
+      if(!sources.length){
+        select.innerHTML = `<option value="">Tidak ada bot sumber lain</option>`;
+      }
     }
 
     function renderSelectedInfo(bot){
@@ -1514,6 +1550,88 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       finally{ $("backupBtn").disabled = false; }
     }
 
+    function downloadJsonBlob(data, filename){
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function cloneOptionsPayload(){
+      return {
+        copy_channels: $("cloneChannels").checked,
+        copy_templates: $("cloneTemplates").checked,
+        copy_protection: $("cloneProtection").checked,
+        copy_admin_roles: $("cloneAdminRoles").checked,
+        copy_caption: $("cloneCaption").checked
+      };
+    }
+
+    async function exportBotSettings(){
+      const bot = selectedBot();
+      if(!bot) return showMsg("botBackupMsg", "Pilih bot dulu.", "error");
+      $("exportBotSettingsBtn").disabled = true;
+      try{
+        const data = await api(`/api/bots/${bot.id}/settings-export`);
+        const stamp = new Date().toISOString().replaceAll(":","-").slice(0,19);
+        const name = (bot.username || bot.first_name || "bot").replace(/[^a-z0-9_-]/gi, "_");
+        downloadJsonBlob(data, `fsub-${name}-settings-${stamp}.json`);
+        showMsg("botBackupMsg", "Setting bot berhasil diexport.", "ok");
+      }catch(err){ showMsg("botBackupMsg", err.message, "error"); }
+      finally{ $("exportBotSettingsBtn").disabled = false; }
+    }
+
+    async function readJsonFile(input){
+      const file = input.files && input.files[0];
+      if(!file) throw new Error("Pilih file JSON dulu.");
+      const text = await file.text();
+      try{ return JSON.parse(text); }
+      catch{ throw new Error("File JSON tidak valid."); }
+    }
+
+    async function importBotSettings(){
+      const bot = selectedBot();
+      if(!bot) return showMsg("botBackupMsg", "Pilih bot target dulu.", "error");
+      if(!confirm(`Restore setting ke ${botDisplayName(bot)}? Setting lama pada bagian yang dicopy akan tertimpa.`)) return;
+      $("importBotSettingsBtn").disabled = true;
+      try{
+        const backup = await readJsonFile($("importBotSettingsFile"));
+        const data = await api(`/api/bots/${bot.id}/settings-import`, {
+          method:"POST",
+          body:JSON.stringify({backup, ...cloneOptionsPayload()})
+        });
+        showMsg("botBackupMsg", `${data.message || "Setting berhasil direstore."}
+Field: ${(data.updated_fields || []).join(", ")}`, "ok");
+        await loadDashboard();
+      }catch(err){ showMsg("botBackupMsg", err.message, "error"); }
+      finally{ $("importBotSettingsBtn").disabled = false; }
+    }
+
+    async function cloneBotSettings(){
+      const target = selectedBot();
+      const sourceId = $("cloneSourceBot").value;
+      if(!target) return showMsg("cloneSettingsMsg", "Pilih bot target dulu.", "error");
+      if(!sourceId) return showMsg("cloneSettingsMsg", "Pilih bot sumber dulu.", "error");
+      const source = state.bots.find(b => b.id === sourceId);
+      if(!confirm(`Clone setting dari ${botDisplayName(source)} ke ${botDisplayName(target)}?`)) return;
+      $("cloneSettingsBtn").disabled = true;
+      try{
+        const data = await api(`/api/bots/${target.id}/clone-settings`, {
+          method:"POST",
+          body:JSON.stringify({source_bot_id:sourceId, ...cloneOptionsPayload()})
+        });
+        showMsg("cloneSettingsMsg", `${data.message || "Setting berhasil diclone."}
+Field: ${(data.updated_fields || []).join(", ")}`, "ok");
+        await loadDashboard();
+      }catch(err){ showMsg("cloneSettingsMsg", err.message, "error"); }
+      finally{ $("cloneSettingsBtn").disabled = false; }
+    }
+
     function initBotSearch(){
       ["botSearchMain","botSearchChannel","botSearchTemplate"].forEach(id => {
         const el = $(id);
@@ -1634,6 +1752,9 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
     $("webhookHealthBtn").addEventListener("click", checkWebhookHealth);
     $("deleteBotBtn").addEventListener("click", deleteBot);
     $("backupBtn").addEventListener("click", downloadBackup);
+    $("exportBotSettingsBtn").addEventListener("click", exportBotSettings);
+    $("importBotSettingsBtn").addEventListener("click", importBotSettings);
+    $("cloneSettingsBtn").addEventListener("click", cloneBotSettings);
     $("saveDefaultOwnerBtn").addEventListener("click", saveDefaultOwner);
 
     window.selectBot = selectBot;
