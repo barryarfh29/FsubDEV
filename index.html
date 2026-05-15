@@ -670,6 +670,7 @@
               <button class="btn-green" id="startBotBtn" type="button">Start Bot</button>
               <button class="btn-amber" id="stopBotBtn" type="button">Stop Bot</button>
               <button class="btn-secondary" id="validateBtn" type="button">Validasi Setup</button>
+              <button class="btn-secondary" id="webhookHealthBtn" type="button">Cek Webhook</button>
               <button class="btn-red" id="deleteBotBtn" type="button">Hapus Bot</button>
             </div>
             <div id="manageMsg" class="notice hidden"></div>
@@ -870,11 +871,21 @@ button: Support | https://t.me/support</div>
                   <div id="antiToggle" class="toggle"></div>
                 </div>
 
-                <label for="contentAdmins" style="margin-top:12px">Admin Konten Telegram ID</label>
+                <label for="contentAdmins" style="margin-top:12px">Admin Konten Legacy / Semua Izin</label>
                 <textarea id="contentAdmins" placeholder="Satu ID per baris:
 123456789
 987654321"></textarea>
-                <div class="example">Admin konten boleh upload/generate link, tapi tidak bisa ubah setting website. Owner tidak perlu dimasukkan.</div>
+                <div class="example">Legacy: ID di sini punya semua izin konten jika role khusus di bawah kosong. Owner tidak perlu dimasukkan.</div>
+
+                <label for="uploadAdmins" style="margin-top:12px">Admin Upload / Generate Link</label>
+                <textarea id="uploadAdmins" placeholder="Satu ID per baris. Kosong = ikut Admin Konten Legacy."></textarea>
+
+                <label for="getAdmins" style="margin-top:12px">Admin /get TXT</label>
+                <textarea id="getAdmins" placeholder="Satu ID per baris. Kosong = ikut Admin Konten Legacy."></textarea>
+
+                <label for="broadcastAdmins" style="margin-top:12px">Admin Broadcast /bcast</label>
+                <textarea id="broadcastAdmins" placeholder="Satu ID per baris. Kosong = ikut Admin Konten Legacy."></textarea>
+                <div class="example">Role khusus membuat izin lebih rapi: upload, /get, dan /bcast bisa dipisah. Owner selalu punya semua izin.</div>
               </div>
 
               <div class="template-action-row">
@@ -1176,6 +1187,9 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       $("protectToggle").classList.toggle("on", Boolean(bot.protect_content));
       $("antiToggle").classList.toggle("on", Boolean(bot.anti_external_telegram_links));
       $("contentAdmins").value = (bot.content_admin_ids || []).join("\n");
+      $("uploadAdmins").value = (bot.upload_admin_ids || []).join("\n");
+      $("getAdmins").value = (bot.get_admin_ids || []).join("\n");
+      $("broadcastAdmins").value = (bot.broadcast_admin_ids || []).join("\n");
       const customTexts = bot.custom_texts || {};
       $("startMessage").value = customTexts.start_message || "";
       $("helpMessage").value = customTexts.help_message || "";
@@ -1324,13 +1338,20 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       }catch(err){ alert(err.message); }
     }
 
+    function parseAdminIdsFrom(id){
+      return $(id).value
+        .split(/[\n, ]+/).map(v => v.trim()).filter(Boolean)
+        .map(Number).filter(v => Number.isInteger(v) && v > 0);
+    }
+
     async function saveSettings(){
       const bot = selectedBot();
       if(!bot) return;
       try{
-        const contentAdminIds = $("contentAdmins").value
-          .split(/[\n, ]+/).map(v => v.trim()).filter(Boolean)
-          .map(Number).filter(v => Number.isInteger(v) && v > 0);
+        const contentAdminIds = parseAdminIdsFrom("contentAdmins");
+        const uploadAdminIds = parseAdminIdsFrom("uploadAdmins");
+        const getAdminIds = parseAdminIdsFrom("getAdmins");
+        const broadcastAdminIds = parseAdminIdsFrom("broadcastAdmins");
         const customTexts = {
           start_message:$("startMessage").value.trim(),
           help_message:$("helpMessage").value.trim(),
@@ -1344,6 +1365,9 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
           protect_content:$("protectToggle").classList.contains("on"),
           anti_external_telegram_links:$("antiToggle").classList.contains("on"),
           content_admin_ids:contentAdminIds,
+          upload_admin_ids:uploadAdminIds,
+          get_admin_ids:getAdminIds,
+          broadcast_admin_ids:broadcastAdminIds,
           custom_texts:customTexts,
           media_caption_template:$("mediaCaptionTemplate").value.trim()
         })});
@@ -1403,6 +1427,33 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
         const data = await api(`/api/bots/${bot.id}/validate`, {method:"POST"});
         showMsg("manageMsg", renderValidationResult(data), data.ok ? "ok" : "error");
         await loadDashboard();
+      }catch(err){ showMsg("manageMsg", err.message, "error"); }
+    }
+
+    function renderWebhookHealth(data){
+      const lines = [];
+      lines.push(data.ok ? "✅ Webhook sehat" : "⚠️ Webhook perlu dicek");
+      lines.push(`Bot: @${data.bot_username || "-"}`);
+      lines.push(`Running: ${data.is_running ? "Ya" : "Tidak"}`);
+      lines.push(`Mode: ${data.run_mode || "-"}`);
+      lines.push(`Pending Updates: ${data.pending_update_count ?? 0}`);
+      lines.push(`URL Aktif: ${data.url || "-"}`);
+      lines.push(`URL Seharusnya: ${data.expected_url || "-"}`);
+      if(data.last_error_message){
+        lines.push("");
+        lines.push(`Last Error: ${data.last_error_message}`);
+        if(data.last_error_date) lines.push(`Error Date: ${data.last_error_date}`);
+      }
+      return lines.join("\n");
+    }
+
+    async function checkWebhookHealth(){
+      const bot = selectedBot();
+      if(!bot) return;
+      showMsg("manageMsg", "Sedang cek webhook...", "");
+      try{
+        const data = await api(`/api/bots/${bot.id}/webhook-health`);
+        showMsg("manageMsg", renderWebhookHealth(data), data.ok ? "ok" : "error");
       }catch(err){ showMsg("manageMsg", err.message, "error"); }
     }
 
@@ -1576,6 +1627,7 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
     $("stopBotBtn").addEventListener("click", stopBot);
     $("validateBtn").addEventListener("click", validateBot);
     $("validateBtn2").addEventListener("click", validateBot);
+    $("webhookHealthBtn").addEventListener("click", checkWebhookHealth);
     $("deleteBotBtn").addEventListener("click", deleteBot);
     $("backupBtn").addEventListener("click", downloadBackup);
     $("saveDefaultOwnerBtn").addEventListener("click", saveDefaultOwner);
