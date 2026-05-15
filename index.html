@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FSub Panel</title>
-  <!-- FUNCTIONAL VERSION: connected to backend API. v63 Caption Media via website. -->
+  <!-- v74 start template example link | FUNCTIONAL VERSION: connected to backend API. v63 Caption Media via website. -->
   <style>
     :root{
       --bg:#0a1018;
@@ -765,10 +765,9 @@
                 <textarea id="startMessage"></textarea>
                 <div class="example">
                   <div class="example-head"><strong>Template bawaan</strong><button type="button" onclick="useTemplateExample('startMessage')">Gunakan</button></div>
-                  <div class="example-text">👋 Halo {mention}
+                  <div class="example-text">Silakan Join Ke Channel &amp; Group Terlebih Dulu
 
-Selamat datang di {bot_name}.
-Gunakan link FSub yang sudah dibagikan untuk membuka konten.</div>
+🔴 &lt;a href=&quot;https://t.me/channelkamu&quot;&gt;&lt;b&gt;&lt;i&gt;JOIN VVIP TERUPDATE DISINI&lt;/i&gt;&lt;/b&gt;&lt;/a&gt;</div>
                 </div>
               </div>
 
@@ -1001,7 +1000,7 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
     };
 
     const DEFAULT_TEMPLATES = {
-      startMessage: "👋 Halo {mention}\n\nSelamat datang di {bot_name}.\nGunakan link FSub yang sudah dibagikan untuk membuka konten.",
+      startMessage: "Silakan Join Ke Channel & Group Terlebih Dulu\n\n🔴 <a href=\"https://t.me/channelkamu\"><b><i>JOIN VVIP TERUPDATE DISINI</i></b></a>",
       helpMessage: "ℹ️ Bantuan\n\nGunakan link FSub yang sudah dibagikan.\nJika belum bisa membuka konten, pastikan kamu sudah join channel wajib.\n\nJika masih bermasalah, minta link baru ke admin.",
       joinRequiredMessage: "📢 Halo {mention}\n\nKamu harus join {required_count} channel wajib terlebih dahulu.\nKlik tombol channel di bawah, lalu kembali ke bot dan tekan Saya Sudah Join.",
       notAllowedMessage: "🚫 Maaf {first_name}, akses ditolak.\n\nKamu tidak memiliki izin untuk membuat link FSub.\nSilakan gunakan link yang sudah dibagikan oleh admin.",
@@ -1732,7 +1731,7 @@ Field: ${(data.updated_fields || []).join(", ")}`, "ok");
 
 
     const DEFAULT_TEMPLATE_TEXTS = {
-      start: "👋 Halo {mention}\n\nSelamat datang di {bot_name}.\nGunakan link FSub yang sudah dibagikan untuk membuka konten.",
+      start: "Silakan Join Ke Channel & Group Terlebih Dulu\n\n🔴 <a href=\"https://t.me/channelkamu\"><b><i>JOIN VVIP TERUPDATE DISINI</i></b></a>",
       help: "ℹ️ Bantuan\n\nGunakan link FSub yang sudah dibagikan.\nJika belum bisa membuka konten, pastikan kamu sudah join channel wajib.",
       join: "📢 Halo {mention}\n\nKamu harus join {required_count} channel wajib terlebih dahulu.\nSetelah join, klik tombol Saya Sudah Join.",
       denied: "🚫 Maaf {first_name}, kamu tidak memiliki izin untuk membuat link FSub.",
