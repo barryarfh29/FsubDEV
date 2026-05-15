@@ -987,6 +987,7 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
     const API_BASE = "https://bot-botfsub.1ynxwv.easypanel.host";
     const SESSION_KEY = "fsub_admin_session";
     const SELECTED_KEY = "fsub_selected_bot";
+    const TEMPLATE_SELECTED_KEY = "fsub_template_selected_bot";
 
     const $ = (id) => document.getElementById(id);
     const state = {
@@ -995,6 +996,7 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       stats: {},
       settings: {},
       selectedBotId: localStorage.getItem(SELECTED_KEY) || "",
+      templateSelectedBotId: localStorage.getItem(TEMPLATE_SELECTED_KEY) || "",
       templateReady: false
     };
 
@@ -1011,6 +1013,7 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
 
     function headers(){ return { "Content-Type":"application/json", Authorization:`Bearer ${state.token}` }; }
     function selectedBot(){ return state.bots.find(b => b.id === state.selectedBotId) || state.bots[0] || null; }
+    function templateBot(){ return state.bots.find(b => b.id === state.templateSelectedBotId) || null; }
     function esc(v){ return String(v ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
 
     function showMsg(id, text, type=""){
@@ -1068,6 +1071,11 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       state.settings = data.settings || {};
       $("defaultOwnerId").value = state.settings.default_owner_id || "";
       if(!state.bots.find(b => b.id === state.selectedBotId)) state.selectedBotId = state.bots[0]?.id || "";
+      if(!state.bots.find(b => b.id === state.templateSelectedBotId)){
+        state.templateSelectedBotId = "";
+        state.templateReady = false;
+        localStorage.removeItem(TEMPLATE_SELECTED_KEY);
+      }
       if(state.selectedBotId) localStorage.setItem(SELECTED_KEY, state.selectedBotId);
       render();
     }
@@ -1076,10 +1084,16 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       renderStats();
       renderBotList();
       renderBotSelects();
+      const activePage = document.querySelector(".page.active")?.id || "";
       const bot = selectedBot();
-      renderSelectedInfo(bot);
+      const tplBot = templateBot();
+      renderSelectedInfo(activePage === "page-template" ? tplBot : bot);
       renderChecklist(bot);
-      if(bot) renderManage(bot);
+      if(activePage === "page-template" && state.templateReady && tplBot){
+        renderManage(tplBot);
+      }else if(bot){
+        renderManage(bot);
+      }
       renderTemplateGate();
       renderBackupTools();
     }
@@ -1160,14 +1174,16 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
         const query = input ? input.value : "";
         const q = String(query || "").trim();
         const bots = state.bots.filter(bot => botMatches(bot, q));
-        const selected = selectedBot();
+        const isTemplateSearch = cfg.searchId === "botSearchTemplate";
+        const selected = isTemplateSearch ? templateBot() : selectedBot();
+        const selectedId = isTemplateSearch ? state.templateSelectedBotId : state.selectedBotId;
 
         // Select tetap diisi untuk fallback, tapi disembunyikan di UI.
         let selectBots = bots;
         if(selected && !selectBots.some(bot => bot.id === selected.id)){
           selectBots = [selected, ...selectBots];
         }
-        select.innerHTML = selectBots.map(bot => `<option value="${esc(bot.id)}" ${bot.id === state.selectedBotId ? "selected" : ""}>${esc(botDisplayName(bot))}</option>`).join("");
+        select.innerHTML = selectBots.map(bot => `<option value="${esc(bot.id)}" ${bot.id === selectedId ? "selected" : ""}>${esc(botDisplayName(bot))}</option>`).join("");
 
         const empty = $(cfg.emptyId);
         if(empty) empty.classList.toggle("show", Boolean(q) && state.bots.length > 0 && bots.length === 0);
@@ -1187,7 +1203,7 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
 
         live.classList.toggle("show", bots.length > 0);
         live.innerHTML = bots.slice(0, 8).map(bot => {
-          const active = bot.id === state.selectedBotId ? "active" : "";
+          const active = bot.id === selectedId ? "active" : "";
           const status = bot.is_running ? "RUNNING" : "STOPPED";
           const pill = bot.is_running ? "run" : "stop";
           const name = botDisplayName(bot);
@@ -1222,8 +1238,8 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       const empty = $("botEmptyTemplate");
       if(!choose || !settings) return;
 
-      const bot = selectedBot();
-      const ready = Boolean(state.templateReady && state.selectedBotId && bot);
+      const bot = templateBot();
+      const ready = Boolean(state.templateReady && state.templateSelectedBotId && bot);
       choose.classList.toggle("hidden", ready);
       settings.classList.toggle("hidden", !ready);
 
@@ -1244,9 +1260,10 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
       if(pill && name){
         const activePage = document.querySelector(".page.active")?.id || "";
         const showOnPage = activePage === "page-template";
-        pill.classList.toggle("show", Boolean(state.selectedBotId && bot && showOnPage));
-        pill.classList.toggle("running", Boolean(bot?.is_running));
-        pill.classList.toggle("stopped", Boolean(state.selectedBotId && bot && !bot.is_running));
+        const canShow = Boolean(showOnPage && state.templateReady && state.templateSelectedBotId && bot);
+        pill.classList.toggle("show", canShow);
+        pill.classList.toggle("running", Boolean(canShow && bot?.is_running));
+        pill.classList.toggle("stopped", Boolean(canShow && !bot.is_running));
         name.textContent = bot ? botDisplayName(bot) : "-";
       }
     }
@@ -1327,8 +1344,14 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
 
 
     function selectBotFromSearch(id, searchId){
-      if(searchId === "botSearchTemplate") state.templateReady = true;
-      selectBot(id);
+      if(searchId === "botSearchTemplate"){
+        state.templateReady = true;
+        state.templateSelectedBotId = id;
+        localStorage.setItem(TEMPLATE_SELECTED_KEY, id);
+        render();
+      }else{
+        selectBot(id);
+      }
 
       // Setelah bot dipilih dari hasil pencarian, kosongkan kolom search
       // dan sembunyikan hasil live-search agar tampilan bersih lagi.
@@ -1364,8 +1387,15 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
 
     function syncSelectBot(selectId){
       const id = $(selectId).value;
-      if(selectId === "botSelectTemplate") state.templateReady = true;
-      if(id) selectBot(id);
+      if(!id) return;
+      if(selectId === "botSelectTemplate"){
+        state.templateReady = true;
+        state.templateSelectedBotId = id;
+        localStorage.setItem(TEMPLATE_SELECTED_KEY, id);
+        render();
+      }else{
+        selectBot(id);
+      }
     }
 
     function selectBot(id){
@@ -1438,7 +1468,7 @@ Backend: https://bot-botfsub.1ynxwv.easypanel.host</div>
     }
 
     async function saveSettings(){
-      const bot = selectedBot();
+      const bot = templateBot();
       if(!bot) return;
       try{
         const contentAdminIds = parseAdminIdsFrom("contentAdmins");
@@ -1786,7 +1816,7 @@ Field: ${(data.updated_fields || []).join(", ")}`, "ok");
         topChangeBotBtn.addEventListener("click", () => {
           state.templateReady = false;
           renderTemplateGate();
-          renderSelectedInfo(selectedBot());
+          renderSelectedInfo(templateBot());
           setTimeout(() => $("botSearchTemplate")?.focus(), 50);
         });
       }
