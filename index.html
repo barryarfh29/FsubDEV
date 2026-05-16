@@ -865,11 +865,13 @@
           <div class="card half">
             <h2>Channel Database</h2>
             <p>Channel penyimpanan media. Bot harus menjadi admin dan punya izin post.</p>
-            <label for="storageChannel">Username / Link / ID</label>
-            <input id="storageChannel" type="text" placeholder="@channeldb / https://t.me/channeldb / -100xxxx" />
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
-              <button id="saveStorageBtn" type="button">Simpan</button>
-              <button class="btn-secondary" id="validateBtn2" type="button">Validasi</button>
+            <div id="storageEditor" class="storage-editor">
+              <label for="storageChannel">Username / Link / ID</label>
+              <input id="storageChannel" type="text" placeholder="@channeldb / https://t.me/channeldb / -100xxxx" />
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+                <button id="saveStorageBtn" type="button">Simpan</button>
+                <button class="btn-secondary" id="validateBtn2" type="button">Validasi</button>
+              </div>
             </div>
             <div id="storageMsg" class="notice hidden"></div>
             <div id="storageInfo"></div>
@@ -1166,6 +1168,7 @@ Backend/API: https://apifsub.site</div>
       selectedBotId: localStorage.getItem(SELECTED_KEY) || "",
       templateSelectedBotId: localStorage.getItem(TEMPLATE_SELECTED_KEY) || "",
       templateReady: false,
+      storageEditorOpen: false,
       actionChecks: JSON.parse(sessionStorage.getItem("fsub_action_checks") || "{}")
     };
 
@@ -1521,18 +1524,31 @@ Backend/API: https://apifsub.site</div>
 
     function renderStorageChannel(bot){
       const box = $("storageInfo");
+      const editor = $("storageEditor");
       if(!box) return;
       const ch = bot?.storage_channel;
+
+      // Jika Channel Database sudah ada, form input disembunyikan agar tampilan clean.
+      // Form muncul lagi hanya saat klik tombol Ganti.
+      if(editor){
+        editor.classList.toggle("hidden", Boolean(ch && !state.storageEditorOpen));
+      }
+
       if(!ch){
         box.innerHTML = `<div class="notice">Channel Database belum disimpan.</div>`;
         return;
       }
+
       box.innerHTML = `<div class="channel-item storage-channel-item">
-        <div>
+        <div class="storage-channel-main">
           <strong>${esc(channelName(ch))}</strong><br>
           <span class="muted small">${esc(channelMeta(ch, "Channel Database aktif"))}</span>
         </div>
-        <span class="pill run">Database</span>
+        <div class="storage-channel-actions">
+          <span class="pill run">Database</span>
+          <button class="btn-secondary" type="button" onclick="editStorageChannel()">Ganti</button>
+          <button class="btn-secondary" type="button" onclick="validateBot()">Validasi</button>
+        </div>
       </div>`;
     }
 
@@ -1623,6 +1639,7 @@ Backend/API: https://apifsub.site</div>
     }
 
     function selectBot(id){
+      state.storageEditorOpen = false;
       state.selectedBotId = id;
       localStorage.setItem(SELECTED_KEY, id);
       render();
@@ -1644,6 +1661,12 @@ Backend/API: https://apifsub.site</div>
       finally{ $("saveBotBtn").disabled = false; }
     }
 
+    function editStorageChannel(){
+      state.storageEditorOpen = true;
+      renderStorageChannel(selectedBot());
+      setTimeout(() => $("storageChannel")?.focus(), 50);
+    }
+
     async function saveStorage(){
       const bot = selectedBot();
       const channel = $("storageChannel").value.trim();
@@ -1653,6 +1676,7 @@ Backend/API: https://apifsub.site</div>
       try{
         const data = await api(`/api/bots/${bot.id}/storage-channel`, {method:"POST", body:JSON.stringify({channel})});
         resetActionChecks(bot.id, ["validationOk"]);
+        state.storageEditorOpen = false;
         showMsg("storageMsg", data.message || "Channel Database disimpan.", "ok");
         await loadDashboard();
       }catch(err){ showMsg("storageMsg", err.message, "error"); }
@@ -2150,6 +2174,8 @@ Field: ${(data.updated_fields || []).join(", ")}`, "ok");
     window.selectBotFromSearch = selectBotFromSearch;
     window.removeRequired = removeRequired;
     window.useTemplateExample = useTemplateExample;
+    window.editStorageChannel = editStorageChannel;
+    window.validateBot = validateBot;
 
     (async function init(){
       initNav();
