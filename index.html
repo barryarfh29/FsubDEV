@@ -1133,7 +1133,7 @@ ID di sini bisa akses /get TXT dan /bcast."></textarea>
             <label for="defaultOwnerId">Default Owner Telegram ID</label>
             <input id="defaultOwnerId" type="text" inputmode="numeric" placeholder="123456789" />
             <label class="switch-row" style="margin-top:10px">
-              <input id="applyDefaultOwnerAll" type="checkbox" />
+              <input id="applyDefaultOwnerAll" type="checkbox" checked />
               <span>Terapkan juga ke semua bot yang sudah ada</span>
             </label>
             <button id="saveDefaultOwnerBtn" type="button" style="margin-top:12px">Simpan Default Owner</button>
@@ -1823,7 +1823,7 @@ Backend/API: https://apifsub.site</div>
           body:JSON.stringify({default_owner_id:Number(owner), apply_to_existing_bots:applyAll})
         });
         showMsg("defaultOwnerMsg", data.message || "Default Owner disimpan.", "ok");
-        $("applyDefaultOwnerAll").checked = false;
+        $("applyDefaultOwnerAll").checked = true;
         await loadDashboard();
       }catch(err){ showMsg("defaultOwnerMsg", err.message, "error"); }
       finally{ $("saveDefaultOwnerBtn").disabled = false; }
