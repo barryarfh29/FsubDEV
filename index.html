@@ -743,11 +743,9 @@
 
           <div class="card four">
             <h2>Tambah Bot</h2>
-            <p>Kalau Default Owner sudah diatur, cukup isi token.</p>
+            <p>Bot baru otomatis memakai Default Owner dari menu Setting.</p>
             <label for="botToken">Bot Token</label>
             <input id="botToken" type="password" placeholder="Token dari BotFather" />
-            <label for="ownerId">Owner Telegram ID</label>
-            <input id="ownerId" type="text" inputmode="numeric" placeholder="Opsional" />
             <button class="btn-full" id="saveBotBtn" type="button" style="margin-top:12px">+ Tambah Bot</button>
             <div id="addBotMsg" class="notice hidden"></div>
           </div>
@@ -1512,17 +1510,14 @@ Backend/API: https://apifsub.site</div>
 
     async function saveBot(){
       const token = $("botToken").value.trim();
-      const owner = $("ownerId").value.trim();
       if(!token) return showMsg("addBotMsg", "Bot Token wajib diisi.", "error");
-      if(!owner && !state.settings.default_owner_id) return showMsg("addBotMsg", "Isi Owner ID atau set Default Owner dulu.", "error");
+      if(!state.settings.default_owner_id) return showMsg("addBotMsg", "Set Default Owner dulu di menu Setting.", "error");
       $("saveBotBtn").disabled = true;
       try{
         const body = {token};
-        if(owner) body.owner_id = Number(owner);
         const data = await api("/api/bots", {method:"POST", body:JSON.stringify(body)});
         state.selectedBotId = data.bot?.id || state.selectedBotId;
         $("botToken").value = "";
-        $("ownerId").value = "";
         showMsg("addBotMsg", data.message || "Bot tersimpan.", "ok");
         await loadDashboard();
       }catch(err){ showMsg("addBotMsg", err.message, "error"); }
