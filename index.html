@@ -1068,12 +1068,11 @@ button: Support | https://t.me/support</div>
                 <label for="uploadAdmins" style="margin-top:12px">Admin Upload / Generate Link</label>
                 <textarea id="uploadAdmins" placeholder="Satu ID per baris. Kosong = ikut Admin Konten Legacy."></textarea>
 
-                <label for="getAdmins" style="margin-top:12px">Admin /get TXT</label>
-                <textarea id="getAdmins" placeholder="Satu ID per baris. Kosong = ikut Admin Konten Legacy."></textarea>
+                <label for="getBroadcastAdmins" style="margin-top:12px">Admin /get TXT & Broadcast /bcast</label>
+                <textarea id="getBroadcastAdmins" placeholder="Satu ID per baris. Kosong = ikut Admin Konten Legacy.
 
-                <label for="broadcastAdmins" style="margin-top:12px">Admin Broadcast /bcast</label>
-                <textarea id="broadcastAdmins" placeholder="Satu ID per baris. Kosong = ikut Admin Konten Legacy."></textarea>
-                <div class="example">Role khusus membuat izin lebih rapi: upload, /get, dan /bcast bisa dipisah. Owner selalu punya semua izin.</div>
+ID di sini bisa akses /get TXT dan /bcast."></textarea>
+                <div class="example">Agar tidak menumpuk, izin /get TXT dan Broadcast /bcast digabung dalam satu daftar. Owner selalu punya semua izin.</div>
               </div>
 
               <div class="template-action-row">
@@ -1492,8 +1491,8 @@ Backend/API: https://apifsub.site</div>
       $("antiToggle").classList.toggle("on", Boolean(bot.anti_external_telegram_links));
       $("contentAdmins").value = (bot.content_admin_ids || []).join("\n");
       $("uploadAdmins").value = (bot.upload_admin_ids || []).join("\n");
-      $("getAdmins").value = (bot.get_admin_ids || []).join("\n");
-      $("broadcastAdmins").value = (bot.broadcast_admin_ids || []).join("\n");
+      const getBroadcastIds = uniqueIds([...(bot.get_admin_ids || []), ...(bot.broadcast_admin_ids || [])]);
+      $("getBroadcastAdmins").value = getBroadcastIds.join("\n");
       const customTexts = bot.custom_texts || {};
       $("startMessage").value = customTexts.start_message || "";
       $("helpMessage").value = customTexts.help_message || "";
@@ -1657,10 +1656,23 @@ Backend/API: https://apifsub.site</div>
       }catch(err){ alert(err.message); }
     }
 
+    function uniqueIds(values){
+      const out = [];
+      const seen = new Set();
+      (values || []).forEach(value => {
+        const num = Number(value);
+        if(Number.isInteger(num) && num > 0 && !seen.has(num)){
+          seen.add(num);
+          out.push(num);
+        }
+      });
+      return out;
+    }
+
     function parseAdminIdsFrom(id){
-      return $(id).value
+      return uniqueIds($(id).value
         .split(/[\n, ]+/).map(v => v.trim()).filter(Boolean)
-        .map(Number).filter(v => Number.isInteger(v) && v > 0);
+        .map(Number).filter(v => Number.isInteger(v) && v > 0));
     }
 
     async function saveSettings(){
@@ -1669,8 +1681,7 @@ Backend/API: https://apifsub.site</div>
       try{
         const contentAdminIds = parseAdminIdsFrom("contentAdmins");
         const uploadAdminIds = parseAdminIdsFrom("uploadAdmins");
-        const getAdminIds = parseAdminIdsFrom("getAdmins");
-        const broadcastAdminIds = parseAdminIdsFrom("broadcastAdmins");
+        const getBroadcastAdminIds = parseAdminIdsFrom("getBroadcastAdmins");
         const customTexts = {
           start_message:$("startMessage").value.trim(),
           help_message:$("helpMessage").value.trim(),
@@ -1685,8 +1696,8 @@ Backend/API: https://apifsub.site</div>
           anti_external_telegram_links:$("antiToggle").classList.contains("on"),
           content_admin_ids:contentAdminIds,
           upload_admin_ids:uploadAdminIds,
-          get_admin_ids:getAdminIds,
-          broadcast_admin_ids:broadcastAdminIds,
+          get_admin_ids:getBroadcastAdminIds,
+          broadcast_admin_ids:getBroadcastAdminIds,
           custom_texts:customTexts,
           media_caption_template:$("mediaCaptionTemplate").value.trim()
         })});
