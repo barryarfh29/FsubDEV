@@ -309,6 +309,7 @@
     }
     .toggle.on{background:linear-gradient(180deg,#ff8410,#ff6400)}
     .toggle.on:before{left:24px}
+    .toggle.locked{cursor:not-allowed;opacity:.96}
 
     .notice{
       margin-top:9px;border:1px solid var(--line);border-radius:12px;background:#0d1623;
@@ -1054,9 +1055,9 @@ button: Support | https://t.me/support</div>
                 <div class="toggle-row">
                   <div>
                     <strong>Blok Rantai Bot Luar</strong>
-                    <p>Menolak link bot luar dan source chain kotor.</p>
+                    <p>Selalu aktif untuk menolak link bot luar dan source chain kotor.</p>
                   </div>
-                  <div id="antiToggle" class="toggle"></div>
+                  <div id="antiToggle" class="toggle on locked" title="Aktif permanen"></div>
                 </div>
 
                 <label for="contentAdmins" style="margin-top:12px">Admin Konten Legacy / Semua Izin</label>
@@ -1488,7 +1489,8 @@ Backend/API: https://apifsub.site</div>
     function renderManage(bot){
       $("storageChannel").value = bot.storage_channel?.username ? `@${bot.storage_channel.username}` : (bot.storage_channel?.input || bot.storage_channel?.chat_id || "");
       $("protectToggle").classList.toggle("on", Boolean(bot.protect_content));
-      $("antiToggle").classList.toggle("on", Boolean(bot.anti_external_telegram_links));
+      // Selalu aktif: keamanan rantai bot luar tidak bisa dimatikan dari website.
+      $("antiToggle").classList.add("on");
       $("contentAdmins").value = (bot.content_admin_ids || []).join("\n");
       $("uploadAdmins").value = (bot.upload_admin_ids || []).join("\n");
       const getBroadcastIds = uniqueIds([...(bot.get_admin_ids || []), ...(bot.broadcast_admin_ids || [])]);
@@ -1693,7 +1695,7 @@ Backend/API: https://apifsub.site</div>
         };
         const data = await api(`/api/bots/${bot.id}/settings`, {method:"POST", body:JSON.stringify({
           protect_content:$("protectToggle").classList.contains("on"),
-          anti_external_telegram_links:$("antiToggle").classList.contains("on"),
+          anti_external_telegram_links:true,
           content_admin_ids:contentAdminIds,
           upload_admin_ids:uploadAdminIds,
           get_admin_ids:getBroadcastAdminIds,
@@ -2023,9 +2025,11 @@ Field: ${(data.updated_fields || []).join(", ")}`, "ok");
             document.querySelectorAll("[data-setup-page]").forEach(b => b.classList.toggle("active", b.dataset.setupPage === page));
           }
           if(page === "template"){
-            state.templateReady = false;
             const input = $("botSearchTemplate");
             if(input) input.value = "";
+            // Kalau sebelumnya sudah pernah pilih bot Template, buka lagi langsung tampilkan data tersimpan.
+            // Data tetap diambil dari dashboard/backend, jadi textarea tidak kosong jika template sudah diset.
+            state.templateReady = Boolean(state.templateSelectedBotId && templateBot());
           }
           render();
         });
@@ -2042,9 +2046,10 @@ Field: ${(data.updated_fields || []).join(", ")}`, "ok");
           $("pageDesc").textContent = pageMeta[page][1];
           document.querySelectorAll("[data-setup-page]").forEach(b => b.classList.toggle("active", b.dataset.setupPage === page));
           if(page === "template"){
-            state.templateReady = false;
             const input = $("botSearchTemplate");
             if(input) input.value = "";
+            // Tab Template mengingat bot terakhir yang dipilih dan langsung render setting yang tersimpan.
+            state.templateReady = Boolean(state.templateSelectedBotId && templateBot());
           }
           render();
         });
@@ -2089,7 +2094,7 @@ Field: ${(data.updated_fields || []).join(", ")}`, "ok");
       });
 
       $("protectToggle").addEventListener("click", () => $("protectToggle").classList.toggle("on"));
-      $("antiToggle").addEventListener("click", () => $("antiToggle").classList.toggle("on"));
+      $("antiToggle").addEventListener("click", () => $("antiToggle").classList.add("on"));
     }
 
     $("loginBtn").addEventListener("click", login);
