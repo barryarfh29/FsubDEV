@@ -593,6 +593,64 @@
       margin-top:12px;
     }
 
+
+    /* premium action bar - Status Bot Terpilih */
+    .bot-action-bar{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:14px;
+      padding:10px;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.018)),
+        rgba(10,16,24,.72);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.05),
+        0 14px 32px rgba(0,0,0,.22);
+    }
+
+    .bot-action-bar button{
+      min-height:36px;
+      padding:9px 13px;
+      border-radius:11px;
+      font-size:12.2px;
+      font-weight:760;
+      letter-spacing:-.01em;
+      box-shadow:none;
+    }
+
+    .bot-action-bar .btn-secondary{
+      background:linear-gradient(180deg,#223044,#182334)!important;
+      border:1px solid rgba(255,255,255,.11);
+      color:#dbe7f5;
+    }
+
+    .bot-action-bar .btn-green{
+      background:linear-gradient(180deg,#18c964,#109447)!important;
+      border:1px solid rgba(134,239,172,.22);
+      box-shadow:0 8px 18px rgba(16,148,71,.16);
+    }
+
+    .bot-action-bar .btn-amber{
+      background:linear-gradient(180deg,#f59e0b,#b86b08)!important;
+      border:1px solid rgba(253,230,138,.18);
+      box-shadow:0 8px 18px rgba(245,158,11,.13);
+    }
+
+    .bot-action-bar .btn-red{
+      background:linear-gradient(180deg,#f04444,#b91c1c)!important;
+      border:1px solid rgba(254,202,202,.18);
+      box-shadow:0 8px 18px rgba(185,28,28,.16);
+    }
+
+    .bot-action-bar button:hover{
+      transform:translateY(-1px);
+      filter:brightness(1.04);
+    }
+
   </style>
 </head>
 
@@ -677,7 +735,7 @@
           <div class="card">
             <h2>Status Bot Terpilih</h2>
             <div id="checklist" class="checklist"></div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+            <div class="bot-action-bar">
               <button class="btn-green" id="startBotBtn" type="button">Start Bot</button>
               <button class="btn-amber" id="stopBotBtn" type="button">Stop Bot</button>
               <button class="btn-secondary" id="validateBtn" type="button">Validasi Setup</button>
@@ -974,8 +1032,8 @@ button: Support | https://t.me/support</div>
 
           <div class="card half">
             <h2>Info Panel</h2>
-            <div class="notice">Frontend: https://fsubdev.vercel.app
-Backend: https://apifsub.site</div>
+            <div class="notice">Frontend: https://fsubpremium.cloud
+Backend/API: https://apifsub.site</div>
           </div>
         </div>
       </section>
