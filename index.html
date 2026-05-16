@@ -835,8 +835,6 @@
             <div class="bot-action-bar">
               <button class="btn-green" id="startBotBtn" type="button">Start Bot</button>
               <button class="btn-amber" id="stopBotBtn" type="button">Stop Bot</button>
-              <button class="btn-secondary" id="validateBtn" type="button">Validasi Setup</button>
-              <button class="btn-secondary" id="webhookHealthBtn" type="button">Cek Webhook</button>
               <button class="btn-red" id="deleteBotBtn" type="button">Hapus Bot</button>
             </div>
             <div id="manageMsg" class="notice hidden"></div>
@@ -1122,7 +1120,7 @@ button: Support | https://t.me/support</div>
           </div>
           <div class="card">
             <h2>Catatan</h2>
-            <div class="notice">Setelah restore/clone channel, jalankan Validasi Setup pada bot target untuk memastikan bot target sudah admin di channel yang dicopy.</div>
+            <div class="notice">Setelah restore/clone channel, jalankan Validasi pada menu Channel bot target untuk memastikan bot target sudah admin di channel yang dicopy.</div>
           </div>
         </div>
       </section>
@@ -2094,9 +2092,9 @@ Field: ${(data.updated_fields || []).join(", ")}`, "ok");
     $("useCurrentTemplateBtn").addEventListener("click", useCurrentTemplateExample);
     $("startBotBtn").addEventListener("click", startBot);
     $("stopBotBtn").addEventListener("click", stopBot);
-    $("validateBtn").addEventListener("click", validateBot);
+    if($("validateBtn")) $("validateBtn").addEventListener("click", validateBot);
     $("validateBtn2").addEventListener("click", validateBot);
-    $("webhookHealthBtn").addEventListener("click", checkWebhookHealth);
+    if($("webhookHealthBtn")) $("webhookHealthBtn").addEventListener("click", checkWebhookHealth);
     $("deleteBotBtn").addEventListener("click", deleteBot);
     $("backupBtn").addEventListener("click", downloadBackup);
     $("exportBotSettingsBtn").addEventListener("click", exportBotSettings);
