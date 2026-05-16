@@ -872,6 +872,7 @@
               <button class="btn-secondary" id="validateBtn2" type="button">Validasi</button>
             </div>
             <div id="storageMsg" class="notice hidden"></div>
+            <div id="storageInfo"></div>
           </div>
 
           <div class="card half">
@@ -1504,10 +1505,36 @@ Backend/API: https://apifsub.site</div>
       $("invalidCodeMessage").value = customTexts.invalid_code_message || "";
       $("linkCreatedMessage").value = customTexts.link_created_message || "";
       $("mediaCaptionTemplate").value = bot.media_caption_template || "";
+      renderStorageChannel(bot);
       renderRequiredChannels(bot);
     }
 
     function channelName(ch){ return ch?.title || (ch?.username ? `@${ch.username}` : ch?.chat_id) || "-"; }
+
+    function channelMeta(ch, fallback){
+      const parts = [];
+      if(ch?.chat_id) parts.push(`ID: ${ch.chat_id}`);
+      if(ch?.username) parts.push(`@${ch.username}`);
+      if(ch?.chat_type) parts.push(ch.chat_type);
+      return parts.join(" • ") || fallback || "Aktif";
+    }
+
+    function renderStorageChannel(bot){
+      const box = $("storageInfo");
+      if(!box) return;
+      const ch = bot?.storage_channel;
+      if(!ch){
+        box.innerHTML = `<div class="notice">Channel Database belum disimpan.</div>`;
+        return;
+      }
+      box.innerHTML = `<div class="channel-item storage-channel-item">
+        <div>
+          <strong>${esc(channelName(ch))}</strong><br>
+          <span class="muted small">${esc(channelMeta(ch, "Channel Database aktif"))}</span>
+        </div>
+        <span class="pill run">Database</span>
+      </div>`;
+    }
 
     function renderRequiredChannels(bot){
       const list = bot.required_channels || [];
@@ -1519,7 +1546,7 @@ Backend/API: https://apifsub.site</div>
       box.innerHTML = list.map(ch => `<div class="channel-item">
         <div>
           <strong>${esc(channelName(ch))}</strong><br>
-          <span class="muted small">Channel wajib join aktif</span>
+          <span class="muted small">${esc(channelMeta(ch, "Channel wajib join aktif"))}</span>
         </div>
         <button class="btn-red" onclick="removeRequired('${esc(ch.chat_id)}')" type="button">Hapus</button>
       </div>`).join("");
