@@ -822,6 +822,9 @@
           <h2>Pilih Bot Dulu</h2>
           <p>Cari dan klik bot dari hasil pencarian di atas. Setelah bot dipilih, setting Template, Proteksi, Admin, dan Caption Media akan muncul.</p>
           <div class="notice">Agar tidak salah edit, halaman Template sekarang dikunci sampai kamu memilih bot dari pencarian.</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+            <button class="btn-secondary" id="backToChannelBtn" type="button">← Kembali ke Channel</button>
+          </div>
         </div>
 
         <div class="card hidden" id="templateSettingsCard">
@@ -1960,6 +1963,22 @@ Field: ${(data.updated_fields || []).join(", ")}`, "ok");
           renderTemplateGate();
           renderSelectedInfo(templateBot());
           setTimeout(() => $("botSearchTemplate")?.focus(), 50);
+        });
+      }
+
+      const backToChannelBtn = $("backToChannelBtn");
+      if(backToChannelBtn){
+        backToChannelBtn.addEventListener("click", () => {
+          state.templateReady = false;
+          const page = "channel";
+          document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+          document.querySelector('.nav-btn[data-page="channel"]')?.classList.add("active");
+          document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+          $("page-channel").classList.add("active");
+          $("pageTitle").textContent = pageMeta[page][0];
+          $("pageDesc").textContent = pageMeta[page][1];
+          document.querySelectorAll("[data-setup-page]").forEach(b => b.classList.toggle("active", b.dataset.setupPage === page));
+          render();
         });
       }
 
