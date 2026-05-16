@@ -781,7 +781,7 @@
 
       <nav class="nav">
         <button class="nav-btn active" data-page="bot" type="button"><span class="nav-icon"></span> Bot</button>
-        <button class="nav-btn" data-page="channel" type="button"><span class="nav-icon"></span> Setup</button>
+        <button class="nav-btn" data-page="template" type="button"><span class="nav-icon"></span> Setup</button>
         <button class="nav-btn" data-page="backup" type="button"><span class="nav-icon"></span> Backup</button>
         <button class="nav-btn" data-page="setting" type="button"><span class="nav-icon"></span> Setting</button>
       </nav>
@@ -843,22 +843,32 @@
         </div>
       </section>
 
-      <section class="page" id="page-channel">
-        <div class="setup-tabs-wrap">
-          <div class="setup-tabs">
-            <button class="setup-tab-btn active" data-setup-page="channel" type="button">Channel</button>
-            <button class="setup-tab-btn" data-setup-page="template" type="button">Template</button>
-          </div>
+      <section class="page" id="page-channel"></section>
+
+      <section class="page" id="page-template">
+        <div class="bot-search" id="templateBotPicker">
+          <input id="botSearchTemplate" type="search" placeholder="Cari bot untuk Template... contoh: @Botkil" autocomplete="off" />
         </div>
-        <div class="bot-search">
-          <input id="botSearchChannel" type="search" placeholder="Cari bot untuk Channel... contoh: @Botkil" autocomplete="off" />
-        </div>
-        <div id="botHintChannel" class="bot-search-hint">Klik bot dari hasil pencarian untuk memilih.</div>
-        <div id="botLiveChannel" class="bot-live-results"></div>
+        <div id="botHintTemplate" class="bot-search-hint">Klik bot dari hasil pencarian untuk memilih.</div>
+        <div id="botLiveTemplate" class="bot-live-results"></div>
         <div class="bot-select-row single hidden">
-          <select id="botSelectChannel" onchange="syncSelectBot('botSelectChannel')"></select>
+          <select id="botSelectTemplate" onchange="syncSelectBot('botSelectTemplate')"></select>
         </div>
-        <div id="botEmptyChannel" class="bot-empty">Bot tidak ditemukan.</div>
+        <div id="botEmptyTemplate" class="bot-empty">Bot tidak ditemukan.</div>
+
+        <div id="templateChooseCard" class="card">
+          <h2>Pilih Bot Dulu</h2>
+          <p>Cari dan klik bot dari hasil pencarian di atas. Setelah bot dipilih, setting Template, Proteksi, Admin, dan Caption Media akan muncul.</p>
+          <div class="notice">Agar tidak salah edit, halaman Template sekarang dikunci sampai kamu memilih bot dari pencarian.</div>
+        </div>
+
+        <div class="card hidden" id="templateSettingsCard">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap">
+            <div>
+              <h2>Setup Bot</h2>
+              <p>Channel, template, proteksi, admin, dan caption media dalam satu tempat.</p>
+            </div>
+          </div>
 
         <div class="grid">
           <div class="card half">
@@ -886,36 +896,6 @@
             <div id="requiredList"></div>
           </div>
         </div>
-      </section>
-
-      <section class="page" id="page-template">
-        <div class="bot-search" id="templateBotPicker">
-          <input id="botSearchTemplate" type="search" placeholder="Cari bot untuk Template... contoh: @Botkil" autocomplete="off" />
-        </div>
-        <div id="botHintTemplate" class="bot-search-hint">Klik bot dari hasil pencarian untuk memilih.</div>
-        <div id="botLiveTemplate" class="bot-live-results"></div>
-        <div class="bot-select-row single hidden">
-          <select id="botSelectTemplate" onchange="syncSelectBot('botSelectTemplate')"></select>
-        </div>
-        <div id="botEmptyTemplate" class="bot-empty">Bot tidak ditemukan.</div>
-
-        <div id="templateChooseCard" class="card">
-          <h2>Pilih Bot Dulu</h2>
-          <p>Cari dan klik bot dari hasil pencarian di atas. Setelah bot dipilih, setting Template, Proteksi, Admin, dan Caption Media akan muncul.</p>
-          <div class="notice">Agar tidak salah edit, halaman Template sekarang dikunci sampai kamu memilih bot dari pencarian.</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
-            <button class="btn-secondary" id="backToChannelBtn" type="button">← Kembali ke Channel</button>
-          </div>
-        </div>
-
-        <div class="card hidden" id="templateSettingsCard">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap">
-            <div>
-              <h2>Template</h2>
-              <p>Custom text bot, protect content, anti chain, dan admin konten dalam satu tempat.</p>
-            </div>
-            <button class="btn-secondary" id="backToChannelBtn2" type="button">← Kembali ke Channel</button>
-          </div>
 
           <div class="menu-card">
             <div class="subnav">
@@ -1660,14 +1640,19 @@ Backend/API: https://apifsub.site</div>
       finally{ $("saveBotBtn").disabled = false; }
     }
 
+    function channelTargetBot(){
+      const templatePageActive = $("page-template")?.classList.contains("active");
+      return templatePageActive ? templateBot() : selectedBot();
+    }
+
     function editStorageChannel(){
       state.storageEditorOpen = true;
-      renderStorageChannel(selectedBot());
+      renderStorageChannel(channelTargetBot());
       setTimeout(() => $("storageChannel")?.focus(), 50);
     }
 
     async function saveStorage(){
-      const bot = selectedBot();
+      const bot = channelTargetBot();
       const channel = $("storageChannel").value.trim();
       if(!bot) return;
       if(!channel) return showMsg("storageMsg", "Channel Database wajib diisi.", "error");
@@ -1683,7 +1668,7 @@ Backend/API: https://apifsub.site</div>
     }
 
     async function addRequired(){
-      const bot = selectedBot();
+      const bot = channelTargetBot();
       const channel = $("requiredChannel").value.trim();
       if(!bot) return;
       if(!channel) return showMsg("requiredMsg", "Channel wajib join wajib diisi.", "error");
@@ -1699,7 +1684,7 @@ Backend/API: https://apifsub.site</div>
     }
 
     async function removeRequired(chatId){
-      const bot = selectedBot();
+      const bot = channelTargetBot();
       if(!bot) return;
       try{
         await api(`/api/bots/${bot.id}/required-channels/${encodeURIComponent(chatId)}`, {method:"DELETE"});
@@ -2055,8 +2040,8 @@ Field: ${(data.updated_fields || []).join(", ")}`, "ok");
 
     const pageMeta = {
       bot:["Bot","Pilih bot dulu, lalu kelola setup-nya di menu lain."],
-      channel:["Setup","Atur Channel Database dan Channel Wajib Join untuk bot yang dipilih."],
-      template:["Setup","Kelola template, proteksi, admin, dan caption media."],
+      channel:["Setup","Kelola channel, template, proteksi, admin, dan caption media."],
+      template:["Setup","Kelola channel, template, proteksi, admin, dan caption media."],
       backup:["Backup","Download backup MongoDB dengan aman."],
       setting:["Setting","Default owner dan pengaturan global panel."]
     };
