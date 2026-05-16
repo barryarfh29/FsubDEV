@@ -828,8 +828,13 @@
         </div>
 
         <div class="card hidden" id="templateSettingsCard">
-          <h2>Template</h2>
-          <p>Custom text bot, protect content, anti chain, dan admin konten dalam satu tempat.</p>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap">
+            <div>
+              <h2>Template</h2>
+              <p>Custom text bot, protect content, anti chain, dan admin konten dalam satu tempat.</p>
+            </div>
+            <button class="btn-secondary" id="backToChannelBtn2" type="button">← Kembali ke Channel</button>
+          </div>
 
           <div class="menu-card">
             <div class="subnav">
@@ -1966,21 +1971,23 @@ Field: ${(data.updated_fields || []).join(", ")}`, "ok");
         });
       }
 
-      const backToChannelBtn = $("backToChannelBtn");
-      if(backToChannelBtn){
-        backToChannelBtn.addEventListener("click", () => {
-          state.templateReady = false;
-          const page = "channel";
-          document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-          document.querySelector('.nav-btn[data-page="channel"]')?.classList.add("active");
-          document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-          $("page-channel").classList.add("active");
-          $("pageTitle").textContent = pageMeta[page][0];
-          $("pageDesc").textContent = pageMeta[page][1];
-          document.querySelectorAll("[data-setup-page]").forEach(b => b.classList.toggle("active", b.dataset.setupPage === page));
-          render();
-        });
+      function goBackToChannel(){
+        state.templateReady = false;
+        const page = "channel";
+        document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+        document.querySelector('.nav-btn[data-page="channel"]')?.classList.add("active");
+        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+        $("page-channel").classList.add("active");
+        $("pageTitle").textContent = pageMeta[page][0];
+        $("pageDesc").textContent = pageMeta[page][1];
+        document.querySelectorAll("[data-setup-page]").forEach(b => b.classList.toggle("active", b.dataset.setupPage === page));
+        render();
       }
+
+      ["backToChannelBtn", "backToChannelBtn2"].forEach(id => {
+        const btn = $(id);
+        if(btn) btn.addEventListener("click", goBackToChannel);
+      });
 
       document.querySelectorAll("[data-template]").forEach(btn => {
         btn.addEventListener("click", () => {
