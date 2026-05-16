@@ -1353,6 +1353,21 @@ ID di sini bisa akses /get TXT dan /bcast."></textarea>
                 <div class="example">Agar tidak menumpuk, izin /get TXT dan Broadcast /bcast digabung dalam satu daftar. Owner selalu punya semua izin.</div>
               </div>
 
+              <div class="preset-box">
+                <h2 style="font-size:14px;margin-bottom:4px">Global Template Preset</h2>
+                <p>Preset hanya mengisi template/caption/pesan maintenance ke form. Klik Simpan Template & Proteksi untuk menyimpan ke bot.</p>
+                <div class="preset-row">
+                  <div>
+                    <label for="templatePresetSelect">Pilih Preset</label>
+                    <select id="templatePresetSelect"></select>
+                  </div>
+                  <button class="btn-secondary" id="applyTemplatePresetBtn" type="button">Terapkan Preset</button>
+                  <button class="btn-secondary" id="saveTemplatePresetBtn" type="button">Simpan Jadi Preset</button>
+                  <button class="btn-red" id="deleteTemplatePresetBtn" type="button">Hapus Preset</button>
+                </div>
+                <div id="templatePresetMsg" class="notice hidden"></div>
+              </div>
+
               <div class="template-action-row">
                 <button id="saveSettingsBtn" type="button">Simpan Template & Proteksi</button>
                 <button class="btn-secondary" id="useCurrentTemplateBtn" type="button">Gunakan Template Bawaan</button>
@@ -1427,6 +1442,19 @@ Backend/API: https://apifsub.site</div>
     </main>
   </div>
 
+
+  <div id="safeConfirmBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div class="safe-modal" role="dialog" aria-modal="true" aria-labelledby="safeConfirmTitle">
+      <h3 id="safeConfirmTitle">Konfirmasi</h3>
+      <p id="safeConfirmMessage">Lanjutkan aksi ini?</p>
+      <div id="safeConfirmTarget" class="modal-target hidden"></div>
+      <div class="modal-actions">
+        <button id="safeConfirmCancel" class="btn-secondary" type="button">Batal</button>
+        <button id="safeConfirmOk" class="btn-red" type="button">Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const API_BASE = "https://apifsub.site";
     const SESSION_KEY = "fsub_admin_session";
@@ -1443,7 +1471,8 @@ Backend/API: https://apifsub.site</div>
       templateSelectedBotId: localStorage.getItem(TEMPLATE_SELECTED_KEY) || "",
       templateReady: false,
       storageEditorOpen: false,
-      actionChecks: JSON.parse(sessionStorage.getItem("fsub_action_checks") || "{}")
+      actionChecks: JSON.parse(sessionStorage.getItem("fsub_action_checks") || "{}"),
+      templatePresets: []
     };
 
     const DEFAULT_TEMPLATES = {
@@ -1513,6 +1542,62 @@ Backend/API: https://apifsub.site</div>
       return data;
     }
 
+
+    function confirmAction({title="Konfirmasi", message="Lanjutkan aksi ini?", target="", okText="Lanjutkan", okClass="btn-red", delayMs=0}={}){
+      const backdrop = $("safeConfirmBackdrop");
+      const titleEl = $("safeConfirmTitle");
+      const msgEl = $("safeConfirmMessage");
+      const targetEl = $("safeConfirmTarget");
+      const cancelBtn = $("safeConfirmCancel");
+      const okBtn = $("safeConfirmOk");
+      if(!backdrop || !okBtn || !cancelBtn) return Promise.resolve(window.confirm(message));
+
+      return new Promise(resolve => {
+        let timer = null;
+        let remaining = Math.ceil(delayMs / 1000);
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+        targetEl.textContent = target || "";
+        targetEl.classList.toggle("hidden", !target);
+        okBtn.className = okClass;
+        okBtn.disabled = delayMs > 0;
+        okBtn.textContent = delayMs > 0 ? `${okText} (${remaining})` : okText;
+        backdrop.classList.add("show");
+        backdrop.setAttribute("aria-hidden", "false");
+
+        const cleanup = (value) => {
+          if(timer) clearInterval(timer);
+          backdrop.classList.remove("show");
+          backdrop.setAttribute("aria-hidden", "true");
+          okBtn.disabled = false;
+          cancelBtn.onclick = null;
+          okBtn.onclick = null;
+          backdrop.onclick = null;
+          document.onkeydown = null;
+          resolve(value);
+        };
+
+        if(delayMs > 0){
+          timer = setInterval(() => {
+            remaining -= 1;
+            if(remaining > 0){
+              okBtn.textContent = `${okText} (${remaining})`;
+            }else{
+              clearInterval(timer);
+              timer = null;
+              okBtn.disabled = false;
+              okBtn.textContent = okText;
+            }
+          }, 1000);
+        }
+
+        cancelBtn.onclick = () => cleanup(false);
+        okBtn.onclick = () => cleanup(true);
+        backdrop.onclick = (event) => { if(event.target === backdrop) cleanup(false); };
+        document.onkeydown = (event) => { if(event.key === "Escape") cleanup(false); };
+      });
+    }
+
     function setLoginView(loggedIn){
       $("loginView").classList.toggle("hidden", loggedIn);
       $("appView").classList.toggle("hidden", !loggedIn);
@@ -1545,10 +1630,14 @@ Backend/API: https://apifsub.site</div>
     }
 
     async function loadDashboard(){
-      const data = await api("/api/dashboard");
+      const [data, presetData] = await Promise.all([
+        api("/api/dashboard"),
+        api("/api/template-presets").catch(() => ({presets:[]}))
+      ]);
       state.bots = data.bots || [];
       state.stats = data.stats || {};
       state.settings = data.settings || {};
+      state.templatePresets = presetData.presets || [];
       $("defaultOwnerId").value = state.settings.default_owner_id || "";
       if(!state.bots.find(b => b.id === state.selectedBotId)) state.selectedBotId = state.bots[0]?.id || "";
       if(!state.bots.find(b => b.id === state.templateSelectedBotId)){
@@ -1577,6 +1666,7 @@ Backend/API: https://apifsub.site</div>
       renderActionButtons(bot);
       renderTemplateGate();
       renderBackupTools();
+      renderTemplatePresets();
     }
 
     function renderStats(){
@@ -1612,6 +1702,23 @@ Backend/API: https://apifsub.site</div>
       return botSearchText(bot).includes(q);
     }
 
+    function botHasTemplate(bot){
+      const texts = bot && bot.custom_texts ? Object.keys(bot.custom_texts).filter(k => String(bot.custom_texts[k] || "").trim()).length : 0;
+      return Boolean(texts || String(bot?.media_caption_template || "").trim());
+    }
+
+    function botStatusBadges(bot){
+      const joinCount = (bot.required_channels || []).length;
+      const badges = [
+        {text: bot.is_running ? "RUNNING" : "STOPPED", cls: bot.is_running ? "ok" : "danger"},
+        {text: bot.storage_channel ? "DB OK" : "DB KOSONG", cls: bot.storage_channel ? "ok" : "warn"},
+        {text: `JOIN ${joinCount}`, cls: joinCount ? "info" : "warn"},
+        {text: botHasTemplate(bot) ? "TEMPLATE OK" : "TEMPLATE KOSONG", cls: botHasTemplate(bot) ? "ok" : "warn"}
+      ];
+      if(bot.maintenance_mode) badges.push({text:"MAINTENANCE ON", cls:"danger"});
+      return badges;
+    }
+
     function renderBotList(){
       const box = $("botList");
       const empty = $("botEmptyMain");
@@ -1631,10 +1738,12 @@ Backend/API: https://apifsub.site</div>
         const status = bot.is_running ? "RUNNING" : "STOPPED";
         const pill = bot.is_running ? "run" : "stop";
         const name = botDisplayName(bot);
+        const badges = botStatusBadges(bot).map(b => `<span class="bot-badge ${b.cls}">${esc(b.text)}</span>`).join("");
         return `<div class="bot-card ${active}" onclick="selectBot('${esc(bot.id)}')">
-          <div>
+          <div class="bot-card-main">
             <div class="bot-name">${esc(name)}</div>
             <div class="bot-meta">${esc(bot.owner_label || "Owner")} ${bot.owner_masked ? `· ${esc(bot.owner_masked)}` : ""}</div>
+            <div class="bot-badges">${badges}</div>
           </div>
           <span class="pill ${pill}">${status}</span>
         </div>`;
@@ -2082,6 +2191,14 @@ Backend/API: https://apifsub.site</div>
     async function stopBot(){
       const bot = selectedBot();
       if(!bot) return;
+      const ok = await confirmAction({
+        title:"Stop Bot?",
+        message:"Bot tidak akan menerima pesan sampai dinyalakan lagi.",
+        target:botDisplayName(bot),
+        okText:"Stop Bot",
+        okClass:"btn-amber"
+      });
+      if(!ok) return;
       try{
         const data = await api(`/api/bots/${bot.id}/stop`, {method:"POST"});
         resetActionChecks(bot.id, ["webhookOk"]);
@@ -2162,7 +2279,15 @@ Backend/API: https://apifsub.site</div>
     async function deleteBot(){
       const bot = selectedBot();
       if(!bot) return;
-      if(!confirm("Hapus bot ini dari panel?")) return;
+      const ok = await confirmAction({
+        title:"Hapus Bot?",
+        message:"Aksi ini akan menghapus bot dari panel. Setting, channel, template, dan data bot ini tidak bisa dipulihkan kecuali kamu punya backup.",
+        target:botDisplayName(bot),
+        okText:"Ya, Hapus Bot",
+        okClass:"btn-red",
+        delayMs:2000
+      });
+      if(!ok) return;
       try{
         await api(`/api/bots/${bot.id}`, {method:"DELETE"});
         state.selectedBotId = "";
@@ -2175,7 +2300,16 @@ Backend/API: https://apifsub.site</div>
       const owner = $("defaultOwnerId").value.trim();
       const applyAll = $("applyDefaultOwnerAll").checked;
       if(!owner) return showMsg("defaultOwnerMsg", "Default Owner Telegram ID wajib diisi.", "error");
-      if(applyAll && !confirm("Terapkan Default Owner ini ke semua bot yang sudah ada?")) return;
+      if(applyAll){
+        const ok = await confirmAction({
+          title:"Terapkan ke Semua Bot?",
+          message:"Default Owner akan diterapkan ke semua bot yang sudah ada.",
+          target:`Owner ID: ${owner}`,
+          okText:"Terapkan",
+          okClass:"btn-amber"
+        });
+        if(!ok) return;
+      }
       $("saveDefaultOwnerBtn").disabled = true;
       try{
         const data = await api("/api/settings/default-owner", {
@@ -2259,7 +2393,14 @@ Backend/API: https://apifsub.site</div>
     async function importBotSettings(){
       const bot = selectedBot();
       if(!bot) return showMsg("botBackupMsg", "Pilih bot target dulu.", "error");
-      if(!confirm(`Restore setting ke ${botDisplayName(bot)}? Setting lama pada bagian yang dicopy akan tertimpa.`)) return;
+      const ok = await confirmAction({
+        title:"Restore Setting Bot?",
+        message:"Setting lama pada bagian yang dipilih akan tertimpa.",
+        target:botDisplayName(bot),
+        okText:"Restore",
+        okClass:"btn-amber"
+      });
+      if(!ok) return;
       $("importBotSettingsBtn").disabled = true;
       try{
         const backup = await readJsonFile($("importBotSettingsFile"));
@@ -2280,7 +2421,14 @@ Field: ${(data.updated_fields || []).join(", ")}`, "ok");
       if(!target) return showMsg("cloneSettingsMsg", "Pilih bot target dulu.", "error");
       if(!sourceId) return showMsg("cloneSettingsMsg", "Pilih bot sumber dulu.", "error");
       const source = state.bots.find(b => b.id === sourceId);
-      if(!confirm(`Clone setting dari ${botDisplayName(source)} ke ${botDisplayName(target)}?`)) return;
+      const ok = await confirmAction({
+        title:"Clone Setting Bot?",
+        message:`Setting dari ${botDisplayName(source)} akan diterapkan ke bot target.`,
+        target:botDisplayName(target),
+        okText:"Clone Setting",
+        okClass:"btn-amber"
+      });
+      if(!ok) return;
       $("cloneSettingsBtn").disabled = true;
       try{
         const data = await api(`/api/bots/${target.id}/clone-settings`, {
@@ -2292,6 +2440,102 @@ Field: ${(data.updated_fields || []).join(", ")}`, "ok");
         await loadDashboard();
       }catch(err){ showMsg("cloneSettingsMsg", err.message, "error"); }
       finally{ $("cloneSettingsBtn").disabled = false; }
+    }
+
+
+    function renderTemplatePresets(){
+      const select = $("templatePresetSelect");
+      if(!select) return;
+      const presets = state.templatePresets || [];
+      if(!presets.length){
+        select.innerHTML = `<option value="">Belum ada preset</option>`;
+        return;
+      }
+      select.innerHTML = presets.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("");
+    }
+
+    function currentTemplatePayloadFromForm(){
+      return {
+        custom_texts:{
+          start_message:$("startMessage").value.trim(),
+          help_message:$("helpMessage").value.trim(),
+          join_required_message:$("joinRequiredMessage").value.trim(),
+          not_allowed_message:$("notAllowedMessage").value.trim(),
+          external_link_blocked_message:$("externalBlockedMessage").value.trim(),
+          invalid_code_message:$("invalidCodeMessage").value.trim(),
+          link_created_message:$("linkCreatedMessage").value.trim()
+        },
+        media_caption_template:$("mediaCaptionTemplate").value.trim(),
+        maintenance_message:$("maintenanceMessage").value.trim()
+      };
+    }
+
+    function applyTemplatePayloadToForm(settings){
+      const texts = settings.custom_texts || {};
+      $("startMessage").value = texts.start_message || "";
+      $("helpMessage").value = texts.help_message || "";
+      $("joinRequiredMessage").value = texts.join_required_message || "";
+      $("notAllowedMessage").value = texts.not_allowed_message || "";
+      $("externalBlockedMessage").value = texts.external_link_blocked_message || "";
+      $("invalidCodeMessage").value = texts.invalid_code_message || "";
+      $("linkCreatedMessage").value = texts.link_created_message || "";
+      $("mediaCaptionTemplate").value = settings.media_caption_template || "";
+      $("maintenanceMessage").value = settings.maintenance_message || DEFAULT_TEMPLATES.maintenanceMessage || "";
+    }
+
+    async function refreshTemplatePresets(){
+      try{
+        const data = await api("/api/template-presets");
+        state.templatePresets = data.presets || [];
+        renderTemplatePresets();
+      }catch(err){ showMsg("templatePresetMsg", err.message, "error"); }
+    }
+
+    function selectedTemplatePreset(){
+      const id = $("templatePresetSelect")?.value || "";
+      return (state.templatePresets || []).find(p => p.id === id) || null;
+    }
+
+    async function applyTemplatePreset(){
+      const preset = selectedTemplatePreset();
+      if(!preset) return showMsg("templatePresetMsg", "Pilih preset dulu.", "error");
+      applyTemplatePayloadToForm(preset.settings || {});
+      showMsg("templatePresetMsg", `Preset ${preset.name} diterapkan ke form. Klik Simpan Template & Proteksi untuk menyimpan ke bot.`, "ok");
+    }
+
+    async function saveTemplatePreset(){
+      const name = prompt("Nama preset template:", "Preset FSub");
+      if(!name || !name.trim()) return;
+      $("saveTemplatePresetBtn").disabled = true;
+      try{
+        const data = await api("/api/template-presets", {
+          method:"POST",
+          body:JSON.stringify({name:name.trim(), settings:currentTemplatePayloadFromForm()})
+        });
+        showMsg("templatePresetMsg", data.message || "Preset disimpan.", "ok");
+        await refreshTemplatePresets();
+      }catch(err){ showMsg("templatePresetMsg", err.message, "error"); }
+      finally{ $("saveTemplatePresetBtn").disabled = false; }
+    }
+
+    async function deleteTemplatePreset(){
+      const preset = selectedTemplatePreset();
+      if(!preset) return showMsg("templatePresetMsg", "Pilih preset dulu.", "error");
+      const ok = await confirmAction({
+        title:"Hapus Preset?",
+        message:"Preset template global ini akan dihapus dari panel.",
+        target:preset.name,
+        okText:"Hapus Preset",
+        okClass:"btn-red"
+      });
+      if(!ok) return;
+      $("deleteTemplatePresetBtn").disabled = true;
+      try{
+        const data = await api(`/api/template-presets/${preset.id}`, {method:"DELETE"});
+        showMsg("templatePresetMsg", data.message || "Preset dihapus.", "ok");
+        await refreshTemplatePresets();
+      }catch(err){ showMsg("templatePresetMsg", err.message, "error"); }
+      finally{ $("deleteTemplatePresetBtn").disabled = false; }
     }
 
     function initBotSearch(){
@@ -2468,6 +2712,9 @@ Field: ${(data.updated_fields || []).join(", ")}`, "ok");
     $("addRequiredBtn").addEventListener("click", addRequired);
     $("saveSettingsBtn").addEventListener("click", saveSettings);
     $("useCurrentTemplateBtn").addEventListener("click", useCurrentTemplateExample);
+    $("applyTemplatePresetBtn").addEventListener("click", applyTemplatePreset);
+    $("saveTemplatePresetBtn").addEventListener("click", saveTemplatePreset);
+    $("deleteTemplatePresetBtn").addEventListener("click", deleteTemplatePreset);
     $("startBotBtn").addEventListener("click", startBot);
     $("stopBotBtn").addEventListener("click", stopBot);
     if($("validateBtn")) $("validateBtn").addEventListener("click", validateBot);
