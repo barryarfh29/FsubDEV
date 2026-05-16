@@ -665,7 +665,13 @@
       }
     }
 
-  </style>
+  
+
+    /* Hide validasi/webhook setelah hasil aman */
+    .bot-action-bar button.action-hidden{
+      display:none !important;
+    }
+</style>
 </head>
 
 <body>
@@ -1068,7 +1074,8 @@ Backend/API: https://apifsub.site</div>
       settings: {},
       selectedBotId: localStorage.getItem(SELECTED_KEY) || "",
       templateSelectedBotId: localStorage.getItem(TEMPLATE_SELECTED_KEY) || "",
-      templateReady: false
+      templateReady: false,
+      actionChecks: JSON.parse(sessionStorage.getItem("fsub_action_checks") || "{}")
     };
 
     const DEFAULT_TEMPLATES = {
@@ -1086,6 +1093,33 @@ Backend/API: https://apifsub.site</div>
     function selectedBot(){ return state.bots.find(b => b.id === state.selectedBotId) || state.bots[0] || null; }
     function templateBot(){ return state.bots.find(b => b.id === state.templateSelectedBotId) || null; }
     function esc(v){ return String(v ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+
+    function saveActionChecks(){
+      sessionStorage.setItem("fsub_action_checks", JSON.stringify(state.actionChecks || {}));
+    }
+
+    function setActionCheck(botId, key, value){
+      if(!botId) return;
+      if(!state.actionChecks[botId]) state.actionChecks[botId] = {};
+      state.actionChecks[botId][key] = Boolean(value);
+      saveActionChecks();
+      renderActionButtons(selectedBot());
+    }
+
+    function resetActionChecks(botId, keys){
+      if(!botId || !state.actionChecks[botId]) return;
+      (keys || ["validationOk", "webhookOk"]).forEach(key => delete state.actionChecks[botId][key]);
+      saveActionChecks();
+      renderActionButtons(selectedBot());
+    }
+
+    function renderActionButtons(bot){
+      const checks = bot ? (state.actionChecks[bot.id] || {}) : {};
+      const validateBtn = $("validateBtn");
+      const webhookBtn = $("webhookHealthBtn");
+      if(validateBtn) validateBtn.classList.toggle("action-hidden", Boolean(bot && checks.validationOk));
+      if(webhookBtn) webhookBtn.classList.toggle("action-hidden", Boolean(bot && checks.webhookOk));
+    }
 
     function showMsg(id, text, type=""){
       const el = $(id);
@@ -1165,6 +1199,7 @@ Backend/API: https://apifsub.site</div>
       }else if(bot){
         renderManage(bot);
       }
+      renderActionButtons(bot);
       renderTemplateGate();
       renderBackupTools();
     }
@@ -1502,6 +1537,7 @@ Backend/API: https://apifsub.site</div>
       $("saveStorageBtn").disabled = true;
       try{
         const data = await api(`/api/bots/${bot.id}/storage-channel`, {method:"POST", body:JSON.stringify({channel})});
+        resetActionChecks(bot.id, ["validationOk"]);
         showMsg("storageMsg", data.message || "Channel Database disimpan.", "ok");
         await loadDashboard();
       }catch(err){ showMsg("storageMsg", err.message, "error"); }
@@ -1517,6 +1553,7 @@ Backend/API: https://apifsub.site</div>
       try{
         const data = await api(`/api/bots/${bot.id}/required-channels`, {method:"POST", body:JSON.stringify({channel})});
         $("requiredChannel").value = "";
+        resetActionChecks(bot.id, ["validationOk"]);
         showMsg("requiredMsg", data.message || "Channel ditambahkan.", "ok");
         await loadDashboard();
       }catch(err){ showMsg("requiredMsg", err.message, "error"); }
@@ -1528,6 +1565,7 @@ Backend/API: https://apifsub.site</div>
       if(!bot) return;
       try{
         await api(`/api/bots/${bot.id}/required-channels/${encodeURIComponent(chatId)}`, {method:"DELETE"});
+        resetActionChecks(bot.id, ["validationOk"]);
         await loadDashboard();
       }catch(err){ alert(err.message); }
     }
@@ -1575,6 +1613,7 @@ Backend/API: https://apifsub.site</div>
       if(!bot) return;
       try{
         const data = await api(`/api/bots/${bot.id}/start`, {method:"POST"});
+        resetActionChecks(bot.id, ["webhookOk"]);
         showMsg("manageMsg", data.message || "Bot dijalankan.", "ok");
         await loadDashboard();
       }catch(err){ showMsg("manageMsg", err.message, "error"); }
@@ -1585,6 +1624,7 @@ Backend/API: https://apifsub.site</div>
       if(!bot) return;
       try{
         const data = await api(`/api/bots/${bot.id}/stop`, {method:"POST"});
+        resetActionChecks(bot.id, ["webhookOk"]);
         showMsg("manageMsg", data.message || "Bot dihentikan.", "ok");
         await loadDashboard();
       }catch(err){ showMsg("manageMsg", err.message, "error"); }
@@ -1619,9 +1659,13 @@ Backend/API: https://apifsub.site</div>
       showMsg("manageMsg", "Sedang validasi channel...", "");
       try{
         const data = await api(`/api/bots/${bot.id}/validate`, {method:"POST"});
+        setActionCheck(bot.id, "validationOk", Boolean(data.ok));
         showMsg("manageMsg", renderValidationResult(data), data.ok ? "ok" : "error");
         await loadDashboard();
-      }catch(err){ showMsg("manageMsg", err.message, "error"); }
+      }catch(err){
+        setActionCheck(bot.id, "validationOk", false);
+        showMsg("manageMsg", err.message, "error");
+      }
     }
 
     function renderWebhookHealth(data){
@@ -1647,8 +1691,12 @@ Backend/API: https://apifsub.site</div>
       showMsg("manageMsg", "Sedang cek webhook...", "");
       try{
         const data = await api(`/api/bots/${bot.id}/webhook-health`);
+        setActionCheck(bot.id, "webhookOk", Boolean(data.ok));
         showMsg("manageMsg", renderWebhookHealth(data), data.ok ? "ok" : "error");
-      }catch(err){ showMsg("manageMsg", err.message, "error"); }
+      }catch(err){
+        setActionCheck(bot.id, "webhookOk", false);
+        showMsg("manageMsg", err.message, "error");
+      }
     }
 
     async function deleteBot(){
