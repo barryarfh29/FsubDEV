@@ -1702,23 +1702,6 @@ Backend/API: https://apifsub.site</div>
       return botSearchText(bot).includes(q);
     }
 
-    function botHasTemplate(bot){
-      const texts = bot && bot.custom_texts ? Object.keys(bot.custom_texts).filter(k => String(bot.custom_texts[k] || "").trim()).length : 0;
-      return Boolean(texts || String(bot?.media_caption_template || "").trim());
-    }
-
-    function botStatusBadges(bot){
-      const joinCount = (bot.required_channels || []).length;
-      const badges = [
-        {text: bot.is_running ? "RUNNING" : "STOPPED", cls: bot.is_running ? "ok" : "danger"},
-        {text: bot.storage_channel ? "DB OK" : "DB KOSONG", cls: bot.storage_channel ? "ok" : "warn"},
-        {text: `JOIN ${joinCount}`, cls: joinCount ? "info" : "warn"},
-        {text: botHasTemplate(bot) ? "TEMPLATE OK" : "TEMPLATE KOSONG", cls: botHasTemplate(bot) ? "ok" : "warn"}
-      ];
-      if(bot.maintenance_mode) badges.push({text:"MAINTENANCE ON", cls:"danger"});
-      return badges;
-    }
-
     function renderBotList(){
       const box = $("botList");
       const empty = $("botEmptyMain");
@@ -1738,12 +1721,10 @@ Backend/API: https://apifsub.site</div>
         const status = bot.is_running ? "RUNNING" : "STOPPED";
         const pill = bot.is_running ? "run" : "stop";
         const name = botDisplayName(bot);
-        const badges = botStatusBadges(bot).map(b => `<span class="bot-badge ${b.cls}">${esc(b.text)}</span>`).join("");
         return `<div class="bot-card ${active}" onclick="selectBot('${esc(bot.id)}')">
-          <div class="bot-card-main">
+          <div>
             <div class="bot-name">${esc(name)}</div>
             <div class="bot-meta">${esc(bot.owner_label || "Owner")} ${bot.owner_masked ? `· ${esc(bot.owner_masked)}` : ""}</div>
-            <div class="bot-badges">${badges}</div>
           </div>
           <span class="pill ${pill}">${status}</span>
         </div>`;
