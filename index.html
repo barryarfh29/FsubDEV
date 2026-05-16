@@ -888,6 +888,43 @@
       color:#fff;
     }
 
+
+
+    .maintenance-quick{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-height:42px;
+      padding:8px 12px;
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:9px;
+      background:rgba(255,255,255,.025);
+      color:#dbe7f5;
+      font-size:12.4px;
+      font-weight:760;
+    }
+
+    .maintenance-quick .toggle{
+      width:42px;
+      height:23px;
+      margin:0;
+    }
+
+    .maintenance-quick .toggle:before{
+      width:17px;
+      height:17px;
+    }
+
+    .maintenance-quick .toggle.on:before{
+      left:22px;
+    }
+
+    .maintenance-quick.active{
+      border-color:rgba(245,158,11,.34);
+      background:rgba(245,158,11,.075);
+      color:#fde68a;
+    }
+
     @media(max-width:700px){
       .bot-action-bar{gap:8px}
       .bot-action-bar button{
@@ -1079,6 +1116,10 @@
             <h2>Status Bot Terpilih</h2>
             <div id="checklist" class="checklist"></div>
             <div class="bot-action-bar">
+              <div id="maintenanceQuickBox" class="maintenance-quick">
+                <span>Maintenance</span>
+                <div id="maintenanceQuickToggle" class="toggle" title="Mode Maintenance"></div>
+              </div>
               <button class="btn-green" id="startBotBtn" type="button">Start Bot</button>
               <button class="btn-amber" id="stopBotBtn" type="button">Stop Bot</button>
               <button class="btn-red" id="deleteBotBtn" type="button">Hapus Bot</button>
@@ -1289,13 +1330,6 @@ button: Support | https://t.me/support</div>
                   <div id="antiToggle" class="toggle on locked" title="Aktif permanen"></div>
                 </div>
 
-                <div class="toggle-row">
-                  <div>
-                    <strong>Mode Maintenance</strong>
-                    <p>Jika aktif, user biasa tidak bisa membuka konten sementara. Owner dan admin tetap bisa akses.</p>
-                  </div>
-                  <div id="maintenanceToggle" class="toggle"></div>
-                </div>
 
                 <label for="maintenanceMessage" style="margin-top:12px">Pesan Maintenance</label>
                 <textarea id="maintenanceMessage" placeholder="⚠️ Bot sedang maintenance.
@@ -1454,6 +1488,12 @@ Backend/API: https://apifsub.site</div>
       const webhookBtn = $("webhookHealthBtn");
       if(validateBtn) validateBtn.classList.toggle("action-hidden", Boolean(bot && checks.validationOk));
       if(webhookBtn) webhookBtn.classList.toggle("action-hidden", Boolean(bot && checks.webhookOk));
+
+      const maintenanceBox = $("maintenanceQuickBox");
+      const maintenanceToggle = $("maintenanceQuickToggle");
+      if(maintenanceBox) maintenanceBox.classList.toggle("hidden", !bot);
+      if(maintenanceBox) maintenanceBox.classList.toggle("active", Boolean(bot && bot.maintenance_mode));
+      if(maintenanceToggle) maintenanceToggle.classList.toggle("on", Boolean(bot && bot.maintenance_mode));
     }
 
     function showMsg(id, text, type=""){
@@ -1736,7 +1776,6 @@ Backend/API: https://apifsub.site</div>
       $("protectToggle").classList.toggle("on", Boolean(bot.protect_content));
       // Selalu aktif: keamanan rantai bot luar tidak bisa dimatikan dari website.
       $("antiToggle").classList.add("on");
-      $("maintenanceToggle").classList.toggle("on", Boolean(bot.maintenance_mode));
       $("maintenanceMessage").value = bot.maintenance_message || DEFAULT_TEMPLATES.maintenanceMessage || "";
       $("contentAdmins").value = (bot.content_admin_ids || []).join("\n");
       $("uploadAdmins").value = (bot.upload_admin_ids || []).join("\n");
@@ -1995,7 +2034,7 @@ Backend/API: https://apifsub.site</div>
         const data = await api(`/api/bots/${bot.id}/settings`, {method:"POST", body:JSON.stringify({
           protect_content:$("protectToggle").classList.contains("on"),
           anti_external_telegram_links:true,
-          maintenance_mode:$("maintenanceToggle").classList.contains("on"),
+          maintenance_mode:Boolean(bot.maintenance_mode),
           maintenance_message:$("maintenanceMessage").value.trim(),
           content_admin_ids:contentAdminIds,
           upload_admin_ids:uploadAdminIds,
@@ -2007,6 +2046,26 @@ Backend/API: https://apifsub.site</div>
         showMsg("settingsMsg", data.message || "Pengaturan disimpan.", "ok");
         await loadDashboard();
       }catch(err){ showMsg("settingsMsg", err.message, "error"); }
+    }
+
+
+    async function toggleMaintenanceQuick(){
+      const bot = selectedBot();
+      if(!bot) return;
+      const nextValue = !Boolean(bot.maintenance_mode);
+      const toggle = $("maintenanceQuickToggle");
+      if(toggle) toggle.classList.toggle("on", nextValue);
+      try{
+        const data = await api(`/api/bots/${bot.id}/settings`, {method:"POST", body:JSON.stringify({
+          maintenance_mode:nextValue,
+          maintenance_message:bot.maintenance_message || DEFAULT_TEMPLATES.maintenanceMessage || ""
+        })});
+        showMsg("manageMsg", nextValue ? "Mode maintenance diaktifkan." : "Mode maintenance dimatikan.", "ok");
+        await loadDashboard();
+      }catch(err){
+        if(toggle) toggle.classList.toggle("on", Boolean(bot.maintenance_mode));
+        showMsg("manageMsg", err.message, "error");
+      }
     }
 
     async function startBot(){
@@ -2396,7 +2455,8 @@ Field: ${(data.updated_fields || []).join(", ")}`, "ok");
 
       $("protectToggle").addEventListener("click", () => $("protectToggle").classList.toggle("on"));
       $("antiToggle").addEventListener("click", () => $("antiToggle").classList.add("on"));
-      $("maintenanceToggle").addEventListener("click", () => $("maintenanceToggle").classList.toggle("on"));
+      const maintenanceQuickToggle = $("maintenanceQuickToggle");
+      if(maintenanceQuickToggle) maintenanceQuickToggle.addEventListener("click", toggleMaintenanceQuick);
     }
 
     $("loginBtn").addEventListener("click", login);
