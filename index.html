@@ -1020,6 +1020,110 @@
       }
     }
 
+
+
+    /* FIX confirm modal: popup tengah, bukan teks biasa */
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      z-index:9999;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      background:rgba(2,6,12,.72);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+    }
+
+    .modal-backdrop.show{
+      display:flex;
+    }
+
+    .safe-modal{
+      width:min(430px,100%);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:18px;
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.018)),
+        #101a28;
+      box-shadow:
+        0 28px 80px rgba(0,0,0,.46),
+        inset 0 1px 0 rgba(255,255,255,.06);
+      padding:18px;
+      color:#f8fafc;
+      transform:translateY(4px) scale(.98);
+      opacity:0;
+      animation:safeModalIn .16s ease forwards;
+    }
+
+    @keyframes safeModalIn{
+      to{transform:translateY(0) scale(1);opacity:1}
+    }
+
+    .safe-modal h3{
+      margin:0 0 8px;
+      font-size:18px;
+      line-height:1.2;
+      font-weight:850;
+      letter-spacing:-.02em;
+    }
+
+    .safe-modal p{
+      margin:0;
+      color:#b8c6d8;
+      font-size:12.8px;
+      line-height:1.55;
+    }
+
+    .modal-target{
+      margin-top:13px;
+      padding:11px 12px;
+      border:1px solid rgba(255,105,0,.24);
+      border-radius:13px;
+      background:rgba(255,105,0,.075);
+      color:#fff3e6;
+      font-size:13px;
+      font-weight:800;
+      word-break:break-word;
+    }
+
+    .modal-actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:9px;
+      margin-top:18px;
+    }
+
+    .modal-actions button{
+      min-width:104px;
+      box-shadow:none;
+      border-radius:11px;
+    }
+
+    .modal-actions .btn-secondary{
+      background:#1b283a!important;
+      border:1px solid rgba(255,255,255,.13);
+      color:#e5edf7;
+    }
+
+    .modal-actions .btn-red{
+      background:linear-gradient(180deg,#ef4444,#dc2626)!important;
+      border:1px solid rgba(254,202,202,.20);
+      color:#fff;
+    }
+
+    .modal-actions button:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+
+    @media(max-width:520px){
+      .safe-modal{padding:16px;border-radius:16px}
+      .modal-actions{flex-direction:column-reverse}
+      .modal-actions button{width:100%}
+    }
+
 </style>
 </head>
 
