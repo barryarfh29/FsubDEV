@@ -671,6 +671,86 @@
     .bot-action-bar button.action-hidden{
       display:none !important;
     }
+
+    /* status bot clean grid - compact premium */
+    .checklist{
+      display:grid !important;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:9px !important;
+    }
+
+    @media(min-width:980px){
+      .checklist{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+      }
+    }
+
+    .check{
+      min-height:64px;
+      align-items:flex-start;
+      gap:9px !important;
+      padding:11px 12px !important;
+      border-radius:14px !important;
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.014)),
+        rgba(13,22,35,.42) !important;
+      border:1px solid rgba(255,255,255,.085) !important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.035);
+    }
+
+    .check-dot{
+      width:22px !important;
+      height:22px !important;
+      flex:0 0 22px !important;
+      margin-top:1px;
+      font-size:11px !important;
+      box-shadow:0 0 0 3px rgba(34,197,94,.08);
+    }
+
+    .check.warn .check-dot{
+      box-shadow:0 0 0 3px rgba(245,158,11,.08);
+    }
+
+    .check strong{
+      display:block;
+      font-size:12.35px !important;
+      font-weight:820 !important;
+      letter-spacing:-.01em;
+      line-height:1.18;
+      margin-bottom:3px;
+    }
+
+    .check span{
+      display:block;
+      font-size:11.35px !important;
+      line-height:1.35;
+      color:#aebbd0 !important;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .bot-action-bar{
+      margin-top:15px !important;
+      padding-top:15px;
+      border-top:1px solid rgba(255,255,255,.08);
+      gap:10px !important;
+    }
+
+    .bot-action-bar button{
+      min-height:40px !important;
+      min-width:118px !important;
+      border-radius:10px !important;
+    }
+
+    @media(max-width:700px){
+      .checklist{
+        grid-template-columns:1fr !important;
+      }
+      .bot-action-bar button{
+        min-width:0 !important;
+      }
+    }
+
 </style>
 </head>
 
