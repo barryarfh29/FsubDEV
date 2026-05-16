@@ -1289,6 +1289,20 @@ button: Support | https://t.me/support</div>
                   <div id="antiToggle" class="toggle on locked" title="Aktif permanen"></div>
                 </div>
 
+                <div class="toggle-row">
+                  <div>
+                    <strong>Mode Maintenance</strong>
+                    <p>Jika aktif, user biasa tidak bisa membuka konten sementara. Owner dan admin tetap bisa akses.</p>
+                  </div>
+                  <div id="maintenanceToggle" class="toggle"></div>
+                </div>
+
+                <label for="maintenanceMessage" style="margin-top:12px">Pesan Maintenance</label>
+                <textarea id="maintenanceMessage" placeholder="⚠️ Bot sedang maintenance.
+
+Silakan coba lagi beberapa saat lagi."></textarea>
+                <div class="example">Support button: tambahkan baris <code>button: Judul | https://link</code>. Tombol otomatis maksimal 2 per baris.</div>
+
                 <label for="contentAdmins" style="margin-top:12px">Admin Konten Legacy / Semua Izin</label>
                 <textarea id="contentAdmins" placeholder="Satu ID per baris:
 123456789
@@ -1406,7 +1420,8 @@ Backend/API: https://apifsub.site</div>
       externalBlockedMessage: "🛡️ Konten ditolak.\n\nTerdeteksi link atau username bot Telegram luar:\n{blocked_detail}\n\nSilakan upload konten langsung atau gunakan link dari bot internal yang terdaftar.",
       invalidCodeMessage: "⚠️ Maaf {mention}, link tidak valid atau konten sudah tidak tersedia.\n\nSilakan minta link baru ke admin.",
       linkCreatedMessage: "✅ Link FSub berhasil dibuat:\n<code>{link}</code>",
-      mediaCaptionTemplate: "🔥 Halo {mention}\n\nIni caption custom untuk media kamu.\nKlik tombol di bawah jika perlu.\n\nbutton: Channel | https://t.me/channel\nbutton: Support | https://t.me/support"
+      mediaCaptionTemplate: "🔥 Halo {mention}\n\nIni caption custom untuk media kamu.\nKlik tombol di bawah jika perlu.\n\nbutton: Channel | https://t.me/channel\nbutton: Support | https://t.me/support",
+      maintenanceMessage: "⚠️ <b>Bot sedang maintenance.</b>\n\nSilakan coba lagi beberapa saat lagi."
     };
 
     function headers(){ return { "Content-Type":"application/json", Authorization:`Bearer ${state.token}` }; }
@@ -1721,6 +1736,8 @@ Backend/API: https://apifsub.site</div>
       $("protectToggle").classList.toggle("on", Boolean(bot.protect_content));
       // Selalu aktif: keamanan rantai bot luar tidak bisa dimatikan dari website.
       $("antiToggle").classList.add("on");
+      $("maintenanceToggle").classList.toggle("on", Boolean(bot.maintenance_mode));
+      $("maintenanceMessage").value = bot.maintenance_message || DEFAULT_TEMPLATES.maintenanceMessage || "";
       $("contentAdmins").value = (bot.content_admin_ids || []).join("\n");
       $("uploadAdmins").value = (bot.upload_admin_ids || []).join("\n");
       const getBroadcastIds = uniqueIds([...(bot.get_admin_ids || []), ...(bot.broadcast_admin_ids || [])]);
@@ -1978,6 +1995,8 @@ Backend/API: https://apifsub.site</div>
         const data = await api(`/api/bots/${bot.id}/settings`, {method:"POST", body:JSON.stringify({
           protect_content:$("protectToggle").classList.contains("on"),
           anti_external_telegram_links:true,
+          maintenance_mode:$("maintenanceToggle").classList.contains("on"),
+          maintenance_message:$("maintenanceMessage").value.trim(),
           content_admin_ids:contentAdminIds,
           upload_admin_ids:uploadAdminIds,
           get_admin_ids:getBroadcastAdminIds,
@@ -2377,6 +2396,7 @@ Field: ${(data.updated_fields || []).join(", ")}`, "ok");
 
       $("protectToggle").addEventListener("click", () => $("protectToggle").classList.toggle("on"));
       $("antiToggle").addEventListener("click", () => $("antiToggle").classList.add("on"));
+      $("maintenanceToggle").addEventListener("click", () => $("maintenanceToggle").classList.toggle("on"));
     }
 
     $("loginBtn").addEventListener("click", login);
