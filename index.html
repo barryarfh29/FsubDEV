@@ -388,30 +388,75 @@
       text-transform:uppercase;
       margin-bottom:18px;
     }
-    .login-vault-logo{
-      width:84px;
-      height:84px;
-      margin:0 auto 22px;
-      border-radius:24px;
+    .login-video-orbit{
+      width:112px;
+      height:112px;
+      margin:0 auto 24px;
+      position:relative;
+      display:grid;
+      place-items:center;
+      border-radius:30px;
+      animation:fsubLoginFloat 5s ease-in-out infinite;
+    }
+    .login-video-orbit:before{
+      content:"";
+      position:absolute;
+      inset:-14px;
+      border-radius:36px;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(56,189,248,.34), transparent 42%),
+        radial-gradient(circle at 80% 85%, rgba(255,105,0,.28), transparent 42%);
+      filter:blur(10px);
+      opacity:.9;
+      animation:fsubLoginGlow 6s ease-in-out infinite;
+    }
+    .login-video-frame{
+      width:92px;
+      height:92px;
+      position:relative;
+      overflow:hidden;
+      border-radius:26px;
+      border:1px solid rgba(148,163,184,.22);
+      background:
+        radial-gradient(circle at 30% 20%, rgba(255,255,255,.22), transparent 18%),
+        linear-gradient(135deg,#0f1f35 0%,#10213b 42%,#1b2639 100%);
+      box-shadow:
+        0 20px 46px rgba(37,99,235,.22),
+        0 12px 30px rgba(255,105,0,.12),
+        inset 0 1px 0 rgba(255,255,255,.16);
+      z-index:1;
+    }
+    .login-video-frame:after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(130deg,rgba(255,255,255,.20),transparent 26%,transparent 70%,rgba(255,105,0,.10));
+      pointer-events:none;
+    }
+    .login-video-frame video{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .login-video-fallback{
+      position:absolute;
+      inset:0;
       display:grid;
       place-items:center;
       color:#fff;
-      font-size:22px;
+      font-size:21px;
       font-weight:900;
-      letter-spacing:-.04em;
-      background:
-        radial-gradient(circle at 30% 20%, rgba(255,255,255,.45), transparent 18%),
-        linear-gradient(135deg,#38bdf8 0%,#2563eb 48%,#ff6900 100%);
-      box-shadow:0 18px 42px rgba(37,99,235,.26), inset 0 1px 0 rgba(255,255,255,.28);
-      overflow:hidden;
-      position:relative;
+      letter-spacing:-.045em;
+      z-index:-1;
     }
-    .login-vault-logo:after{
-      content:"";
-      position:absolute;
-      inset:-22px;
-      background:linear-gradient(120deg,transparent 18%,rgba(255,255,255,.23) 34%,transparent 50%);
-      transform:rotate(-12deg);
+    @keyframes fsubLoginFloat{
+      0%,100%{transform:translateY(0) scale(1)}
+      50%{transform:translateY(-8px) scale(1.025)}
+    }
+    @keyframes fsubLoginGlow{
+      0%,100%{transform:rotate(0deg) scale(1);opacity:.78}
+      50%{transform:rotate(7deg) scale(1.08);opacity:1}
     }
     .login-title-vault{
       margin:0;
@@ -937,8 +982,13 @@
   <div id="loginView" class="login-wrap">
     <section class="login-card-vault">
       <div class="login-secure-pill">▾ Secure Private Access</div>
-      <div class="login-vault-logo">VIP</div>
-      <h1 class="login-title-vault">FSub<span>Vault</span></h1>
+      <div class="login-video-orbit">
+        <div class="login-video-frame">
+          <video src="./assets/fsub-login.mp4" autoplay muted loop playsinline preload="metadata"></video>
+          <span class="login-video-fallback">FSub</span>
+        </div>
+      </div>
+      <h1 class="login-title-vault">FSub<span>Premium</span></h1>
       <p class="login-sub-vault">Masuk ke panel private untuk mengelola bot, channel, template, webhook, dan backup FSub Anda.</p>
 
       <label for="password" class="hidden">Password</label>
