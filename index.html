@@ -2282,6 +2282,16 @@ Backend/API: https://apifsub.site</div>
       }
     }
 
+    function isStorageReady(ch){
+      return Boolean(ch && ch.chat_id && ch.ok !== false && !ch.pending_admin && ch.storage_ready !== false);
+    }
+
+    function storageStatusText(ch){
+      if(!ch) return "Belum diset";
+      if(isStorageReady(ch)) return "Siap digunakan";
+      return ch.detail || "Menunggu bot dijadikan admin / izin Post Messages";
+    }
+
     function renderChecklist(bot){
       const box = $("checklist");
       if(!bot){
@@ -2289,12 +2299,13 @@ Backend/API: https://apifsub.site</div>
         return;
       }
       const storage = Boolean(bot.storage_channel);
+      const storageReady = isStorageReady(bot.storage_channel);
       const required = (bot.required_channels || []).length > 0;
       const running = Boolean(bot.is_running);
       const checks = [
         {ok:Boolean(bot.token_hash || bot.bot_id), title:"Token valid", desc: bot.username ? `Terdeteksi sebagai @${bot.username}` : "Token sudah disimpan"},
         {ok:Boolean(bot.owner_id), title:"Owner aktif", desc:"Owner bisa generate link"},
-        {ok:storage, title:"Channel Database", desc: storage ? channelName(bot.storage_channel) : "Belum diset"},
+        {ok:storageReady, title:"Channel Database", desc: storage ? storageStatusText(bot.storage_channel) : "Belum diset"},
         {ok:required, title:"Channel Wajib Join", desc: required ? `${(bot.required_channels || []).length} channel aktif` : "Belum ada channel"},
         {ok:running, title:"Bot running", desc: running ? "Bot aktif menerima pesan" : "Klik Start Bot"}
       ];
@@ -2327,14 +2338,17 @@ Backend/API: https://apifsub.site</div>
       renderRequiredChannels(bot);
     }
 
-    function channelName(ch){ return ch?.title || (ch?.username ? `@${ch.username}` : ch?.chat_id) || "-"; }
+    function channelName(ch){ return ch?.title || (ch?.username ? `@${ch.username}` : ch?.chat_id) || ch?.input || "-"; }
 
     function channelMeta(ch, fallback){
       const parts = [];
       if(ch?.chat_id) parts.push(`ID: ${ch.chat_id}`);
       if(ch?.username) parts.push(`@${ch.username}`);
       if(ch?.chat_type) parts.push(ch.chat_type);
-      return parts.join(" • ") || fallback || "Aktif";
+      if(ch?.bot_member_status) parts.push(`bot: ${ch.bot_member_status}`);
+      const meta = parts.join(" • ") || fallback || "Aktif";
+      const detail = ch?.detail ? ` — ${ch.detail}` : "";
+      return meta + detail;
     }
 
     function renderStorageChannel(bot){
@@ -2354,13 +2368,14 @@ Backend/API: https://apifsub.site</div>
         return;
       }
 
+      const ready = isStorageReady(ch);
       box.innerHTML = `<div class="channel-item storage-channel-item">
         <div class="storage-channel-main">
           <strong>${esc(channelName(ch))}</strong><br>
-          <span class="muted small">${esc(channelMeta(ch, "Channel Database aktif"))}</span>
+          <span class="muted small">${esc(channelMeta(ch, ready ? "Channel Database aktif" : "Menunggu bot admin"))}</span>
         </div>
         <div class="storage-channel-actions">
-          <span class="pill run">Database</span>
+          <span class="pill ${ready ? "run" : "warn"}">${ready ? "Siap" : "Menunggu Admin"}</span>
           <button class="btn-secondary" type="button" onclick="editStorageChannel()">Ganti</button>
           <button class="btn-secondary" type="button" onclick="validateBot()">Validasi</button>
         </div>
@@ -2655,7 +2670,7 @@ Backend/API: https://apifsub.site</div>
     }
 
     async function validateBot(){
-      const bot = selectedBot();
+      const bot = channelTargetBot();
       if(!bot) return;
       showMsg("manageMsg", "Sedang validasi channel...", "");
       try{
